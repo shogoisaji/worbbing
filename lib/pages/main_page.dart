@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/registration_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -113,6 +114,11 @@ class _MainPageState extends State<MainPage> {
                       IconButton(
                           onPressed: () {
                             //
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountPage()),
+                            );
                           },
                           icon: const Icon(
                             Icons.account_circle,

@@ -21,9 +21,15 @@ class AppTextStyles {
     color: Colors.white,
   );
 
+  static final mediumStyle = GoogleFonts.zenKakuGothicNew(
+    fontSize: 24,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+  );
+
   static final bodyStyle = GoogleFonts.zenKakuGothicNew(
     fontSize: 16,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
     color: Colors.white,
   );
 }
@@ -43,6 +49,12 @@ Widget bigText(String text, Color? color) {
 Widget subText(String text, Color? color) {
   return Text(text,
       style: AppTextStyles.subTitleStyle
+          .copyWith(color: color, decoration: TextDecoration.none));
+}
+
+Widget mediumText(String text, Color? color) {
+  return Text(text,
+      style: AppTextStyles.mediumStyle
           .copyWith(color: color, decoration: TextDecoration.none));
 }
 

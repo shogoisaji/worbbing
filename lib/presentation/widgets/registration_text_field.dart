@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
-Widget registrationTextField() {
+Widget registrationTextField(controller) {
   return Stack(
     children: [
       Transform.translate(
@@ -11,17 +11,24 @@ Widget registrationTextField() {
             child: Container(width: 300, height: 80, color: MyTheme.lemon)),
       ),
       Container(
-          width: 300,
-          height: 80,
-          color: Colors.white,
-          child: TextField(
-              //
-              )),
+        width: 300,
+        height: 80,
+        color: Colors.white,
+        child: TextField(
+            //
+            decoration: InputDecoration(border: InputBorder.none),
+            textAlign: TextAlign.center,
+            controller: controller,
+            style: TextStyle(
+              fontSize: 36,
+              color: Colors.black,
+            )),
+      )
     ],
   );
 }
 
-Widget registrationMemoTextField() {
+Widget registrationMemoTextField(controller) {
   return Stack(
     children: [
       Transform.translate(
@@ -31,12 +38,20 @@ Widget registrationMemoTextField() {
             child: Container(width: 300, height: 150, color: MyTheme.orange)),
       ),
       Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
           width: 300,
           height: 150,
           color: Colors.white,
           child: TextField(
               //
-              )),
+              keyboardType: TextInputType.multiline,
+              maxLines: 10,
+              decoration: InputDecoration(border: InputBorder.none),
+              controller: controller,
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.black,
+              ))),
     ],
   );
 }

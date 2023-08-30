@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
-import 'package:worbbing/presentation/widgets/custom_text.dart';
 
-Widget customButton() {
+Widget customButton(Widget widget, Function() function) {
   return GestureDetector(
       onTap: () {
-        //
+        function();
       },
       child: Container(
         width: 170,
@@ -47,7 +46,7 @@ Widget customButton() {
                     width: 120,
                     height: 60,
                     color: MyTheme.orange,
-                    child: titleText('SAVE', Colors.black, null),
+                    child: widget,
                   ),
                 ],
               ),

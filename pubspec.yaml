@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   google_fonts:
+  sqflite: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -59,4 +60,8 @@ flutter:
     - assets/images/registration.png
     - assets/images/detail.png
     - assets/images/deepL.png
+    - assets/images/account.png
+    - assets/images/config.png
+    - assets/images/spacedRepetition.png
+    - assets/images/ebbinghaus.png
     - assets/

@@ -28,7 +28,7 @@ class _DetailPageState extends State<DetailPage> {
               child: Stack(
                 children: [
                   Align(
-                    alignment: const Alignment(-0.89, 0),
+                    alignment: const Alignment(-0.89, -0.1),
                     child: InkWell(
                         child: Image.asset(
                           'assets/images/custom_arrow.png',
@@ -43,7 +43,7 @@ class _DetailPageState extends State<DetailPage> {
                     alignment: Alignment.center,
                     child: Image.asset(
                       'assets/images/detail.png',
-                      width: 250,
+                      width: 200,
                     ),
                   ),
                 ],
