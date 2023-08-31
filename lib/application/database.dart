@@ -50,14 +50,14 @@ class DatabaseHelper {
 
   // add database row
   Future<void> addData(List<dynamic> addData) async {
-    final _noticeDuration = addData[0];
-    final _updateCount = addData[1];
-    final _flag = addData[2];
-    final _originalWord = addData[3];
-    final _translatedWord = addData[4];
-    final _updateDate = addData[5];
-    final _registrationDate = addData[6];
-    final _memo = addData[7];
+    final int _noticeDuration = addData[0];
+    final int _updateCount = addData[1];
+    final bool _flag = addData[2];
+    final String _originalWord = addData[3];
+    final String _translatedWord = addData[4];
+    final String _updateDate = addData[5];
+    final String _registrationDate = addData[6];
+    final String _memo = addData[7];
 
     final row = {
       DatabaseHelper.noticeDuration: _noticeDuration,
@@ -76,5 +76,11 @@ class DatabaseHelper {
     print('挿入された行のid: $id');
     print(
         '挿入されたデータ: \n$_noticeDuration \n$_updateCount \n$_flag \n$_originalWord \n$_translatedWord \n$_updateDate \n$_registrationDate \n$_memo');
+  }
+
+// get database
+  Future<List<Map<String, dynamic>>> queryAllRows() async {
+    Database db = await instance.database;
+    return await db.query(table);
   }
 }

@@ -11,7 +11,7 @@ class WordListTile extends StatefulWidget {
   final int noticeDuration;
   final bool flag;
 
-  final HEIGHT = 80.0;
+  static const HEIGHT = 90.0;
 
   WordListTile(
       {super.key,
@@ -41,12 +41,12 @@ class _WordListTileState extends State<WordListTile>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: widget.HEIGHT,
+      height: WordListTile.HEIGHT,
       child: Stack(
         children: [
-          Container(
+          SizedBox(
               width: double.infinity,
-              height: widget.HEIGHT,
+              height: WordListTile.HEIGHT,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -73,14 +73,30 @@ class _WordListTileState extends State<WordListTile>
                   )
                 ],
               )),
+          Container(
+            width: double.infinity,
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  MyTheme.grey,
+                  MyTheme.grey,
+                  Colors.transparent,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
           SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(-1, 0),
               end: const Offset(0, 0),
             ).animate(_animationController),
-            // slide page
+// slide page
             child: _DrawerPage(
-              translatedWord: '入場する',
+              translatedWord: widget.translatedWord,
             ),
           ),
           LayoutBuilder(
@@ -91,8 +107,12 @@ class _WordListTileState extends State<WordListTile>
                 _clear();
               },
               onHorizontalDragStart: (DragStartDetails details) {
-                _dragStartX = details.localPosition.dx;
-                _isOpening = _animationController.value != 1.0;
+                final startX = details.localPosition.dx;
+                final viewWidth = MediaQuery.of(context).size.width;
+                if (startX <= viewWidth / 2) {
+                  _dragStartX = startX;
+                  _isOpening = _animationController.value != 1.0;
+                }
               },
               onHorizontalDragUpdate: (DragUpdateDetails details) {
                 final dragStartX = _dragStartX;
@@ -101,7 +121,7 @@ class _WordListTileState extends State<WordListTile>
 
                 final newX = details.localPosition.dx;
 
-                _animationController.value = newX / viewWidth;
+                _animationController.value = newX / viewWidth * 1.5;
               },
               onHorizontalDragEnd: (details) {
                 _animationController.animateTo(0.0);
@@ -124,7 +144,7 @@ class _WordListTileState extends State<WordListTile>
 
 class _DrawerPage extends StatelessWidget {
   final translatedWord;
-  final HEIGHT = 80.0;
+  // final HEIGHT = 80.0;
   const _DrawerPage({
     super.key,
     required this.translatedWord,
@@ -136,7 +156,7 @@ class _DrawerPage extends StatelessWidget {
       children: [
         Container(
           width: 250,
-          height: HEIGHT,
+          height: WordListTile.HEIGHT,
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -147,7 +167,7 @@ class _DrawerPage extends StatelessWidget {
           right: 5,
           child: Container(
             width: 250,
-            height: HEIGHT,
+            height: WordListTile.HEIGHT,
             // change translated word
             child: Center(child: titleText(translatedWord, Colors.black, null)),
             decoration: BoxDecoration(

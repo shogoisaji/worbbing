@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:worbbing/models/notice_model.dart';
-import 'package:worbbing/pages/config_page.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
@@ -50,17 +49,6 @@ class _AccountPageState extends State<AccountPage> {
                   width: 200,
                 ),
               ),
-              Align(
-                  alignment: const Alignment(0.9, 0),
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ConfigPage()),
-                        );
-                      },
-                      icon:
-                          Icon(Icons.settings, color: Colors.white, size: 36))),
             ],
           ),
         ),
@@ -68,10 +56,10 @@ class _AccountPageState extends State<AccountPage> {
           height: 20,
         ),
         Container(
-            margin: EdgeInsets.only(top: 25),
-            width: 300,
+            margin: const EdgeInsets.only(top: 25),
+            width: 250,
             child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   mediumText('Total Words', Colors.white),
 // total words
@@ -81,12 +69,12 @@ class _AccountPageState extends State<AccountPage> {
               border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
             )),
         Container(
-            margin: EdgeInsets.only(top: 25),
-            width: 300,
+            margin: const EdgeInsets.only(top: 25),
+            width: 250,
             child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  mediumText('Current\nExpirations', Colors.white),
+                  mediumText('Current Expired', Colors.white),
 // total words
                   titleText(totalWords, MyTheme.orange, 36)
                 ]),
@@ -98,14 +86,14 @@ class _AccountPageState extends State<AccountPage> {
           // color: Colors.blue,
           margin: const EdgeInsets.only(top: 40),
           padding: const EdgeInsets.only(left: 7),
-          width: 330,
+          width: MediaQuery.of(context).size.width - 30,
           height: 100,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: model.noticeDuration.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(7.0),
                 child: Column(
                   children: [
                     noticeBlock(36, model.noticeDuration[index], MyTheme.lemon),
@@ -124,9 +112,9 @@ class _AccountPageState extends State<AccountPage> {
           height: 50,
         ),
         customButton(
-            Text(
+            const Text(
               'エビングハウスの\n忘却曲線について',
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ), () {
           Navigator.push(
             context,

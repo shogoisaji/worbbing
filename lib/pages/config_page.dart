@@ -90,6 +90,7 @@ class _ConfigPageState extends State<ConfigPage> {
             ),
           ),
           // body
+// notification
           Container(
             // color: Colors.blue,
             margin: const EdgeInsets.only(top: 30),
@@ -215,27 +216,44 @@ class _ConfigPageState extends State<ConfigPage> {
                     mediumText('Notification Schedule', Colors.white),
                   ],
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
 // 24:00 ~ 6:00は除外
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  padding: const EdgeInsets.only(top: 7),
-                  color: MyTheme.grey,
-                  width: 330,
-                  height: 70,
-                  // color: Colors.blue,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 24 ~/ int.parse(selectedFrequency),
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(7.0),
-                        child: Transform.rotate(
-                          angle: 0.9,
-                          child: scheduleTime(index),
+                Stack(
+                  children: [
+                    Transform.translate(
+                      offset: const Offset(5, 3.5),
+                      child: Transform.rotate(
+                        angle: 0.015,
+                        child: Container(
+                          width: 330,
+                          height: 70,
+                          color: MyTheme.lemon,
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(top: 7),
+                      color: MyTheme.grey,
+                      width: 330,
+                      height: 70,
+                      // color: Colors.blue,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 24 ~/ int.parse(selectedFrequency),
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(7.0),
+                            child: Transform.rotate(
+                              angle: 0.9,
+                              child: scheduleTime(index),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

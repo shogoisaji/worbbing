@@ -30,7 +30,7 @@ Widget customButton(Widget widget, Function() function) {
                     height: 60,
                     color: MyTheme.orange,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 6,
                   ),
                   Container(
@@ -38,7 +38,7 @@ Widget customButton(Widget widget, Function() function) {
                     height: 60,
                     color: MyTheme.orange,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 6,
                   ),
                   Container(

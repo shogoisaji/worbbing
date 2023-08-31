@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:worbbing/application/database.dart';
 import 'package:worbbing/application/date_format.dart';
+import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -23,8 +24,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     final int noticeDuration = 1;
     final int updateCount = 0;
-    final String originalWord = _originalController.text;
-    final String translatedWord = _translatedController.text;
+    // final String originalWord = _originalController.text;
+    // final String translatedWord = _translatedController.text;
     final String updateDate = getCurrentDate();
     final String registrationDate = getCurrentDate();
     final String memo = _memoController.text;
@@ -65,11 +66,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 15,
-            ),
             Container(
-              padding: const EdgeInsets.only(bottom: 10),
               width: 300,
               alignment: Alignment.centerRight,
               child: IconButton(
@@ -89,18 +86,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         size: 48, color: Colors.white24),
               ),
             ),
+            SizedBox(
+              width: 300,
+              child: subText('English', Colors.white),
+            ),
             registrationTextField(_originalController),
             Padding(
-              padding: const EdgeInsets.all(30.0),
+              padding: const EdgeInsets.only(
+                top: 30.0,
+              ),
               child: InkWell(
                 onTap: () {
                   //
+                  debugPrint("deepL");
                 },
                 child: Image.asset(
                   'assets/images/deepL.png',
                   width: 50,
                 ),
               ),
+            ),
+            SizedBox(
+              width: 300,
+              child: subText('日本語', Colors.white),
             ),
             registrationTextField(_translatedController),
             const SizedBox(
@@ -121,15 +129,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 noticeDuration,
                 updateCount,
                 flag,
-                originalWord,
-                translatedWord,
+                _originalController.text,
+                _translatedController.text,
                 updateDate,
                 registrationDate,
                 memo,
               ];
               await DatabaseHelper.instance.addData(addData);
               if (context.mounted) {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainPage()),
+                );
               }
               debugPrint('save');
             }),

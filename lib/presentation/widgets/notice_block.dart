@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 
 Widget noticeBlock(double size, int number, Color color) {
-  final fontSize = size * 0.65;
+  final fontSize = size * 0.60;
   return Stack(
     children: [
       Transform.translate(
@@ -17,12 +17,17 @@ Widget noticeBlock(double size, int number, Color color) {
         ),
       ),
       Container(
+        alignment: Alignment.center,
         width: size,
         height: size,
-        padding: const EdgeInsets.only(bottom: 10),
         color: color,
-        child:
-            Center(child: titleText(number.toString(), Colors.black, fontSize)),
+        child: Center(
+            child: titleText(
+                number != 0
+                    ? number.toString()
+                    : number.toString().padLeft(2, '0'),
+                Colors.black,
+                fontSize)),
       )
     ],
   );
