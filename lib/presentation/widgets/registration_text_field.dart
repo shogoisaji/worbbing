@@ -49,7 +49,7 @@ Widget registrationMemoTextField(controller) {
               decoration: InputDecoration(border: InputBorder.none),
               controller: controller,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 color: Colors.black,
               ))),
     ],

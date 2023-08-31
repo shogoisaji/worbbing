@@ -28,13 +28,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final WordListTile tile = WordListTile(
-      originalWord: 'addmission',
-      translatedWord: '入場',
-      noticeDuration: 5,
-      flag: true,
-    );
-
     return Scaffold(
 // floating Action Button
         floatingActionButton: Stack(
@@ -156,10 +149,7 @@ class _MainPageState extends State<MainPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                        child: SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: CircularProgressIndicator()));
+                        child: SizedBox(child: CircularProgressIndicator()));
                   }
 
                   if (snapshot.hasError) {
@@ -168,50 +158,47 @@ class _MainPageState extends State<MainPage> {
 
                   final data = snapshot.data!;
 
-                  return Container(
-                    child: ListView.builder(
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final item = data[index];
-                        return Column(
-                          children: [
-                            WordListTile(
-                              originalWord: item[DatabaseHelper.originalWord],
-                              translatedWord:
-                                  item[DatabaseHelper.translatedWord],
-                              noticeDuration:
-                                  item[DatabaseHelper.noticeDuration],
-                              flag: item[DatabaseHelper.flag] != 0,
-                            ),
+                  return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final item = data[index];
+                      return Column(
+                        children: [
+                          WordListTile(
+                            id: item[DatabaseHelper.columnId],
+                            originalWord: item[DatabaseHelper.originalWord],
+                            translatedWord: item[DatabaseHelper.translatedWord],
+                            noticeDuration: item[DatabaseHelper.noticeDuration],
+                            flag: item[DatabaseHelper.flag] != 0,
+                          ),
 // under space
-                            if (index == data.length - 1)
-                              Column(
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    height: 1,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.transparent,
-                                          MyTheme.grey,
-                                          MyTheme.grey,
-                                          Colors.transparent,
-                                        ],
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                      ),
+                          if (index == data.length - 1)
+                            Column(
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        MyTheme.grey,
+                                        MyTheme.grey,
+                                        Colors.transparent,
+                                      ],
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 100,
-                                  ),
-                                ],
-                              )
-                          ],
-                        );
-                      },
-                    ),
+                                ),
+                                const SizedBox(
+                                  height: 100,
+                                ),
+                              ],
+                            )
+                        ],
+                      );
+                    },
                   );
                 },
               ),

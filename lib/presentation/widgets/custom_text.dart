@@ -32,6 +32,12 @@ class AppTextStyles {
     fontWeight: FontWeight.w400,
     color: Colors.white,
   );
+
+  static final bodyStyle2 = GoogleFonts.zenKakuGothicNew(
+    fontSize: 20,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+  );
 }
 
 Widget titleText(String text, Color? color, double? fontSize) {
@@ -61,5 +67,11 @@ Widget mediumText(String text, Color? color) {
 Widget bodyText(String text, Color? color) {
   return Text(text,
       style: AppTextStyles.bodyStyle
+          .copyWith(color: color, decoration: TextDecoration.none));
+}
+
+Widget bodyText2(String text, Color? color) {
+  return Text(text,
+      style: AppTextStyles.bodyStyle2
           .copyWith(color: color, decoration: TextDecoration.none));
 }

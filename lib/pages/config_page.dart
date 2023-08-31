@@ -94,7 +94,7 @@ class _ConfigPageState extends State<ConfigPage> {
           Container(
             // color: Colors.blue,
             margin: const EdgeInsets.only(top: 30),
-            width: 330,
+            width: 300,
             child: Column(
               children: [
                 Row(
@@ -116,148 +116,188 @@ class _ConfigPageState extends State<ConfigPage> {
                   ],
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 15,
                 ),
+                Container(
+                  margin: EdgeInsets.only(left: 5),
+                  padding: EdgeInsets.only(top: 10, left: 25),
+                  decoration: BoxDecoration(
+                    border: Border(
+                        left: BorderSide(
+                            color: notificationState
+                                ? Colors.white
+                                : Colors.white30)),
+                  ),
+                  child: Column(
+                    children: [
 // frequency
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    mediumText('Notification frequency', Colors.white),
-                    Container(
-                      width: 70,
-                      height: 50,
-                      color: Colors.white,
-                      child: Stack(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Positioned(
-                            right: 10,
-                            bottom: 3,
-                            child: mediumText(
-                              'h',
-                              Colors.black,
-                            ),
-                          ),
-                          Positioned(
-                            top: 5,
-                            right: 5,
-                            child: FrequencyDropdownWidget(
-                              onItemSelected: updateFrequency,
+                          mediumText(
+                              'Frequency',
+                              notificationState
+                                  ? Colors.white
+                                  : Colors.white30),
+                          Container(
+                            width: 70,
+                            height: 50,
+                            color: notificationState
+                                ? Colors.white
+                                : Colors.white30,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: 10,
+                                  bottom: 3,
+                                  child: mediumText(
+                                    'h',
+                                    Colors.black,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 5,
+                                  right: 5,
+                                  child: FrequencyDropdownWidget(
+                                    onItemSelected: updateFrequency,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
+                      const SizedBox(
+                        height: 30,
+                      ),
 // notification words count
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    mediumText('Notification Words', Colors.white),
-                    Container(
-                      width: 70,
-                      height: 50,
-                      color: Colors.white,
-                      child: Stack(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Positioned(
-                            right: 3,
-                            bottom: 3,
-                            child: bodyText(
-                              'wds',
-                              Colors.black,
-                            ),
-                          ),
-                          Positioned(
-                            top: 5,
-                            right: 15,
-                            child: WordsCountDropdownWidget(
-                              onItemSelected: updateWordCount,
+                          mediumText(
+                              'Words Count',
+                              notificationState
+                                  ? Colors.white
+                                  : Colors.white30),
+                          Container(
+                            width: 70,
+                            height: 50,
+                            color: notificationState
+                                ? Colors.white
+                                : Colors.white30,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: 3,
+                                  bottom: 3,
+                                  child: bodyText(
+                                    'wds',
+                                    Colors.black,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 5,
+                                  right: 15,
+                                  child: WordsCountDropdownWidget(
+                                    onItemSelected: updateWordCount,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-// notification time
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    mediumText('Notification Time', Colors.white),
-                    GestureDetector(
-                      onTap: () => _selectTime(context),
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 90,
-                        height: 50,
-                        color: Colors.white,
-                        child: titleText(
-                            '${selectedTime.hour.toString().padLeft(2, "0")}:${selectedTime.minute.toString().padLeft(2, "0")}',
-                            Colors.black,
-                            null),
+                      const SizedBox(
+                        height: 30,
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-// notification schedule
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    mediumText('Notification Schedule', Colors.white),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-// 24:00 ~ 6:00は除外
-                Stack(
-                  children: [
-                    Transform.translate(
-                      offset: const Offset(5, 3.5),
-                      child: Transform.rotate(
-                        angle: 0.015,
-                        child: Container(
-                          width: 330,
-                          height: 70,
-                          color: MyTheme.lemon,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 7),
-                      color: MyTheme.grey,
-                      width: 330,
-                      height: 70,
-                      // color: Colors.blue,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 24 ~/ int.parse(selectedFrequency),
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(7.0),
-                            child: Transform.rotate(
-                              angle: 0.9,
-                              child: scheduleTime(index),
+                      // notification time
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          mediumText(
+                              'Time',
+                              notificationState
+                                  ? Colors.white
+                                  : Colors.white30),
+                          GestureDetector(
+                            onTap: () => _selectTime(context),
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 90,
+                              height: 50,
+                              color: notificationState
+                                  ? Colors.white
+                                  : Colors.white30,
+                              child: titleText(
+                                  '${selectedTime.hour.toString().padLeft(2, "0")}:${selectedTime.minute.toString().padLeft(2, "0")}',
+                                  Colors.black,
+                                  null),
                             ),
-                          );
-                        },
+                          )
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      // notification schedule
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          mediumText(
+                              'Schedule',
+                              notificationState
+                                  ? Colors.white
+                                  : Colors.white30),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      // 24:00 ~ 6:00は除外
+                      Stack(
+                        children: [
+                          Transform.translate(
+                            offset: const Offset(5, 3.5),
+                            child: Transform.rotate(
+                              angle: 0.015,
+                              child: Container(
+                                width: 330,
+                                height: 70,
+                                color: MyTheme.lemon,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 7),
+                            color: MyTheme.grey,
+                            width: 330,
+                            height: 70,
+                            // color: Colors.blue,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: 24 ~/ int.parse(selectedFrequency),
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(7.0),
+                                  child: Transform.rotate(
+                                    angle: 0.9,
+                                    child: scheduleTime(index),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          )
+          ),
+          const SizedBox(
+            height: 100,
+          ),
         ])));
   }
 }

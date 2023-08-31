@@ -10,6 +10,7 @@ class WordListTile extends StatefulWidget {
   final String translatedWord;
   final int noticeDuration;
   final bool flag;
+  final int id;
 
   static const HEIGHT = 90.0;
 
@@ -18,7 +19,8 @@ class WordListTile extends StatefulWidget {
       required this.originalWord,
       required this.translatedWord,
       required this.noticeDuration,
-      required this.flag});
+      required this.flag,
+      required this.id});
 
   @override
   State<WordListTile> createState() => _WordListTileState();
@@ -57,7 +59,8 @@ class _WordListTileState extends State<WordListTile>
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => DetailPage()),
+                                  builder: (context) =>
+                                      DetailPage(id: widget.id)),
                             );
                           },
                           child: titleText(widget.originalWord, null, null))),

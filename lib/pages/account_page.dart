@@ -58,35 +58,33 @@ class _AccountPageState extends State<AccountPage> {
         Container(
             margin: const EdgeInsets.only(top: 25),
             width: 250,
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+            ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   mediumText('Total Words', Colors.white),
 // total words
                   titleText(totalWords, MyTheme.orange, 36)
-                ]),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
-            )),
+                ])),
         Container(
             margin: const EdgeInsets.only(top: 25),
             width: 250,
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+            ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   mediumText('Current Expired', Colors.white),
 // total words
                   titleText(totalWords, MyTheme.orange, 36)
-                ]),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
-            )),
+                ])),
 // Data for each noticeDuration
         Container(
-          // color: Colors.blue,
-          margin: const EdgeInsets.only(top: 40),
-          padding: const EdgeInsets.only(left: 7),
-          width: MediaQuery.of(context).size.width - 30,
+          margin: const EdgeInsets.only(top: 50),
+          width: 350, //(noticeBlock+14padding)*7
           height: 100,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,

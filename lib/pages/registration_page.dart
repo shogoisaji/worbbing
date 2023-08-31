@@ -18,7 +18,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController _originalController = TextEditingController();
   TextEditingController _translatedController = TextEditingController();
   TextEditingController _memoController = TextEditingController();
-  bool flag = false;
+  int flag = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _originalController = TextEditingController();
+    _translatedController = TextEditingController();
+    _memoController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _originalController.dispose();
+    _translatedController.dispose();
+    _memoController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +45,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     // final String translatedWord = _translatedController.text;
     final String updateDate = getCurrentDate();
     final String registrationDate = getCurrentDate();
-    final String memo = _memoController.text;
+    // final String memo = _memoController.text;
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -73,14 +90,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: () {
                   // change flag state
                   setState(() {
-                    if (flag == false) {
-                      flag = true;
+                    if (flag == 0) {
+                      flag = 1;
                     } else {
-                      flag = false;
+                      flag = 0;
                     }
                   });
                 },
-                icon: flag
+                icon: flag == 1
                     ? Icon(Icons.flag, size: 48, color: MyTheme.lemon)
                     : const Icon(Icons.flag_outlined,
                         size: 48, color: Colors.white24),
@@ -133,7 +150,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 _translatedController.text,
                 updateDate,
                 registrationDate,
-                memo,
+                _memoController.text,
               ];
               await DatabaseHelper.instance.addData(addData);
               if (context.mounted) {

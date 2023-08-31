@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
-  static const _databaseName = "t_Database.db";
+  static const _databaseName = "test_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
@@ -38,7 +39,7 @@ class DatabaseHelper {
             $columnId INTEGER PRIMARY KEY,
             $noticeDuration INTEGER,
             $updateCount INTEGER,
-            $flag BOOLEAN,
+            $flag INTEGER,
             $originalWord TEXT,
             $translatedWord TEXT, 
             $updateDate TEXT,
@@ -52,7 +53,7 @@ class DatabaseHelper {
   Future<void> addData(List<dynamic> addData) async {
     final int _noticeDuration = addData[0];
     final int _updateCount = addData[1];
-    final bool _flag = addData[2];
+    final int _flag = addData[2];
     final String _originalWord = addData[3];
     final String _translatedWord = addData[4];
     final String _updateDate = addData[5];
@@ -82,5 +83,49 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.database;
     return await db.query(table);
+  }
+
+// get Row
+  Future<List<Map<String, dynamic>>> queryRows(int id) async {
+    Database db = await instance.database;
+    return await db.query(
+      table,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
+// delete row
+  Future<int> deleteRow(int id) async {
+    Database db = await instance.database;
+    return await db.delete(
+      table,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // update duration
+  Future<int> updateDuration(int id, int duration) async {
+    Database db = await instance.database;
+    debugPrint('noticeDuration変更: $duration');
+    return await db.update(
+      table,
+      {noticeDuration: duration},
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // update duration
+  Future<int> updateFlag(int id, int flagState) async {
+    Database db = await instance.database;
+    debugPrint('flag変更: $flagState');
+    return await db.update(
+      table,
+      {flag: flagState},
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
   }
 }
