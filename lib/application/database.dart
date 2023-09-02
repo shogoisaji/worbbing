@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:worbbing/application/date_format.dart';
+import 'package:worbbing/models/notice_model.dart';
 
 class DatabaseHelper {
-  static const _databaseName = "test_Database.db";
+  static const _databaseName = "test1_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
@@ -41,7 +43,7 @@ class DatabaseHelper {
             $updateCount INTEGER,
             $flag INTEGER,
             $originalWord TEXT,
-            $translatedWord TEXT, 
+            $translatedWord TEXT,
             $updateDate TEXT,
             $registrationDate TEXT,
             $memo TEXT
@@ -74,8 +76,8 @@ class DatabaseHelper {
     Database db = await instance.database;
     final id = await db.insert(table, row);
 
-    print('挿入された行のid: $id');
-    print(
+    debugPrint('挿入された行のid: $id');
+    debugPrint(
         '挿入されたデータ: \n$_noticeDuration \n$_updateCount \n$_flag \n$_originalWord \n$_translatedWord \n$_updateDate \n$_registrationDate \n$_memo');
   }
 
@@ -105,25 +107,75 @@ class DatabaseHelper {
     );
   }
 
-  // update duration
-  Future<int> updateDuration(int id, int duration) async {
+  // up duration
+  Future<int> updateNoticeUp(int id) async {
+    NoticeModel noticeModel = NoticeModel();
+    final String currentDate = getCurrentDate();
     Database db = await instance.database;
-    debugPrint('noticeDuration変更: $duration');
+    List<Map<String, dynamic>> queryResult = await db.query(
+      table,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+
+    int currentCount = queryResult.first['count'];
+    int currentDuration = queryResult.first['duration'];
+    int updateDuration = currentDuration < noticeModel.noticeDuration.length - 1
+        ? currentDuration + 1
+        : currentDuration;
+    debugPrint('currentDuration変更: $currentDuration');
+    debugPrint('noticeDuration変更: $updateDuration');
+
     return await db.update(
       table,
-      {noticeDuration: duration},
+      {
+        noticeDuration: updateDuration,
+        updateCount: currentCount + 1,
+        updateDate: currentDate
+      },
       where: '$columnId = ?',
       whereArgs: [id],
     );
   }
 
-  // update duration
+  // down duration
+  Future<int> updateNoticeDown(int id) async {
+    NoticeModel noticeModel = NoticeModel();
+    final String currentDate = getCurrentDate();
+    Database db = await instance.database;
+    List<Map<String, dynamic>> queryResult = await db.query(
+      table,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+
+    int currentCount = queryResult.first['count'];
+    int currentDuration = queryResult.first['duration'];
+    int updateDuration = currentDuration != 0 ? currentDuration - 1 : 0;
+    debugPrint('currentDuration変更: $currentDuration');
+    debugPrint('noticeDuration変更: $updateDuration');
+
+    return await db.update(
+      table,
+      {
+        noticeDuration: updateDuration,
+        updateCount: currentCount + 1,
+        updateDate: currentDate
+      },
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // update flag
   Future<int> updateFlag(int id, int flagState) async {
     Database db = await instance.database;
     debugPrint('flag変更: $flagState');
     return await db.update(
       table,
-      {flag: flagState},
+      {
+        flag: flagState,
+      },
       where: '$columnId = ?',
       whereArgs: [id],
     );

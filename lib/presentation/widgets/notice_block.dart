@@ -6,9 +6,9 @@ Widget noticeBlock(double size, int number, Color color) {
   return Stack(
     children: [
       Transform.translate(
-        offset: const Offset(3, 2),
+        offset: const Offset(5, 4),
         child: Transform.rotate(
-          angle: 0.06,
+          angle: 0.05,
           child: Container(
             width: size,
             height: size,

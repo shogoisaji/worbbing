@@ -39,7 +39,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final int noticeDuration = 1;
+    final int noticeDuration = 0;
     final int updateCount = 0;
     // final String originalWord = _originalController.text;
     // final String translatedWord = _translatedController.text;
@@ -66,8 +66,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     child: InkWell(
                         child: Image.asset(
                           'assets/images/custom_arrow.png',
-                          width: 25,
-                          height: 25,
+                          width: 35,
+                          height: 35,
                         ),
                         onTap: () {
                           Navigator.pop(context);
@@ -105,9 +105,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             SizedBox(
               width: 300,
-              child: subText('English', Colors.white),
+              child: bodyText('English', MyTheme.lightGrey),
             ),
-            registrationTextField(_originalController),
+            originalTextField(_originalController),
             Padding(
               padding: const EdgeInsets.only(
                 top: 30.0,
@@ -125,22 +125,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             SizedBox(
               width: 300,
-              child: subText('日本語', Colors.white),
+              child: bodyText('日本語', MyTheme.lightGrey),
             ),
-            registrationTextField(_translatedController),
+            translatedTextField(_translatedController),
             const SizedBox(
               height: 40,
             ),
             Container(
               width: 300,
               alignment: Alignment.topLeft,
-              child: subText('Memo', Colors.white),
+              child: bodyText('Memo', MyTheme.lightGrey),
             ),
-            registrationMemoTextField(_memoController),
+            memoTextField(_memoController),
             const SizedBox(
               height: 50,
             ),
-            customButton(titleText('SAVE', Colors.black, null), () async {
+            customButton(titleText('SAVE', Colors.black.withOpacity(0.7), null),
+                () async {
               // save
               final List<dynamic> addData = [
                 noticeDuration,

@@ -72,8 +72,8 @@ class _ConfigPageState extends State<ConfigPage> {
                   child: InkWell(
                       child: Image.asset(
                         'assets/images/custom_arrow.png',
-                        width: 25,
-                        height: 25,
+                        width: 35,
+                        height: 35,
                       ),
                       onTap: () {
                         Navigator.pop(context);

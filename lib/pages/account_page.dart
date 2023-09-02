@@ -35,8 +35,8 @@ class _AccountPageState extends State<AccountPage> {
                 child: InkWell(
                     child: Image.asset(
                       'assets/images/custom_arrow.png',
-                      width: 25,
-                      height: 25,
+                      width: 35,
+                      height: 35,
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -57,7 +57,7 @@ class _AccountPageState extends State<AccountPage> {
         ),
         Container(
             margin: const EdgeInsets.only(top: 25),
-            width: 250,
+            width: 300,
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
             ),
@@ -70,7 +70,7 @@ class _AccountPageState extends State<AccountPage> {
                 ])),
         Container(
             margin: const EdgeInsets.only(top: 25),
-            width: 250,
+            width: 300,
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
             ),
@@ -112,7 +112,10 @@ class _AccountPageState extends State<AccountPage> {
         customButton(
             const Text(
               'エビングハウスの\n忘却曲線について',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
             ), () {
           Navigator.push(
             context,

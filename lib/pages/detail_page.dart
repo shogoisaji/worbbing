@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/application/database.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button2.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -20,6 +21,7 @@ TextEditingController _translatedController = TextEditingController();
 TextEditingController _memoController = TextEditingController();
 
 class _DetailPageState extends State<DetailPage> {
+  NoticeModel noticeDurationList = NoticeModel();
   int flag = 0;
   @override
   void initState() {
@@ -65,12 +67,9 @@ class _DetailPageState extends State<DetailPage> {
             final formatUpdateDate =
                 formatForDisplay(data[0][DatabaseHelper.updateDate]);
 
-            // _originalController.text = data[0][DatabaseHelper.originalWord];
-            // _translatedController.text = data[0][DatabaseHelper.translatedWord];
-            // _memoController.text = data[0][DatabaseHelper.memo];
-
-            final String updateDate = getCurrentDate();
             flag = data[0][DatabaseHelper.flag];
+            final notice = noticeDurationList
+                .noticeDuration[data[0][DatabaseHelper.noticeDuration]];
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,8 +88,8 @@ class _DetailPageState extends State<DetailPage> {
                         child: InkWell(
                             child: Image.asset(
                               'assets/images/custom_arrow.png',
-                              width: 25,
-                              height: 25,
+                              width: 35,
+                              height: 35,
                             ),
                             onTap: () {
                               Navigator.push(
@@ -123,8 +122,7 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 8,
                         ),
-                        noticeBlock(72, data[0][DatabaseHelper.noticeDuration],
-                            MyTheme.lemon),
+                        noticeBlock(72, notice, MyTheme.lemon),
                       ],
                     ),
                     Column(
@@ -178,7 +176,7 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 // original word
                 Container(
-                  margin: const EdgeInsets.only(top: 30),
+                  margin: const EdgeInsets.only(top: 20),
                   width: 300,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -296,7 +294,7 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                           ),
                           const SizedBox(
-                            height: 7,
+                            height: 5,
                           ),
                         ],
                       ),
@@ -410,17 +408,14 @@ class _DetailPageState extends State<DetailPage> {
                           () async {
                         await DatabaseHelper.instance.deleteRow(widget.id);
                         if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainPage()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) => const MainPage()),
+                          // );
+                          Navigator.pop(context);
+                          setState(() {});
                         }
-                      }),
-                      customButton2(
-                          MyTheme.blue, titleText('Update', Colors.white, 20),
-                          () {
-                        // delete
                       }),
                     ],
                   ),

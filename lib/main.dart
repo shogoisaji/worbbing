@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/pages/splash_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,11 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),
-      home: const MainPage(),
+      home: AppSplashPage(),
+      routes: {
+        '/splash': (context) => AppSplashPage(),
+        '/main': (context) => MainPage(),
+      },
     );
   }
 }

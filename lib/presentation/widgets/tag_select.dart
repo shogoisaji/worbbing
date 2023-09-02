@@ -3,25 +3,36 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 
 Widget tagSelect(String tag, int tagState, int index, Function() onTap) {
-  return Container(
-    width: 100,
-    height: 37,
-    child: InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          bodyText(tag, null),
-          if (tagState == index)
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: MyTheme.lemon,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            )
-        ],
-      ),
+  return InkWell(
+    onTap: onTap,
+    child: Column(
+      children: [
+        if (tagState == index) ...{
+          bodyTextB(tag, null),
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: MyTheme.lemon,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          )
+        } else
+          // bodyText(tag.split('')[0], Colors.white70),
+          Column(
+            children: [
+              bodyText(tag, Colors.white70),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              )
+            ],
+          ),
+      ],
     ),
   );
 }
