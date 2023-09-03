@@ -87,6 +87,37 @@ class DatabaseHelper {
     return await db.query(table);
   }
 
+  // get database alphabet sort
+  Future<List<Map<String, dynamic>>> queryAllRowsAlphabet() async {
+    Database db = await instance.database;
+
+    return await db.query(table, orderBy: '${DatabaseHelper.originalWord} ASC');
+  }
+
+// get database noticeDuration sort
+  Future<List<Map<String, dynamic>>> queryAllRowsNoticeDuration() async {
+    Database db = await instance.database;
+    return await db.query(table,
+        orderBy:
+            '${DatabaseHelper.noticeDuration} ASC,${DatabaseHelper.registrationDate} DESC');
+  }
+
+// get database registration sort
+  Future<List<Map<String, dynamic>>> queryAllRowsRegistration() async {
+    Database db = await instance.database;
+    return await db.query(table,
+        orderBy: '${DatabaseHelper.registrationDate} DESC');
+  }
+
+// get datebase flag is 1
+  Future<List<Map<String, dynamic>>> queryAllRowsFlag() async {
+    Database db = await instance.database;
+    return await db.query(table,
+        orderBy: '${DatabaseHelper.noticeDuration} ASC',
+        where: "$flag = ?",
+        whereArgs: [1]);
+  }
+
 // get Row
   Future<List<Map<String, dynamic>>> queryRows(int id) async {
     Database db = await instance.database;
@@ -140,7 +171,6 @@ class DatabaseHelper {
 
   // down duration
   Future<int> updateNoticeDown(int id) async {
-    NoticeModel noticeModel = NoticeModel();
     final String currentDate = getCurrentDate();
     Database db = await instance.database;
     List<Map<String, dynamic>> queryResult = await db.query(
@@ -179,5 +209,29 @@ class DatabaseHelper {
       where: '$columnId = ?',
       whereArgs: [id],
     );
+  }
+
+  // total words
+  Future<int> totalWords() async {
+    Database db = await instance.database;
+    final List<Map<String, Object?>> result = await db.query(
+      table,
+      columns: ['COUNT(*) AS count'],
+    );
+    return result.first['count'] as int;
+  }
+
+  // count noticeDuration
+  Future<Map<int, int>> countNoticeDuration() async {
+    Database db = await instance.database;
+    final List<Map<String, Object?>> result = await db.query(table,
+        columns: [noticeDuration, 'COUNT(*) AS count'],
+        groupBy: noticeDuration);
+
+    Map<int, int> noticeCounts = {};
+    for (var row in result) {
+      noticeCounts[row[noticeDuration] as int] = row['count'] as int;
+    }
+    return noticeCounts;
   }
 }

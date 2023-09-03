@@ -4,7 +4,6 @@ import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/config_page.dart';
 import 'package:worbbing/pages/registration_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
-import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
 
@@ -15,20 +14,42 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage>
+    with SingleTickerProviderStateMixin {
   int tagState = 0;
   late Future<List<Map<String, dynamic>>> dataFuture;
 
-  void handleReload() {
+  Future<void> handleReload() async {
+    //durationが短すぎるとエラーになる
+    await Future.delayed(const Duration(milliseconds: 300));
+
     setState(() {
-      dataFuture = DatabaseHelper.instance.queryAllRows();
+      switch (tagState) {
+        case 0:
+          dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();
+        case 1:
+          dataFuture = DatabaseHelper.instance.queryAllRowsAlphabet();
+        case 2:
+          dataFuture = DatabaseHelper.instance.queryAllRowsRegistration();
+        case 3:
+          dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
+      }
     });
   }
 
   @override
   void initState() {
     super.initState();
-    dataFuture = DatabaseHelper.instance.queryAllRows();
+    switch (tagState) {
+      case 0:
+        dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();
+      case 1:
+        dataFuture = DatabaseHelper.instance.queryAllRowsAlphabet();
+      case 2:
+        dataFuture = DatabaseHelper.instance.queryAllRowsRegistration();
+      case 3:
+        dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
+    }
   }
 
   @override
@@ -145,21 +166,25 @@ class _MainPageState extends State<MainPage> {
                           setState(() {
                             tagState = 0;
                           });
+                          handleReload();
                         }),
                         tagSelect('Alphabet', tagState, 1, () {
                           setState(() {
                             tagState = 1;
                           });
+                          handleReload();
                         }),
                         tagSelect('Register', tagState, 2, () {
                           setState(() {
                             tagState = 2;
                           });
+                          handleReload();
                         }),
                         tagSelect('Flagged', tagState, 3, () {
                           setState(() {
                             tagState = 3;
                           });
+                          handleReload();
                         }),
                       ],
                     ),
@@ -215,6 +240,7 @@ class _MainPageState extends State<MainPage> {
                             translatedWord: item[DatabaseHelper.translatedWord],
                             noticeDuration: item[DatabaseHelper.noticeDuration],
                             flag: item[DatabaseHelper.flag] != 0,
+                            updateDate: item[DatabaseHelper.updateDate],
                           ),
 // under space
                           if (index == data.length - 1)

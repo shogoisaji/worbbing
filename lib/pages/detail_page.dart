@@ -66,6 +66,11 @@ class _DetailPageState extends State<DetailPage> {
                 formatForDisplay(data[0][DatabaseHelper.registrationDate]);
             final formatUpdateDate =
                 formatForDisplay(data[0][DatabaseHelper.updateDate]);
+            final DateTime updateDateTime =
+                DateTime.parse(data[0][DatabaseHelper.updateDate]);
+            final DateTime currentDateTime = DateTime.now();
+            final int forgettingDuration =
+                updateDateTime.difference(currentDateTime).inDays;
 
             flag = data[0][DatabaseHelper.flag];
             final notice = noticeDurationList
@@ -141,7 +146,8 @@ class _DetailPageState extends State<DetailPage> {
                                 width: 10,
                               ),
                               // change forgetting duration
-                              titleText('174', MyTheme.orange, null),
+                              titleText(forgettingDuration.toString(),
+                                  MyTheme.orange, null),
                             ],
                           ),
                         ),

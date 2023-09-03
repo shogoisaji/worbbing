@@ -11,6 +11,7 @@ class WordListTile extends StatefulWidget {
   final String translatedWord;
   final int noticeDuration;
   final bool flag;
+  final String updateDate;
   final int id;
   final Function onDragEnd;
 
@@ -23,7 +24,8 @@ class WordListTile extends StatefulWidget {
       required this.noticeDuration,
       required this.flag,
       required this.id,
-      required this.onDragEnd});
+      required this.onDragEnd,
+      required this.updateDate});
 
   @override
   State<WordListTile> createState() => _WordListTileState();
@@ -69,7 +71,7 @@ class _WordListTileState extends State<WordListTile>
           ),
           SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(0, 0),
+              begin: const Offset(0.002, 0),
               end: const Offset(1, 0),
             ).animate(_animationController),
 // slide page
@@ -79,6 +81,7 @@ class _WordListTileState extends State<WordListTile>
               noticeDuration: widget.noticeDuration,
               flag: widget.flag,
               id: widget.id,
+              updateDate: widget.updateDate,
             ),
           ),
           LayoutBuilder(
@@ -111,7 +114,7 @@ class _WordListTileState extends State<WordListTile>
                 final newY = details.localPosition.dy;
                 final diffY = newY - dragStartY;
 
-                if (diffY > 70) {
+                if (diffY > 100) {
                   setState(() {
                     _color = MyTheme.blue;
                     _widget = const Icon(
@@ -120,7 +123,7 @@ class _WordListTileState extends State<WordListTile>
                       size: 48,
                     );
                   });
-                } else if (diffY < -70) {
+                } else if (diffY < -100) {
                   setState(() {
                     _color = MyTheme.orange;
                     _widget = const Icon(
@@ -145,13 +148,12 @@ class _WordListTileState extends State<WordListTile>
 // I don't understand the word
                 if (_color == MyTheme.blue) {
                   DatabaseHelper.instance.updateNoticeDown(widget.id);
-                  await Future.delayed(Duration(milliseconds: 500));
+                  await Future.delayed(Duration(milliseconds: 300));
                   widget.onDragEnd();
                   debugPrint('Don`t understand');
 // I understand the word
                 } else if (_color == MyTheme.orange) {
                   DatabaseHelper.instance.updateNoticeUp(widget.id);
-                  await Future.delayed(Duration(milliseconds: 500));
                   widget.onDragEnd();
                   debugPrint('understand');
                 }
@@ -183,6 +185,7 @@ class _SladeCard extends StatelessWidget {
   final String translatedWord;
   final int noticeDuration;
   final bool flag;
+  final String updateDate;
   final int id;
   // final HEIGHT = 80.0;
   const _SladeCard({
@@ -192,13 +195,20 @@ class _SladeCard extends StatelessWidget {
     required this.noticeDuration,
     required this.flag,
     required this.id,
+    required this.updateDate,
   });
 
   @override
   Widget build(BuildContext context) {
     NoticeModel noticeDurationList = NoticeModel();
+    final DateTime updateDateTime = DateTime.parse(updateDate);
+    final DateTime currentDateTime = DateTime.now();
+    final int forgettingDuration =
+        updateDateTime.difference(currentDateTime).inDays;
     return Container(
-      color: Colors.black,
+      decoration: const BoxDecoration(
+        color: Colors.black,
+      ),
       width: MediaQuery.of(context).size.width,
       height: WordListTile.HEIGHT,
       child: Stack(
@@ -248,7 +258,14 @@ class _SladeCard extends StatelessWidget {
                                 48,
                                 noticeDurationList
                                     .noticeDuration[noticeDuration],
-                                MyTheme.lemon),
+                                (forgettingDuration <
+                                            noticeDurationList.noticeDuration[
+                                                noticeDuration]) ||
+                                        (noticeDurationList.noticeDuration[
+                                                noticeDuration] ==
+                                            00)
+                                    ? MyTheme.lemon
+                                    : MyTheme.orange),
                           )),
                     ],
                   )
