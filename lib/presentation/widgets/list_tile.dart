@@ -112,9 +112,10 @@ class _WordListTileState extends State<WordListTile>
 
                 final newX = details.localPosition.dx;
                 final newY = details.localPosition.dy;
+                final diffX = newX - dragStartX;
                 final diffY = newY - dragStartY;
 
-                if (diffY > 100) {
+                if (diffY > 100 && diffX > 80) {
                   setState(() {
                     _color = MyTheme.blue;
                     _widget = const Icon(
@@ -123,7 +124,7 @@ class _WordListTileState extends State<WordListTile>
                       size: 48,
                     );
                   });
-                } else if (diffY < -100) {
+                } else if (diffY < -100 && diffX > 80) {
                   setState(() {
                     _color = MyTheme.orange;
                     _widget = const Icon(
@@ -234,8 +235,7 @@ class _SladeCard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
+                            Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => DetailPage(id: id)),
                             );

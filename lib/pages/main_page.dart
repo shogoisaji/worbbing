@@ -8,7 +8,9 @@ import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({
+    super.key,
+  });
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -84,10 +86,9 @@ class _MainPageState extends State<MainPage>
                     elevation: 0,
                     backgroundColor: MyTheme.orange,
                     onPressed: () {
-                      Navigator.push(
-                        context,
+                      Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (context) => RegistrationPage()),
+                            builder: (context) => const RegistrationPage()),
                       );
                     },
                     child: Transform.rotate(
@@ -122,10 +123,9 @@ class _MainPageState extends State<MainPage>
                             padding: const EdgeInsets.only(left: 10),
                             onPressed: () {
                               //
-                              Navigator.push(
-                                context,
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => ConfigPage()),
+                                    builder: (context) => const ConfigPage()),
                               );
                             },
                             icon: const Icon(
@@ -142,10 +142,9 @@ class _MainPageState extends State<MainPage>
                             padding: const EdgeInsets.only(right: 10),
                             onPressed: () {
                               //
-                              Navigator.push(
-                                context,
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => AccountPage()),
+                                    builder: (context) => const AccountPage()),
                               );
                             },
                             icon: const Icon(

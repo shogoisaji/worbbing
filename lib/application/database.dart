@@ -138,7 +138,7 @@ class DatabaseHelper {
     );
   }
 
-  // up duration
+  // count up duration
   Future<int> updateNoticeUp(int id) async {
     NoticeModel noticeModel = NoticeModel();
     final String currentDate = getCurrentDate();
@@ -169,7 +169,7 @@ class DatabaseHelper {
     );
   }
 
-  // down duration
+  // count down duration
   Future<int> updateNoticeDown(int id) async {
     final String currentDate = getCurrentDate();
     Database db = await instance.database;
@@ -211,6 +211,23 @@ class DatabaseHelper {
     );
   }
 
+  // update original,translated,memo
+  Future<int> updateWords(
+      int id, String newOriginal, String newTranslated, String newMemo) async {
+    Database db = await instance.database;
+    debugPrint('Words変更: $newOriginal, $newTranslated, $newMemo}');
+    return await db.update(
+      table,
+      {
+        originalWord: newOriginal,
+        translatedWord: newTranslated,
+        memo: newMemo,
+      },
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
   // total words
   Future<int> totalWords() async {
     Database db = await instance.database;
@@ -221,7 +238,7 @@ class DatabaseHelper {
     return result.first['count'] as int;
   }
 
-  // count noticeDuration
+  // Total by noticeDuration
   Future<Map<int, int>> countNoticeDuration() async {
     Database db = await instance.database;
     final List<Map<String, Object?>> result = await db.query(table,

@@ -30,11 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # cupertino_icons: ^1.0.2
   google_fonts:
   sqflite: ^2.3.0
   rive:
   flutter_launcher_icons:
+  flutter_dotenv: ^5.1.0
+  flutter_app_badger: ^1.5.0
+  flutter_local_notifications: ^15.1.1
+  timezone:
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +61,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/images/custom_arrow.png
     - assets/images/registration.png
     - assets/images/detail.png
@@ -75,4 +79,3 @@ flutter_icons:
   image_path: "assets/images/worbbing_icon.png"
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/worbbing_icon.png"
-

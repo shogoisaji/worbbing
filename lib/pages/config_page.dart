@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/frequency_dropdown.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class ConfigPage extends StatefulWidget {
   const ConfigPage({super.key});
@@ -12,23 +18,106 @@ class ConfigPage extends StatefulWidget {
 }
 
 class _ConfigPageState extends State<ConfigPage> {
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   bool notificationState = false;
   TimeOfDay selectedTime = TimeOfDay.now();
   String selectedFrequency = '1';
   String selectedWordCount = '1';
 
+  Future<void> _configureLocalTimeZone() async {
+    tz.initializeTimeZones();
+  }
+
+  Future<void> _initializeNotification() async {
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('ic_notification');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> _cancelNotification() async {
+    await _flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  Future<void> _requestPermissions() async {
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+  }
+
+  Future<void> _registerMessage({
+    required int hour,
+    required int minutes,
+    required message,
+  }) async {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minutes,
+    );
+
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'flutter_local_notifications',
+      message,
+      scheduledDate,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel id',
+          'channel name',
+          importance: Importance.max,
+          priority: Priority.high,
+          ongoing: true,
+          styleInformation: BigTextStyleInformation(message),
+          icon: 'ic_notification',
+        ),
+        iOS: const DarwinNotificationDetails(
+          badgeNumber: 1,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+// update frequency
   void updateFrequency(String newValue) {
     setState(() {
       selectedFrequency = newValue;
     });
   }
 
+// update word count
   void updateWordCount(String newValue) {
     setState(() {
       selectedWordCount = newValue;
     });
   }
 
+// schedule time
   Widget scheduleTime(int index) {
     int hour = (selectedTime.hour + index * int.parse(selectedFrequency)) > 23
         ? (selectedTime.hour + index * int.parse(selectedFrequency)) - 24
@@ -38,6 +127,7 @@ class _ConfigPageState extends State<ConfigPage> {
     return mediumText(text, hour < 7 ? Colors.grey : Colors.white);
   }
 
+// time select
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -53,6 +143,8 @@ class _ConfigPageState extends State<ConfigPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userTimeZone = tz.getLocation('Asia/Tokyo');
+    // final localDeadline = tz.TZDateTime.from(userTimeZone);
     return Scaffold(
         body: SingleChildScrollView(
             child: Column(
@@ -76,7 +168,10 @@ class _ConfigPageState extends State<ConfigPage> {
                         height: 35,
                       ),
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const MainPage()),
+                        );
                       }),
                 ),
                 Align(
@@ -108,8 +203,20 @@ class _ConfigPageState extends State<ConfigPage> {
                       value: notificationState,
                       activeColor: MyTheme.grey,
                       onChanged: (bool value) {
-                        setState(() {
+                        setState(() async {
                           notificationState = value;
+                          if (notificationState) {
+                            await _cancelNotification();
+                            await _requestPermissions();
+
+                            final tz.TZDateTime now =
+                                tz.TZDateTime.now(tz.local);
+                            await _registerMessage(
+                              hour: now.hour,
+                              minutes: now.minute + 1,
+                              message: 'Hello, world!',
+                            );
+                          }
                         });
                       },
                     )

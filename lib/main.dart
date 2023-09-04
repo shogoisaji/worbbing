@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       home: AppSplashPage(),
       routes: {
         '/splash': (context) => AppSplashPage(),
-        '/main': (context) => MainPage(),
+        '/main': (context) => const MainPage(),
       },
     );
   }

@@ -97,8 +97,7 @@ class _DetailPageState extends State<DetailPage> {
                               height: 35,
                             ),
                             onTap: () {
-                              Navigator.push(
-                                context,
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (context) => MainPage()),
                               );
@@ -202,7 +201,7 @@ class _DetailPageState extends State<DetailPage> {
                                   data[0][DatabaseHelper.memo];
                               showDialog(
                                   context: context,
-                                  builder: (BuildContext context) =>
+                                  builder: (BuildContext context1) =>
                                       AlertDialog(
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.zero),
@@ -218,6 +217,8 @@ class _DetailPageState extends State<DetailPage> {
                                                 subText(
                                                     'English', Colors.black54),
                                                 TextField(
+                                                  keyboardType: TextInputType
+                                                      .visiblePassword,
                                                   style: const TextStyle(
                                                       fontSize: 20),
                                                   controller:
@@ -270,7 +271,7 @@ class _DetailPageState extends State<DetailPage> {
                                         actions: [
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.pop(context);
+                                              Navigator.pop(context1);
                                             },
                                             child: subText(
                                                 'Cancel', MyTheme.orange),
@@ -285,7 +286,27 @@ class _DetailPageState extends State<DetailPage> {
                                               backgroundColor: MyTheme.orange,
                                             ),
                                             onPressed: () async {
-                                              //
+// update words
+                                              debugPrint('update words');
+
+                                              await DatabaseHelper.instance
+                                                  .updateWords(
+                                                      data[0][DatabaseHelper
+                                                          .columnId],
+                                                      _originalController.text,
+                                                      _translatedController
+                                                          .text,
+                                                      _memoController.text);
+                                              setState(() {});
+                                              if (context1.mounted) {
+                                                Navigator.pop(context1);
+                                                Navigator.of(context1)
+                                                    .pushReplacement(
+                                                  MaterialPageRoute(
+                                                      builder: (context1) =>
+                                                          const MainPage()),
+                                                );
+                                              }
                                             },
                                             child:
                                                 subText('Update', Colors.white),
@@ -340,7 +361,7 @@ class _DetailPageState extends State<DetailPage> {
                 Container(
                   width: 300,
                   alignment: Alignment.topLeft,
-                  child: subText('Memo', Colors.white),
+                  child: bodyText('Memo', Colors.grey),
                 ),
                 Stack(
                   children: [
@@ -349,12 +370,12 @@ class _DetailPageState extends State<DetailPage> {
                       child: Transform.rotate(
                           angle: 0.02,
                           child: Container(
-                              width: 300, height: 150, color: MyTheme.orange)),
+                              width: 300, height: 100, color: MyTheme.orange)),
                     ),
                     Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         width: 300,
-                        height: 150,
+                        height: 100,
                         color: Colors.white,
                         child: bodyText2(
                             data[0][DatabaseHelper.memo], Colors.black)),
@@ -404,28 +425,53 @@ class _DetailPageState extends State<DetailPage> {
                 const SizedBox(
                   height: 40,
                 ),
-                SizedBox(
-                  width: 350,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      customButton2(
-                          MyTheme.red, titleText('Delete', Colors.white, 20),
-                          () async {
-                        await DatabaseHelper.instance.deleteRow(widget.id);
-                        if (context.mounted) {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => const MainPage()),
-                          // );
-                          Navigator.pop(context);
-                          setState(() {});
-                        }
-                      }),
-                    ],
-                  ),
-                ),
+                customButton2(
+                    MyTheme.red, titleText('Delete', Colors.white, 20),
+                    () async {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context2) =>
+                          // deleteDialog(context, widget.id),
+                          AlertDialog(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero),
+                            backgroundColor:
+                                const Color.fromARGB(255, 206, 206, 206),
+                            title: subText('Really?', Colors.black),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context2);
+                                },
+                                child: subText('Cancel', MyTheme.red),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.only(left: 8, right: 8),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero,
+                                  ),
+                                  backgroundColor: MyTheme.red,
+                                ),
+                                onPressed: () async {
+// Delete
+                                  await DatabaseHelper.instance
+                                      .deleteRow(widget.id);
+                                  if (context2.mounted) {
+                                    Navigator.pop(context2);
+                                    Navigator.of(context2).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context2) =>
+                                              const MainPage()),
+                                    );
+                                  }
+                                },
+                                child: subText('Delete', Colors.white),
+                              ),
+                            ],
+                          ));
+                }),
                 const SizedBox(
                   height: 100,
                 ),

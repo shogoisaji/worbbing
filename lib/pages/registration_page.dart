@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:worbbing/application/database.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/main_page.dart';
@@ -70,7 +71,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           height: 35,
                         ),
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (context) => const MainPage()),
+                          );
                         }),
                   ),
                   Align(
@@ -113,9 +117,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 top: 30.0,
               ),
               child: InkWell(
-                onTap: () {
+                onTap: () async {
                   //
-                  debugPrint("deepL");
+                  await dotenv.load(fileName: ".env");
+                  final apiKey = dotenv.env['DEEPL_API_KEY']!;
+                  debugPrint(apiKey);
                 },
                 child: Image.asset(
                   'assets/images/deepL.png',
@@ -155,9 +161,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ];
               await DatabaseHelper.instance.addData(addData);
               if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MainPage()),
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const MainPage()),
                 );
               }
               debugPrint('save');

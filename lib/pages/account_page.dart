@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/application/database.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
+import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -50,7 +51,10 @@ class _AccountPageState extends State<AccountPage> {
                       height: 35,
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => const MainPage()),
+                      );
                     }),
               ),
               Align(
@@ -99,20 +103,6 @@ class _AccountPageState extends State<AccountPage> {
                         );
                       })
                 ])),
-//         Container(
-//             margin: const EdgeInsets.only(top: 25),
-//             width: 300,
-//             decoration: const BoxDecoration(
-//               border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
-//             ),
-//             child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   mediumText('Current Expired', Colors.white),
-// // total words
-//                   titleText(totalWords, MyTheme.orange, 36)
-//                 ])),
-// Data for each noticeDuration
         FutureBuilder(
             future: countNotice,
             builder: (context, snapshot) {
@@ -170,7 +160,7 @@ class _AccountPageState extends State<AccountPage> {
             ), () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EbbinghausPage()),
+            MaterialPageRoute(builder: (context) => const EbbinghausPage()),
           );
         }),
       ]),
