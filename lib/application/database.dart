@@ -52,7 +52,7 @@ class DatabaseHelper {
   }
 
   // add database row
-  Future<void> addData(List<dynamic> addData) async {
+  Future<String> addData(List<dynamic> addData) async {
     final int _noticeDuration = addData[0];
     final int _updateCount = addData[1];
     final int _flag = addData[2];
@@ -74,11 +74,25 @@ class DatabaseHelper {
     };
 
     Database db = await instance.database;
+
+    final maps = await db.query(
+      table,
+      columns: [columnId],
+      where: '$originalWord = ?',
+      whereArgs: [_originalWord],
+    );
+
+    if (maps.isNotEmpty) {
+      return 'exist';
+    }
+
     final id = await db.insert(table, row);
 
     debugPrint('挿入された行のid: $id');
     debugPrint(
         '挿入されたデータ: \n$_noticeDuration \n$_updateCount \n$_flag \n$_originalWord \n$_translatedWord \n$_updateDate \n$_registrationDate \n$_memo');
+
+    return 'success';
   }
 
 // get database

@@ -70,7 +70,7 @@ class _DetailPageState extends State<DetailPage> {
                 DateTime.parse(data[0][DatabaseHelper.updateDate]);
             final DateTime currentDateTime = DateTime.now();
             final int forgettingDuration =
-                updateDateTime.difference(currentDateTime).inDays;
+                (updateDateTime.difference(currentDateTime).inDays).abs();
 
             flag = data[0][DatabaseHelper.flag];
             final notice = noticeDurationList
@@ -99,7 +99,7 @@ class _DetailPageState extends State<DetailPage> {
                             onTap: () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => MainPage()),
+                                    builder: (context) => const MainPage()),
                               );
                             }),
                       ),

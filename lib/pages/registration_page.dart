@@ -215,7 +215,41 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 registrationDate,
                 _memoController.text,
               ];
-              await DatabaseHelper.instance.addData(addData);
+              String result = await DatabaseHelper.instance.addData(addData);
+              if (result == 'exist') {
+                if (context.mounted) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero),
+                            backgroundColor:
+                                const Color.fromARGB(255, 206, 206, 206),
+                            title: subText('Already registered', Colors.black),
+                            actions: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.only(left: 8, right: 8),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero,
+                                  ),
+                                  backgroundColor: MyTheme.orange,
+                                ),
+                                onPressed: () {
+// Delete
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: subText('OK', Colors.white),
+                              ),
+                            ],
+                          ));
+                }
+                debugPrint('exist');
+                return;
+              }
               if (context.mounted) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const MainPage()),
