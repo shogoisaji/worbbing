@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:worbbing/application/database.dart';
@@ -7,6 +9,8 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/registration_text_field.dart';
+import 'package:deepl_dart/deepl_dart.dart';
+import 'package:http/http.dart' as http;
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -20,6 +24,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController _translatedController = TextEditingController();
   TextEditingController _memoController = TextEditingController();
   int flag = 0;
+  String googleTranslateUrl =
+      "https://translation.googleapis.com/language/translate/v2";
 
   @override
   void initState() {
@@ -112,21 +118,71 @@ class _RegistrationPageState extends State<RegistrationPage> {
               child: bodyText('English', MyTheme.lightGrey),
             ),
             originalTextField(_originalController),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 30.0,
-              ),
-              child: InkWell(
-                onTap: () async {
-                  //
-                  await dotenv.load(fileName: ".env");
-                  final apiKey = dotenv.env['DEEPL_API_KEY']!;
-                  debugPrint(apiKey);
-                },
-                child: Image.asset(
-                  'assets/images/deepL.png',
-                  width: 50,
-                ),
+            Container(
+              width: 150,
+              padding: const EdgeInsets.only(top: 30.0, bottom: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+// Deep L
+                  InkWell(
+                    onTap: () async {
+                      //
+                      if (_originalController.text.isEmpty) {
+                        return;
+                      }
+                      await dotenv.load(fileName: ".env");
+                      final deeplApiKey = dotenv.env['DEEPL_API_KEY']!;
+                      Translator translator = Translator(authKey: deeplApiKey);
+                      TextResult result = await translator
+                          .translateTextSingular(_originalController.text, 'ja',
+                              sourceLang: 'en');
+                      debugPrint('deepl_translate:${result.text}');
+                      _translatedController.text = result.text;
+                    },
+                    child: Image.asset(
+                      'assets/images/deepL.png',
+                      width: 50,
+                    ),
+                  ),
+// Google Cloud Translate
+                  InkWell(
+                    onTap: () async {
+                      //
+                      if (_originalController.text.isEmpty) {
+                        return;
+                      }
+                      await dotenv.load(fileName: ".env");
+                      final googleApiKey = dotenv.env['GOOGLE_API_KEY']!;
+                      Map<String, String> headers = {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': googleApiKey
+                      };
+
+                      Map<String, dynamic> body = {
+                        "q": _originalController.text,
+                        "target": "ja"
+                      };
+
+                      var response = await http.post(
+                          Uri.parse(googleTranslateUrl),
+                          headers: headers,
+                          body: jsonEncode(body));
+
+                      Map<String, dynamic> data = jsonDecode(response.body);
+
+                      String translatedText =
+                          data['data']['translations'][0]['translatedText'];
+
+                      debugPrint('google_translate:$translatedText');
+                      _translatedController.text = translatedText;
+                    },
+                    child: Image.asset(
+                      'assets/images/google_translate.png',
+                      width: 50,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(

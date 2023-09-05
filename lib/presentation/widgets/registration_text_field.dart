@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 Widget originalTextField(controller) {
@@ -39,20 +40,21 @@ Widget translatedTextField(controller) {
             child: Container(width: 300, height: 80, color: MyTheme.lemon)),
       ),
       Container(
-        width: 300,
-        height: 80,
-        color: MyTheme.lightGrey,
-        child: TextField(
+          padding: const EdgeInsets.only(top: 5),
+          width: 300,
+          height: 80,
+          color: MyTheme.lightGrey,
+          child: TextField(
             //
             keyboardType: TextInputType.text,
             decoration: InputDecoration(border: InputBorder.none),
             textAlign: TextAlign.center,
             controller: controller,
-            style: TextStyle(
+            style: GoogleFonts.zenKakuGothicNew(
               fontSize: 28,
-              color: Colors.black,
-            )),
-      )
+              fontWeight: FontWeight.w600,
+            ),
+          ))
     ],
   );
 }

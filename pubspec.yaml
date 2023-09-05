@@ -35,9 +35,7 @@ dependencies:
   rive:
   flutter_launcher_icons:
   flutter_dotenv: ^5.1.0
-  flutter_app_badger: ^1.5.0
-  flutter_local_notifications: ^15.1.1
-  timezone:
+  deepl_dart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +70,7 @@ flutter:
     - assets/images/ebbinghaus.png
     - assets/images/worbbing_icon.png
     - assets/images/worbbing_logo.png
+    - assets/images/google_translate.png
     - assets/rive/worbbing.riv
 
 flutter_icons:
