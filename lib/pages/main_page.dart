@@ -65,6 +65,21 @@ class _MainPageState extends State<MainPage>
           padding: const EdgeInsets.only(bottom: 5, right: 10.0),
           child: Stack(
             children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(65),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(20.0, 15.0),
+                      blurRadius: 15.0,
+                      spreadRadius: 50.0,
+                    ),
+                  ],
+                ),
+              ),
               Transform.rotate(
                 angle: 1.5,
                 child: Container(
@@ -119,11 +134,14 @@ class _MainPageState extends State<MainPage>
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
 // icon
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                            padding: const EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.only(top: 5, left: 10),
                             onPressed: () {
                               //
                               Navigator.of(context).pushReplacement(
@@ -140,9 +158,8 @@ class _MainPageState extends State<MainPage>
                           'assets/images/worbbing_logo.png',
                           width: 200,
                         ),
-                        // titleText('Word List', Colors.white, null),
                         IconButton(
-                            padding: const EdgeInsets.only(right: 10),
+                            padding: const EdgeInsets.only(top: 5, right: 10),
                             onPressed: () {
                               //
                               Navigator.of(context).pushReplacement(
@@ -158,7 +175,7 @@ class _MainPageState extends State<MainPage>
                       ],
                     ),
                     const SizedBox(
-                      height: 5,
+                      height: 10,
                     ),
 // tag
                     Row(

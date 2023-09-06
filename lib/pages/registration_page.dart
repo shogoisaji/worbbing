@@ -128,20 +128,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
 // Deep L
                   InkWell(
                     onTap: () async {
-                      //
                       if (_originalController.text.isEmpty) {
                         return;
                       }
                       await dotenv.load(fileName: ".env");
                       final deeplApiKey = dotenv.env['DEEPL_API_KEY']!;
                       var url = Uri.parse('https://api.deepl.com/v2/translate');
-
                       var jsonBody = jsonEncode({
                         "text": ["${_originalController.text}"],
                         "source_language": "EN",
                         "target_lang": "JA"
                       });
-
                       var response = await http.post(url,
                           headers: {
                             "Host": "api-free.deepl.com",
@@ -166,7 +163,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 // Google Cloud Translate
                   InkWell(
                     onTap: () async {
-                      //
                       if (_originalController.text.isEmpty) {
                         return;
                       }
@@ -176,22 +172,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         'Content-Type': 'application/json',
                         'X-Goog-Api-Key': googleApiKey
                       };
-
                       Map<String, dynamic> body = {
                         "q": _originalController.text,
                         "target": "ja"
                       };
-
                       var response = await http.post(
                           Uri.parse(googleTranslateUrl),
                           headers: headers,
                           body: jsonEncode(body));
-
                       Map<String, dynamic> data = jsonDecode(response.body);
-
                       String translatedText =
                           data['data']['translations'][0]['translatedText'];
-
                       debugPrint('google_translate:$translatedText');
                       _translatedController.text = translatedText;
                       setState(() {
@@ -207,7 +198,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ],
               ),
             ),
-            SizedBox(
+            Container(
+              margin: const EdgeInsets.only(top: 5),
               width: 300,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -235,7 +227,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             customButton(titleText('SAVE', Colors.black.withOpacity(0.7), null),
                 () async {
-              // save
+// original or translated word is empty then return
+              if (_originalController.text == "" ||
+                  _translatedController.text == "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Center(
+                      child: Text('English & 日本語 は入力必須です',
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                  ),
+                );
+                return;
+              }
+// save
               final List<dynamic> addData = [
                 noticeDuration,
                 updateCount,
@@ -268,7 +273,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   backgroundColor: MyTheme.orange,
                                 ),
                                 onPressed: () {
-// Delete
                                   if (context.mounted) {
                                     Navigator.pop(context);
                                   }
@@ -278,7 +282,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             ],
                           ));
                 }
-                debugPrint('exist');
                 return;
               }
               if (context.mounted) {
