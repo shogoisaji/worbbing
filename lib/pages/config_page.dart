@@ -470,7 +470,7 @@ class _ConfigPageState extends State<ConfigPage> {
               await WordsNotification().nowShowNotification(selectedWordCount);
             },
             child: SizedBox(
-              width: 200,
+              width: 230,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

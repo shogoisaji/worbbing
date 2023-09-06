@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),
-      home: MainPage(),
-      // home: AppSplashPage(),
+      // home: MainPage(),
+      home: AppSplashPage(),
       routes: {
         '/splash': (context) => AppSplashPage(),
         '/main': (context) => const MainPage(),

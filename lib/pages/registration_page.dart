@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,6 +26,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   int flag = 0;
   bool googleResponse = false;
   bool deeplResponse = false;
+  String deeplTranslateUrl = 'https://api-free.deepl.com/v2/translate';
   String googleTranslateUrl =
       "https://translation.googleapis.com/language/translate/v2";
 
@@ -119,83 +121,53 @@ class _RegistrationPageState extends State<RegistrationPage> {
               child: bodyText('English', MyTheme.lightGrey),
             ),
             originalTextField(_originalController),
-            Container(
-              width: 150,
-              padding: const EdgeInsets.only(top: 30.0, bottom: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-// Deep L
-                  InkWell(
-                    onTap: () async {
-                      if (_originalController.text.isEmpty) {
-                        return;
-                      }
-                      await dotenv.load(fileName: ".env");
-                      final deeplApiKey = dotenv.env['DEEPL_API_KEY']!;
-                      var url = Uri.parse('https://api.deepl.com/v2/translate');
-                      var jsonBody = jsonEncode({
-                        "text": ["${_originalController.text}"],
-                        "source_language": "EN",
-                        "target_lang": "JA"
-                      });
-                      var response = await http.post(url,
-                          headers: {
-                            "Host": "api-free.deepl.com",
-                            "Authorization": "DeepL-Auth-Key $deeplApiKey",
-                            "Content-Type": "application/json"
-                          },
-                          body: jsonBody);
-                      final responseBody = utf8.decode(response.bodyBytes);
-                      String decodedText =
-                          jsonDecode(responseBody)['translations'][0]['text'];
-                      _translatedController.text = decodedText;
-                      setState(() {
-                        googleResponse = false;
-                        deeplResponse = true;
-                      });
-                    },
-                    child: Image.asset(
-                      'assets/images/deepL.png',
-                      width: 50,
+            const SizedBox(
+              height: 30,
+            ),
+            InkWell(
+              onTap: () async {
+                http.Response response;
+                if (_originalController.text.isEmpty) {
+                  return;
+                }
+                await dotenv.load(fileName: ".env");
+                final googleApiKey = dotenv.env['GOOGLE_API_KEY']!;
+                Map<String, String> headers = {
+                  'Content-Type': 'application/json',
+                  'X-Goog-Api-Key': googleApiKey
+                };
+                Map<String, dynamic> body = {
+                  "q": _originalController.text,
+                  "target": "ja"
+                };
+                try {
+                  response = await http.post(Uri.parse(googleTranslateUrl),
+                      headers: headers, body: jsonEncode(body));
+                  Map<String, dynamic> data = jsonDecode(response.body);
+                  String translatedText =
+                      data['data']['translations'][0]['translatedText'];
+                  debugPrint('google_translate:$translatedText');
+                  _translatedController.text = translatedText;
+                } catch (e) {
+                  debugPrint('error:$e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Center(
+                        child:
+                            Text('翻訳に失敗しました', style: TextStyle(fontSize: 18)),
+                      ),
                     ),
-                  ),
-// Google Cloud Translate
-                  InkWell(
-                    onTap: () async {
-                      if (_originalController.text.isEmpty) {
-                        return;
-                      }
-                      await dotenv.load(fileName: ".env");
-                      final googleApiKey = dotenv.env['GOOGLE_API_KEY']!;
-                      Map<String, String> headers = {
-                        'Content-Type': 'application/json',
-                        'X-Goog-Api-Key': googleApiKey
-                      };
-                      Map<String, dynamic> body = {
-                        "q": _originalController.text,
-                        "target": "ja"
-                      };
-                      var response = await http.post(
-                          Uri.parse(googleTranslateUrl),
-                          headers: headers,
-                          body: jsonEncode(body));
-                      Map<String, dynamic> data = jsonDecode(response.body);
-                      String translatedText =
-                          data['data']['translations'][0]['translatedText'];
-                      debugPrint('google_translate:$translatedText');
-                      _translatedController.text = translatedText;
-                      setState(() {
-                        deeplResponse = false;
-                        googleResponse = true;
-                      });
-                    },
-                    child: Image.asset(
-                      'assets/images/google_translate.png',
-                      width: 50,
-                    ),
-                  ),
-                ],
+                  );
+                  return;
+                }
+                setState(() {
+                  deeplResponse = false;
+                  googleResponse = true;
+                });
+              },
+              child: Image.asset(
+                'assets/images/google_translate.png',
+                width: 50,
               ),
             ),
             Container(

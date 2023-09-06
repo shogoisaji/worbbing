@@ -39,13 +39,14 @@ class WordsNotification {
     String notificationWord = '';
     List<Map> words = await DatabaseHelper.instance
         .getRandomWords(int.parse(selectedWordCount));
-    for (var row in words) {
-      notificationWord += '・${row['original']}:${row['translated']} ';
-    }
+    // for (var row in words) {
+    //   notificationWord += '・${row['original']}:${row['translated']} ';
+    // }
     await flutterLocalNotificationsPlugin.show(
       0,
-      'Worbbing',
-      notificationWord,
+      words[0]['original'],
+      // notificationWord,
+      words[0]['translated'],
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'show notification',
