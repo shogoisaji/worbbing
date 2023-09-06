@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:worbbing/application/database.dart';
 import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/config_page.dart';
@@ -42,6 +43,8 @@ class _MainPageState extends State<MainPage>
   @override
   void initState() {
     super.initState();
+    FlutterAppBadger.removeBadge();
+
     switch (tagState) {
       case 0:
         dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();

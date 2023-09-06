@@ -9,7 +9,6 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/registration_text_field.dart';
-import 'package:deepl_dart/deepl_dart.dart';
 import 'package:http/http.dart' as http;
 
 class RegistrationPage extends StatefulWidget {
@@ -24,6 +23,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController _translatedController = TextEditingController();
   TextEditingController _memoController = TextEditingController();
   int flag = 0;
+  bool googleResponse = false;
+  bool deeplResponse = false;
   String googleTranslateUrl =
       "https://translation.googleapis.com/language/translate/v2";
 
@@ -133,12 +134,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       }
                       await dotenv.load(fileName: ".env");
                       final deeplApiKey = dotenv.env['DEEPL_API_KEY']!;
-                      Translator translator = Translator(authKey: deeplApiKey);
-                      TextResult result = await translator
-                          .translateTextSingular(_originalController.text, 'ja',
-                              sourceLang: 'en');
-                      debugPrint('deepl_translate:${result.text}');
-                      _translatedController.text = result.text;
+                      var url = Uri.parse('https://api.deepl.com/v2/translate');
+
+                      var jsonBody = jsonEncode({
+                        "text": ["${_originalController.text}"],
+                        "source_language": "EN",
+                        "target_lang": "JA"
+                      });
+
+                      var response = await http.post(url,
+                          headers: {
+                            "Host": "api-free.deepl.com",
+                            "Authorization": "DeepL-Auth-Key $deeplApiKey",
+                            "Content-Type": "application/json"
+                          },
+                          body: jsonBody);
+                      final responseBody = utf8.decode(response.bodyBytes);
+                      String decodedText =
+                          jsonDecode(responseBody)['translations'][0]['text'];
+                      _translatedController.text = decodedText;
+                      setState(() {
+                        googleResponse = false;
+                        deeplResponse = true;
+                      });
                     },
                     child: Image.asset(
                       'assets/images/deepL.png',
@@ -176,6 +194,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
                       debugPrint('google_translate:$translatedText');
                       _translatedController.text = translatedText;
+                      setState(() {
+                        deeplResponse = false;
+                        googleResponse = true;
+                      });
                     },
                     child: Image.asset(
                       'assets/images/google_translate.png',
@@ -187,7 +209,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             SizedBox(
               width: 300,
-              child: bodyText('日本語', MyTheme.lightGrey),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  bodyText('日本語', MyTheme.lightGrey),
+                  if (googleResponse)
+                    bodyText('powered by Google 翻訳', MyTheme.grey),
+                  if (deeplResponse)
+                    bodyText('powered by Deep L', MyTheme.grey),
+                ],
+              ),
             ),
             translatedTextField(_translatedController),
             const SizedBox(

@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <!-- 通知アイコンなどのリソースを保持 -->
+  <drawable name="ic_launcher"/>
+  
+  <!-- 通知音などのリソースを保持 -->
+  <raw name="my_sound_file"/>
+  
+</resources>

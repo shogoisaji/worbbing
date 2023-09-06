@@ -105,7 +105,6 @@ class _WordListTileState extends State<WordListTile>
                 final dragStartX = _dragStartX;
                 final dragStartY = _dragStartY;
                 final isOpening = _isOpening;
-                // if (dragStartX == null || isOpening == null) return;
                 if (dragStartX == null ||
                     dragStartY == null ||
                     isOpening == null) return;
@@ -137,7 +136,7 @@ class _WordListTileState extends State<WordListTile>
                   setState(() {
                     _color = MyTheme.lemon;
                     _widget =
-                        titleText(widget.translatedWord, Colors.black, null);
+                        titleText(widget.translatedWord, Colors.black, 28);
                   });
                 }
 
@@ -149,7 +148,7 @@ class _WordListTileState extends State<WordListTile>
 // I don't understand the word
                 if (_color == MyTheme.blue) {
                   DatabaseHelper.instance.updateNoticeDown(widget.id);
-                  await Future.delayed(Duration(milliseconds: 300));
+                  await Future.delayed(const Duration(milliseconds: 300));
                   widget.onDragEnd();
                   debugPrint('Don`t understand');
 // I understand the word
@@ -188,7 +187,6 @@ class _SladeCard extends StatelessWidget {
   final bool flag;
   final String updateDate;
   final int id;
-  // final HEIGHT = 80.0;
   const _SladeCard({
     super.key,
     required this.translatedWord,
@@ -249,24 +247,17 @@ class _SladeCard extends StatelessWidget {
                         const Icon(Icons.flag, color: Colors.white, size: 32),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: InkWell(
-                            onTap: () {
-                              debugPrint('Push noticeDuration');
-                              //
-                            },
-                            child: noticeBlock(
-                                48,
-                                noticeDurationList
-                                    .noticeDuration[noticeDuration],
-                                (forgettingDuration <
-                                            noticeDurationList.noticeDuration[
-                                                noticeDuration]) ||
-                                        (noticeDurationList.noticeDuration[
-                                                noticeDuration] ==
-                                            00)
-                                    ? MyTheme.lemon
-                                    : MyTheme.orange),
-                          )),
+                          child: noticeBlock(
+                              48,
+                              noticeDurationList.noticeDuration[noticeDuration],
+                              (forgettingDuration <
+                                          noticeDurationList.noticeDuration[
+                                              noticeDuration]) ||
+                                      (noticeDurationList
+                                              .noticeDuration[noticeDuration] ==
+                                          00)
+                                  ? MyTheme.lemon
+                                  : MyTheme.orange)),
                     ],
                   )
                 ],

@@ -265,4 +265,13 @@ class DatabaseHelper {
     }
     return noticeCounts;
   }
+
+// notificaton words get random words
+  Future<List<Map>> getRandomWords(int num) async {
+    final db = await database;
+    String query =
+        "SELECT $originalWord, $translatedWord FROM $table ORDER BY RANDOM() LIMIT $num";
+    List<Map> result = await db.rawQuery(query);
+    return result;
+  }
 }

@@ -2,18 +2,18 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:worbbing/application/database.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/frequency_dropdown.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('flutter_logo');
+    AndroidInitializationSettings('app_icon');
 const InitializationSettings initializationSettings =
     InitializationSettings(android: initializationSettingsAndroid);
 
@@ -57,48 +57,77 @@ class _ConfigPageState extends State<ConfigPage> {
     }
   }
 
-// notification
-  Future<void> _scheduleDailyNotification() async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('your channel id', 'your channel name',
-            channelDescription: 'your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
-    await flutterLocalNotificationsPlugin.show(0, '通知', '通知内容',
-        NotificationDetails(android: androidNotificationDetails)
-        // _nextInstance(),
-        // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-        // const NotificationDetails(
-        //   android: AndroidNotificationDetails(
-        //     'id',
-        //     'ob-1-face-daily',
-        //     // importance: Importance.high,
-        //     // priority: Priority.high,
-        //     importance: Importance.max,
-        //     priority: Priority.max,
-        //   ),
-        //   iOS: DarwinNotificationDetails(
-        //     badgeNumber: 1,
-        //   ),
-        // ),
-        // uiLocalNotificationDateInterpretation:
-        //     UILocalNotificationDateInterpretation.absoluteTime,
-        // matchDateTimeComponents: DateTimeComponents.time,
-        // // androidAllowWhileIdle: true,
-        // androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        );
+// test now show notification
+  Future<void> _nowShowNotification() async {
+    String notificationWord = '';
+    List<Map> words = await DatabaseHelper.instance
+        .getRandomWords(int.parse(selectedWordCount));
+    words.forEach((row) {
+      notificationWord += '・${row['original']}:${row['translated']} ';
+    });
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Worbbing',
+      notificationWord,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'show notification',
+          'show notification',
+          channelDescription: 'show notification',
+          icon: 'mipmap/ic_launcher',
+          importance: Importance.max,
+          priority: Priority.max,
+        ),
+        iOS: DarwinNotificationDetails(
+          badgeNumber: 1,
+        ),
+      ),
+    );
   }
 
-  // 1回目に通知を飛ばす時間の作成
-  // tz.TZDateTime _nextInstance() {
-  //   final japan = tz.getLocation("Asia/Tokyo");
-  //   final tz.TZDateTime tzDt = tz.TZDateTime(
-  //       japan, 2023, 9, 15, selectedTime.hour, selectedTime.minute);
-  //   // 2023, 2, 15, selectedTime.hour, selectedTime.minute, 0, 0, 0
+// notification
+  Future<void> _scheduleNotification() async {
+    String notificationWord = '';
+    List<Map> words = await DatabaseHelper.instance
+        .getRandomWords(int.parse(selectedWordCount));
+    words.forEach((row) {
+      notificationWord += '・${row['original']}:${row['translated']} ';
+    });
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      1,
+      'Worbbing',
+      notificationWord,
+      _nextInstance(),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'schedule notification',
+          'schedule notification',
+          channelDescription: 'schedule notification',
+          icon: 'mipmap/ic_launcher',
+          importance: Importance.max,
+          priority: Priority.max,
+        ),
+        iOS: DarwinNotificationDetails(
+          badgeNumber: 1,
+        ),
+      ),
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      androidAllowWhileIdle: true,
+    );
+  }
 
-  //   return tzDt;
-  // }
+// notification time
+  tz.TZDateTime _nextInstance() {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month,
+        now.day, selectedTime.hour, selectedTime.minute);
+    // if (scheduledDate.isBefore(now)) {
+    //   scheduledDate = scheduledDate.add(const Duration(minutes: 1));
+    // }
+    return scheduledDate;
+  }
 
 // update frequency
   void updateFrequency(String newValue) {
@@ -388,17 +417,25 @@ class _ConfigPageState extends State<ConfigPage> {
               ],
             ),
           ),
+          const SizedBox(
+            height: 30,
+          ),
           ElevatedButton(
             onPressed: () async {
               await _requestPermissions();
-              debugPrint('ok permission');
-              await _scheduleDailyNotification();
-              debugPrint('ok notification');
+              await _nowShowNotification();
             },
-            child: Text('notice'),
+            child: Text('now show'),
           ),
           const SizedBox(
-            height: 100,
+            height: 30,
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _requestPermissions();
+              await _scheduleNotification();
+            },
+            child: Text('schedule notice'),
           ),
         ])));
   }
