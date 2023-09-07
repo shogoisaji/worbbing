@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,7 +12,8 @@ import 'package:worbbing/presentation/widgets/registration_text_field.dart';
 import 'package:http/http.dart' as http;
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+  final String? sharedText;
+  RegistrationPage({super.key, this.sharedText});
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -26,7 +26,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   int flag = 0;
   bool googleResponse = false;
   bool deeplResponse = false;
-  String deeplTranslateUrl = 'https://api-free.deepl.com/v2/translate';
   String googleTranslateUrl =
       "https://translation.googleapis.com/language/translate/v2";
 
@@ -36,6 +35,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     _originalController = TextEditingController();
     _translatedController = TextEditingController();
     _memoController = TextEditingController();
+    _originalController.text = widget.sharedText ?? '';
+    debugPrint('RegistrationPage input text:${_originalController.text}');
   }
 
   @override
@@ -49,13 +50,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final int noticeDuration = 0;
-    final int updateCount = 0;
-    // final String originalWord = _originalController.text;
-    // final String translatedWord = _translatedController.text;
+    const int noticeDuration = 0; // 初期値
+    const int updateCount = 0; // 初期値
     final String updateDate = getCurrentDate();
     final String registrationDate = getCurrentDate();
-    // final String memo = _memoController.text;
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

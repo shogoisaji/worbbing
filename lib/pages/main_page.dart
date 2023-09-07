@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:worbbing/application/database.dart';
 import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/config_page.dart';
@@ -22,6 +23,23 @@ class _MainPageState extends State<MainPage>
   int tagState = 0;
   late Future<List<Map<String, dynamic>>> dataFuture;
 
+  @override
+  void initState() {
+    super.initState();
+
+    // tag reload
+    switch (tagState) {
+      case 0:
+        dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();
+      case 1:
+        dataFuture = DatabaseHelper.instance.queryAllRowsAlphabet();
+      case 2:
+        dataFuture = DatabaseHelper.instance.queryAllRowsRegistration();
+      case 3:
+        dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
+    }
+  }
+
   Future<void> handleReload() async {
     //durationが短すぎるとエラーになる
     await Future.delayed(const Duration(milliseconds: 300));
@@ -38,23 +56,6 @@ class _MainPageState extends State<MainPage>
           dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
       }
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    FlutterAppBadger.removeBadge();
-
-    switch (tagState) {
-      case 0:
-        dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();
-      case 1:
-        dataFuture = DatabaseHelper.instance.queryAllRowsAlphabet();
-      case 2:
-        dataFuture = DatabaseHelper.instance.queryAllRowsRegistration();
-      case 3:
-        dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
-    }
   }
 
   @override
@@ -106,7 +107,7 @@ class _MainPageState extends State<MainPage>
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (context) => const RegistrationPage()),
+                            builder: (context) => RegistrationPage()),
                       );
                     },
                     child: Transform.rotate(
