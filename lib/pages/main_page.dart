@@ -239,17 +239,19 @@ class _MainPageState extends State<MainPage>
                   DateTime updateDateTime;
 
 // change list expired top of list
-                  for (var i = 0; i < editableList.length; i++) {
-                    updateDateTime = DateTime.parse(
-                        editableList[i][DatabaseHelper.updateDate]);
-                    forgettingDuration =
-                        currentDateTime.difference(updateDateTime).inDays;
-                    if (forgettingDuration >=
-                        noticeDurationList.noticeDuration[editableList[i]
-                            [DatabaseHelper.noticeDuration]]) {
-                      // insert top of array
-                      var insertData = editableList.removeAt(i);
-                      editableList.insert(0, insertData);
+                  if (tagState == 0) {
+                    for (var i = 0; i < editableList.length; i++) {
+                      updateDateTime = DateTime.parse(
+                          editableList[i][DatabaseHelper.updateDate]);
+                      forgettingDuration =
+                          currentDateTime.difference(updateDateTime).inDays;
+                      if (forgettingDuration >=
+                          noticeDurationList.noticeDuration[editableList[i]
+                              [DatabaseHelper.noticeDuration]]) {
+                        // insert top of array
+                        var insertData = editableList.removeAt(i);
+                        editableList.insert(0, insertData);
+                      }
                     }
                   }
 
