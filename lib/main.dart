@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
 
     _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStream().listen((String? value) {
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     _intentDataStreamSubscription.cancel();
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -72,26 +72,35 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       debugPrint('paused');
-      // アプリが paused 中
     } else if (state == AppLifecycleState.resumed) {
       debugPrint('resumed');
       if (_extractedText != '') {
-        Navigator.pushReplacementNamed(
-          context,
-          '/registration',
-          arguments: _extractedText,
-        );
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Navigator.pushReplacementNamed(
+            context,
+            '/registration',
+          );
+        });
       }
-
-      // アプリが resumed 中
     } else if (state == AppLifecycleState.inactive) {
       debugPrint('inactive');
-
-      // アプリが inactive 中
     } else if (state == AppLifecycleState.detached) {
       debugPrint('detached');
+    }
+  }
 
-      // アプリが detached 中
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint('didChangeDependencies');
+
+    if (_extractedText != '') {
+      debugPrint('didChangeDependencies into if');
+      Navigator.pushReplacementNamed(
+        context,
+        '/registration',
+        arguments: _extractedText,
+      );
     }
   }
 

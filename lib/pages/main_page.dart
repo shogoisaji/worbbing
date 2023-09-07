@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:worbbing/application/database.dart';
+import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/config_page.dart';
 import 'package:worbbing/pages/registration_page.dart';
@@ -230,6 +231,27 @@ class _MainPageState extends State<MainPage>
                   }
 
                   final data = snapshot.data!;
+                  var editableList = List.from(data);
+
+                  NoticeModel noticeDurationList = NoticeModel();
+                  final DateTime currentDateTime = DateTime.now();
+                  int forgettingDuration;
+                  DateTime updateDateTime;
+
+// change list expired top of list
+                  for (var i = 0; i < editableList.length; i++) {
+                    updateDateTime = DateTime.parse(
+                        editableList[i][DatabaseHelper.updateDate]);
+                    forgettingDuration =
+                        currentDateTime.difference(updateDateTime).inDays;
+                    if (forgettingDuration >=
+                        noticeDurationList.noticeDuration[editableList[i]
+                            [DatabaseHelper.noticeDuration]]) {
+                      // insert top of array
+                      var insertData = editableList.removeAt(i);
+                      editableList.insert(0, insertData);
+                    }
+                  }
 
                   return ListView.separated(
                     separatorBuilder: (context, index) => Container(
@@ -248,9 +270,9 @@ class _MainPageState extends State<MainPage>
                       height: 1,
                     ),
                     padding: EdgeInsets.zero,
-                    itemCount: data.length,
+                    itemCount: editableList.length,
                     itemBuilder: (context, index) {
-                      final item = data[index];
+                      final item = editableList[index];
                       return Column(
                         children: [
                           WordListTile(
@@ -263,7 +285,7 @@ class _MainPageState extends State<MainPage>
                             updateDate: item[DatabaseHelper.updateDate],
                           ),
 // under space
-                          if (index == data.length - 1)
+                          if (index == editableList.length - 1)
                             Column(
                               children: [
                                 Container(

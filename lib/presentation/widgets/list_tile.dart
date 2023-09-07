@@ -203,7 +203,7 @@ class _SladeCard extends StatelessWidget {
     final DateTime updateDateTime = DateTime.parse(updateDate);
     final DateTime currentDateTime = DateTime.now();
     final int forgettingDuration =
-        updateDateTime.difference(currentDateTime).inDays;
+        currentDateTime.difference(updateDateTime).inDays;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.black,

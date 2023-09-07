@@ -53,11 +53,13 @@ class DatabaseHelper {
 
   // add database row
   Future<String> addData(List<dynamic> addData) async {
+    // final int _noticeDuration = 2;
     final int _noticeDuration = addData[0];
     final int _updateCount = addData[1];
     final int _flag = addData[2];
     final String _originalWord = addData[3];
     final String _translatedWord = addData[4];
+    // final String _updateDate = "2023-08-20T06:00:00.000Z";
     final String _updateDate = addData[5];
     final String _registrationDate = addData[6];
     final String _memo = addData[7];
