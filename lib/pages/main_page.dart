@@ -233,21 +233,23 @@ class _MainPageState extends State<MainPage>
                   final data = snapshot.data!;
                   var editableList = List.from(data);
 
-                  NoticeModel noticeDurationList = NoticeModel();
                   final DateTime currentDateTime = DateTime.now();
+                  NoticeModel noticeDurationList = NoticeModel();
+                  int noticeDurationTime;
                   int forgettingDuration;
                   DateTime updateDateTime;
 
 // change list expired top of list
                   if (tagState == 0) {
                     for (var i = 0; i < editableList.length; i++) {
+                      noticeDurationTime = noticeDurationList.noticeDuration[
+                          editableList[i][DatabaseHelper.noticeDuration]];
                       updateDateTime = DateTime.parse(
                           editableList[i][DatabaseHelper.updateDate]);
                       forgettingDuration =
                           currentDateTime.difference(updateDateTime).inDays;
-                      if (forgettingDuration >=
-                          noticeDurationList.noticeDuration[editableList[i]
-                              [DatabaseHelper.noticeDuration]]) {
+                      if (forgettingDuration >= noticeDurationTime &&
+                          noticeDurationTime != 00) {
                         // insert top of array
                         var insertData = editableList.removeAt(i);
                         editableList.insert(0, insertData);
