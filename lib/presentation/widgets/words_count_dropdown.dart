@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/models/config_model.dart';
 
 class WordsCountDropdownWidget extends StatefulWidget {
+  final String setelcedWordsCount;
   final Function(String) onItemSelected;
 
-  const WordsCountDropdownWidget({required this.onItemSelected});
+  const WordsCountDropdownWidget(
+      {super.key,
+      required this.onItemSelected,
+      required this.setelcedWordsCount});
 
   @override
   _WordsCountDropdownWidgetState createState() =>
@@ -16,6 +20,7 @@ class _WordsCountDropdownWidgetState extends State<WordsCountDropdownWidget> {
 
   @override
   Widget build(BuildContext context) {
+    dropdownValue = widget.setelcedWordsCount;
     return DropdownButton<String>(
       alignment: Alignment.center,
       underline: Container(

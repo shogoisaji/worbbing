@@ -114,7 +114,7 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 15,
+                  height: 40,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -179,9 +179,9 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ],
                 ),
-                // original word
+// original word
                 Container(
-                  margin: const EdgeInsets.only(top: 20),
+                  margin: const EdgeInsets.only(top: 30),
                   width: 300,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -288,7 +288,6 @@ class _DetailPageState extends State<DetailPage> {
                                             onPressed: () async {
 // update words
                                               debugPrint('update words');
-
                                               await DatabaseHelper.instance
                                                   .updateWords(
                                                       data[0][DatabaseHelper

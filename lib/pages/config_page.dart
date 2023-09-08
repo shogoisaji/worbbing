@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/database.dart';
 import 'package:worbbing/application/words_notificaton.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
-import 'package:worbbing/presentation/widgets/frequency_dropdown.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -31,74 +27,134 @@ class _ConfigPageState extends State<ConfigPage> {
   bool time1State = false;
   bool time2State = false;
   bool time3State = false;
-  TimeOfDay selectedTime1 = TimeOfDay.now();
-  TimeOfDay selectedTime2 = TimeOfDay.now();
-  TimeOfDay selectedTime3 = TimeOfDay.now();
-  String selectedFrequency = '1';
-  String selectedWordCount = '1';
+  TimeOfDay selectedTime1 = const TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay selectedTime2 = const TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay selectedTime3 = const TimeOfDay(hour: 0, minute: 0);
+  String selectedWordsCount = '1';
+  late SharedPreferences prefs;
 
-// update frequency
-  void updateFrequency(String newValue) {
-    setState(() {
-      selectedFrequency = newValue;
-    });
+  @override
+  void initState() {
+    super.initState();
+    initPrefs();
+    loadData();
   }
 
-// update word count
-  void updateWordCount(String newValue) async {
+// <shared preferences data list>
+  // 'notificationState'
+  // 'selectedWordsCount'
+  // 'time1State'
+  // 'time2State'
+  // 'time3State'
+  // 'selectedTime1'
+  // 'selectedTime2'
+  // 'selectedTime3'
+
+// shared preferences init
+  void initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+// shared preferences save data
+  void saveData(String key, value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) prefs.setBool(key, value);
+    if (value is TimeOfDay) {
+      prefs.setInt(key + 'hour', value.hour);
+      prefs.setInt(key + 'minute', value.minute);
+    }
+    if (value is String) prefs.setString(key, value);
+    print('saved');
+    print(' → $key');
+    print(' → $value');
+  }
+
+// shared preferences load data
+  void loadData() async {
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      selectedWordCount = newValue;
+      notificationState = prefs.getBool('notificationState') ?? false;
+      selectedWordsCount = prefs.getString('selectedWordsCount') ?? '1';
+      time1State = prefs.getBool('time1State') ?? false;
+      time2State = prefs.getBool('time2State') ?? false;
+      time3State = prefs.getBool('time3State') ?? false;
+      selectedTime1 = TimeOfDay(
+          hour: prefs.getInt('selectedTime1hour') ?? 0,
+          minute: prefs.getInt('selectedTime1minute') ?? 0);
+      selectedTime2 = TimeOfDay(
+          hour: prefs.getInt('selectedTime2hour') ?? 0,
+          minute: prefs.getInt('selectedTime2minute') ?? 0);
+      selectedTime3 = TimeOfDay(
+          hour: prefs.getInt('selectedTime3hour') ?? 0,
+          minute: prefs.getInt('selectedTime3minute') ?? 0);
+    });
+    print('loaded');
+    print(' → notificationState : $notificationState');
+    print(' → selectedWordsCount : $selectedWordsCount');
+    print(' → time1State : $time1State');
+    print(' → time2State : $time2State');
+    print(' → time3State : $time3State');
+    print(' → selectedTime1 : $selectedTime1');
+    print(' → selectedTime2 : $selectedTime2');
+    print(' → selectedTime3 : $selectedTime3');
+  }
+
+// update words count
+  void updateWordsCount(String newValue) async {
+    setState(() {
+      selectedWordsCount = newValue;
+      saveData('selectedWordsCount', newValue);
     });
     if (notificationState) {
       if (notificationState && time1State) {
         await WordsNotification()
-            .scheduleNotification(1, selectedWordCount, selectedTime1);
+            .scheduleNotification(10, selectedWordsCount, selectedTime1);
       }
       if (notificationState && time2State) {
         await WordsNotification()
-            .scheduleNotification(2, selectedWordCount, selectedTime2);
+            .scheduleNotification(20, selectedWordsCount, selectedTime2);
       }
       if (notificationState && time3State) {
         await WordsNotification()
-            .scheduleNotification(3, selectedWordCount, selectedTime3);
+            .scheduleNotification(30, selectedWordsCount, selectedTime3);
       }
-
-      debugPrint("word count set");
     }
   }
 
 // time select
-  Future<void> _selectTime(BuildContext context, int timeType) async {
+  Future<void> _selectTime(BuildContext context, int timeTypeNumber) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
-
     if (picked != null) {
-      switch (timeType) {
-        case 1:
+      switch (timeTypeNumber) {
+        case 10:
           setState(() {
             selectedTime1 = picked;
+            saveData('selectedTime1', selectedTime1);
           });
           if (notificationState) {
             await WordsNotification().scheduleNotification(
-                timeType, selectedWordCount, selectedTime1);
+                timeTypeNumber, selectedWordsCount, selectedTime1);
           }
-        case 2:
+        case 20:
           setState(() {
             selectedTime2 = picked;
+            saveData('selectedTime2', selectedTime2);
           });
           if (notificationState) {
             await WordsNotification().scheduleNotification(
-                timeType, selectedWordCount, selectedTime2);
+                timeTypeNumber, selectedWordsCount, selectedTime2);
           }
-        case 3:
+        case 30:
           setState(() {
             selectedTime3 = picked;
+            saveData('selectedTime3', selectedTime3);
           });
           if (notificationState) {
             await WordsNotification().scheduleNotification(
-                timeType, selectedWordCount, selectedTime3);
+                timeTypeNumber, selectedWordsCount, selectedTime3);
           }
       }
     }
@@ -164,20 +220,21 @@ class _ConfigPageState extends State<ConfigPage> {
                       onChanged: (bool value) async {
                         setState(() {
                           notificationState = value;
+                          saveData('notificationState', notificationState);
                         });
                         if (notificationState) {
                           await WordsNotification().requestPermissions();
                           if (time1State) {
                             await WordsNotification().scheduleNotification(
-                                1, selectedWordCount, selectedTime1);
+                                10, selectedWordsCount, selectedTime1);
                           }
                           if (time2State) {
                             await WordsNotification().scheduleNotification(
-                                2, selectedWordCount, selectedTime1);
+                                20, selectedWordsCount, selectedTime1);
                           }
                           if (time3State) {
                             await WordsNotification().scheduleNotification(
-                                3, selectedWordCount, selectedTime1);
+                                30, selectedWordsCount, selectedTime1);
                           }
                           debugPrint("notificaton ON");
                         } else {
@@ -225,6 +282,7 @@ class _ConfigPageState extends State<ConfigPage> {
                 const SizedBox(
                   height: 15,
                 ),
+                // vertical line
                 Container(
                   margin: const EdgeInsets.only(left: 5),
                   padding: const EdgeInsets.only(top: 10, left: 25),
@@ -262,11 +320,17 @@ class _ConfigPageState extends State<ConfigPage> {
                                     Colors.black,
                                   ),
                                 ),
+                                // Positioned(
+                                //     top: 3,
+                                //     left: 15,
+                                //     child: titleText(
+                                //         selectedWordsCount, Colors.black, 32)),
                                 Positioned(
                                   top: 5,
                                   right: 15,
                                   child: WordsCountDropdownWidget(
-                                    onItemSelected: updateWordCount,
+                                    setelcedWordsCount: selectedWordsCount,
+                                    onItemSelected: updateWordsCount,
                                   ),
                                 ),
                               ],
@@ -285,10 +349,11 @@ class _ConfigPageState extends State<ConfigPage> {
                             onTap: () async {
                               setState(() {
                                 time1State = !time1State;
+                                saveData('time1State', time1State);
                               });
                               if (notificationState && time1State) {
                                 await WordsNotification().scheduleNotification(
-                                    1, selectedWordCount, selectedTime1);
+                                    10, selectedWordsCount, selectedTime1);
                               }
                               if (!time1State) {
                                 await flutterLocalNotificationsPlugin.cancel(1);
@@ -316,7 +381,7 @@ class _ConfigPageState extends State<ConfigPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => _selectTime(context, 1),
+                            onTap: () => _selectTime(context, 10),
                             child: Container(
                               alignment: Alignment.center,
                               width: 90,
@@ -343,10 +408,11 @@ class _ConfigPageState extends State<ConfigPage> {
                             onTap: () async {
                               setState(() {
                                 time2State = !time2State;
+                                saveData('time2State', time2State);
                               });
                               if (notificationState && time2State) {
                                 await WordsNotification().scheduleNotification(
-                                    2, selectedWordCount, selectedTime2);
+                                    20, selectedWordsCount, selectedTime2);
                               }
                               if (!time2State) {
                                 await flutterLocalNotificationsPlugin.cancel(2);
@@ -374,7 +440,7 @@ class _ConfigPageState extends State<ConfigPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => _selectTime(context, 2),
+                            onTap: () => _selectTime(context, 20),
                             child: Container(
                               alignment: Alignment.center,
                               width: 90,
@@ -401,10 +467,11 @@ class _ConfigPageState extends State<ConfigPage> {
                             onTap: () async {
                               setState(() {
                                 time3State = !time3State;
+                                saveData('time3State', time3State);
                               });
                               if (notificationState && time3State) {
                                 await WordsNotification().scheduleNotification(
-                                    3, selectedWordCount, selectedTime3);
+                                    30, selectedWordsCount, selectedTime3);
                               }
                               if (!time3State) {
                                 await flutterLocalNotificationsPlugin.cancel(3);
@@ -432,7 +499,7 @@ class _ConfigPageState extends State<ConfigPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => _selectTime(context, 3),
+                            onTap: () => _selectTime(context, 30),
                             child: Container(
                               alignment: Alignment.center,
                               width: 90,
@@ -457,6 +524,7 @@ class _ConfigPageState extends State<ConfigPage> {
           const SizedBox(
             height: 70,
           ),
+          // sample notification bottom
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.only(bottom: 2, left: 8, right: 8),
@@ -467,7 +535,7 @@ class _ConfigPageState extends State<ConfigPage> {
             ),
             onPressed: () async {
               await WordsNotification().requestPermissions();
-              await WordsNotification().nowShowNotification(selectedWordCount);
+              await WordsNotification().nowShowNotification(selectedWordsCount);
             },
             child: SizedBox(
               width: 230,

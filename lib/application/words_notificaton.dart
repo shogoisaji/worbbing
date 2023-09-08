@@ -36,12 +36,8 @@ class WordsNotification {
 
 // sample notification
   Future<void> nowShowNotification(String selectedWordCount) async {
-    String notificationWord = '';
     List<Map> words = await DatabaseHelper.instance
         .getRandomWords(int.parse(selectedWordCount));
-    // for (var row in words) {
-    //   notificationWord += '・${row['original']}:${row['translated']} ';
-    // }
     await flutterLocalNotificationsPlugin.show(
       0,
       words[0]['original'],
@@ -52,7 +48,9 @@ class WordsNotification {
           'show notification',
           'show notification',
           channelDescription: 'show notification',
-          icon: 'mipmap/ic_launcher',
+          // icon: 'mipmap/ic_launcher',
+          icon: 'drawable/notice_icon',
+
           importance: Importance.max,
           priority: Priority.max,
         ),
@@ -66,38 +64,37 @@ class WordsNotification {
 // schedule notification
   Future<void> scheduleNotification(int notificationId,
       String selectedWordCount, TimeOfDay selectedTime) async {
-    String notificationWord = '';
+    debugPrint(notificationId.toString());
     List<Map> words = await DatabaseHelper.instance
         .getRandomWords(int.parse(selectedWordCount));
-    for (var row in words) {
-      // notification body add text
-      notificationWord += '・${row['original']}:${row['translated']} ';
+    for (int row = 0; row < words.length; row++) {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        notificationId + row,
+        words[row]['original'],
+        words[row]['translated'],
+        _nextInstance(selectedTime),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'worbbing schedule notice',
+            'worbbing schedule notice',
+            channelDescription: 'worbbing schedule notice',
+            icon: 'drawable/notice_icon',
+            // icon: 'mipmap/ic_launcher',
+            importance: Importance.max,
+            priority: Priority.max,
+          ),
+          iOS: DarwinNotificationDetails(
+            badgeNumber: 1,
+          ),
+        ),
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+        androidAllowWhileIdle: true,
+      );
+      debugPrint(
+          "notificaton set time${notificationId + row} => ${selectedTime.hour}:${selectedTime.minute}");
     }
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      notificationId,
-      'Worbbing',
-      notificationWord,
-      _nextInstance(selectedTime),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'schedule notification',
-          'schedule notification',
-          channelDescription: 'schedule notification',
-          icon: 'mipmap/ic_launcher',
-          importance: Importance.max,
-          priority: Priority.max,
-        ),
-        iOS: DarwinNotificationDetails(
-          badgeNumber: 1,
-        ),
-      ),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-      androidAllowWhileIdle: true,
-    );
-    debugPrint(
-        "notificaton set time$notificationId => ${selectedTime.hour}:${selectedTime.minute}");
   }
 
 // notification time
