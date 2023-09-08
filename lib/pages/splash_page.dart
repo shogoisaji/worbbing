@@ -15,7 +15,7 @@ class _AppSplashPageState extends State<AppSplashPage> {
     super.initState();
     _controller = SimpleAnimation('opening');
 
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    Future.delayed(const Duration(milliseconds: 2100), () {
       Navigator.of(context).pushReplacementNamed('/main');
     });
   }

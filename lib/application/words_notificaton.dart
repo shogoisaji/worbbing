@@ -41,18 +41,16 @@ class WordsNotification {
     await flutterLocalNotificationsPlugin.show(
       0,
       words[0]['original'],
-      // notificationWord,
       words[0]['translated'],
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'show notification',
-          'show notification',
+          'show notification', 'show notification',
           channelDescription: 'show notification',
-          // icon: 'mipmap/ic_launcher',
+          //saved => /android/app/src/main/res/drawable/notice_icon.png
           icon: 'drawable/notice_icon',
-
           importance: Importance.max,
           priority: Priority.max,
+          // actions: [AndroidNotificationAction('1', 'ok')]
         ),
         iOS: DarwinNotificationDetails(
           badgeNumber: 1,
@@ -64,9 +62,10 @@ class WordsNotification {
 // schedule notification
   Future<void> scheduleNotification(int notificationId,
       String selectedWordCount, TimeOfDay selectedTime) async {
-    debugPrint(notificationId.toString());
+    // creat notice list
     List<Map> words = await DatabaseHelper.instance
         .getRandomWords(int.parse(selectedWordCount));
+
     for (int row = 0; row < words.length; row++) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId + row,
@@ -78,8 +77,8 @@ class WordsNotification {
             'worbbing schedule notice',
             'worbbing schedule notice',
             channelDescription: 'worbbing schedule notice',
+            //saved => /android/app/src/main/res/drawable/notice_icon.png
             icon: 'drawable/notice_icon',
-            // icon: 'mipmap/ic_launcher',
             importance: Importance.max,
             priority: Priority.max,
           ),

@@ -23,10 +23,29 @@ class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   int tagState = 0;
   late Future<List<Map<String, dynamic>>> dataFuture;
+  late AnimationController animationController;
+  late Animation<double> translateAnimation;
+  late Animation<double> opacityAnimation;
+  final _customTween = Tween<double>(begin: 1.0, end: 5.0);
+  final _opacityTween = Tween<double>(begin: 1.0, end: 5.0);
 
   @override
   void initState() {
     super.initState();
+
+    animationController = AnimationController(
+      vsync: this,
+      value: 0,
+      duration: const Duration(milliseconds: 300),
+    );
+    translateAnimation =
+        _customTween.animate(animationController.drive(CurveTween(
+      curve: Curves.easeInOut,
+    )));
+    opacityAnimation =
+        _opacityTween.animate(animationController.drive(CurveTween(
+      curve: Curves.easeInOut,
+    )));
 
     // tag reload
     switch (tagState) {
@@ -39,6 +58,12 @@ class _MainPageState extends State<MainPage>
       case 3:
         dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
     }
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   Future<void> handleReload() async {
@@ -65,64 +90,81 @@ class _MainPageState extends State<MainPage>
 // floating Action Button
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 5, right: 10.0),
-          child: Stack(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(65),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(20.0, 15.0),
-                      blurRadius: 15.0,
-                      spreadRadius: 50.0,
-                    ),
-                  ],
-                ),
-              ),
-              Transform.rotate(
-                angle: 1.5,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.zero,
-                    color: MyTheme.grey,
-                  ),
-                ),
-              ),
-              Transform.rotate(
-                angle: 1.2,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.zero,
-                    color: MyTheme.orange,
-                  ),
-                  child: FloatingActionButton(
-                    elevation: 0,
-                    backgroundColor: MyTheme.orange,
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => RegistrationPage()),
-                      );
-                    },
-                    child: Transform.rotate(
-                      angle: -1.2,
-                      child: const Icon(
-                        Icons.add,
-                        size: 32,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          child:
+              // customFloatingActionButton(
+              //     context, animationController, translateAnimation),
+              AnimatedBuilder(
+                  animation: translateAnimation,
+                  builder: (_, __) {
+                    return Stack(
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(65),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black,
+                                offset: Offset(20.0, 15.0),
+                                blurRadius: 15.0,
+                                spreadRadius: 50.0,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Transform.rotate(
+                          angle: 1.5,
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.zero,
+                              color: MyTheme.grey,
+                            ),
+                          ),
+                        ),
+                        Transform.scale(
+                          scale: 1 * translateAnimation.value,
+                          child: Transform.rotate(
+                            angle: 1.2,
+                            child: Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.zero,
+                                  color: MyTheme.orange
+                                      .withOpacity(1 / opacityAnimation.value),
+                                ),
+                                child: FloatingActionButton(
+                                    elevation: 0,
+                                    backgroundColor: MyTheme.orange.withOpacity(
+                                        1 / opacityAnimation.value),
+                                    // FAB onPressed
+                                    onPressed: () {
+                                      animationController.forward();
+                                      Future.delayed(
+                                          const Duration(milliseconds: 200),
+                                          () {
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  RegistrationPage()),
+                                        );
+                                      });
+                                    },
+                                    child: Transform.rotate(
+                                      angle: -1.2,
+                                      child: const Icon(
+                                        Icons.add,
+                                        size: 32,
+                                      ),
+                                    ))),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
         ),
         body: Column(
           children: [
@@ -146,6 +188,7 @@ class _MainPageState extends State<MainPage>
                             padding: const EdgeInsets.only(top: 5, left: 10),
                             onPressed: () {
                               //
+
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (context) => const ConfigPage()),
