@@ -151,10 +151,10 @@ class _AccountPageState extends State<AccountPage> {
           height: 50,
         ),
         customButton(
-            const Text(
+            Text(
               'エビングハウスの\n忘却曲線について',
               style: TextStyle(
-                  color: Colors.black87,
+                  color: Colors.black.withOpacity(0.7),
                   fontSize: 12,
                   fontWeight: FontWeight.w600),
             ), () {

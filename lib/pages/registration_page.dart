@@ -272,8 +272,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
             const SizedBox(
               height: 50,
             ),
-            customButton(titleText('SAVE', Colors.black.withOpacity(0.7), null),
-                () async {
+            customButton(
+                Text('SAVE',
+                    style: TextStyle(
+                        color: Colors.black.withOpacity(0.6),
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold)), () async {
 // original or translated word is empty then return
               if (_originalController.text == "" ||
                   _translatedController.text == "") {
