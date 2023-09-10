@@ -10,10 +10,12 @@ import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/registration_text_field.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistrationPage extends StatefulWidget {
-  final String? sharedText;
-  RegistrationPage({super.key, this.sharedText});
+  const RegistrationPage({
+    super.key,
+  });
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -24,19 +26,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController _translatedController = TextEditingController();
   TextEditingController _memoController = TextEditingController();
   int flag = 0;
+  final int CREDIT = 20;
+  late SharedPreferences prefs;
+  DateTime resetDate = DateTime.now();
+  int translateCredit = 0;
   bool googleResponse = false;
-  bool deeplResponse = false;
   String googleTranslateUrl =
       "https://translation.googleapis.com/language/translate/v2";
 
   @override
   void initState() {
     super.initState();
+    initPrefs();
+    _loadDate();
     _originalController = TextEditingController();
     _translatedController = TextEditingController();
     _memoController = TextEditingController();
-    _originalController.text = widget.sharedText ?? '';
-    debugPrint('RegistrationPage input text:${_originalController.text}');
+  }
+
+  _loadDate() async {
+    translateCredit = await checkResetCredit();
+    debugPrint('translateCredit:$translateCredit');
+    setState(() {});
   }
 
   @override
@@ -46,6 +57,58 @@ class _RegistrationPageState extends State<RegistrationPage> {
     _memoController.dispose();
 
     super.dispose();
+  }
+
+// <shared preferences data list>
+  // 'resetDate'
+  // 'translateCredit'
+
+// shared preferences init
+  void initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+// shared preferences check credit
+  Future<int> checkResetCredit() async {
+    final prefs = await SharedPreferences.getInstance();
+    DateTime today = DateTime.now();
+    // have credit
+    if (prefs.getString('resetDate') != null) {
+      resetDate = DateTime.parse(prefs.getString('resetDate')!);
+      debugPrint('resetDate:$resetDate');
+      debugPrint('today    :$today');
+      // already reset credit today
+      if (today.difference(resetDate).inDays == 0) {
+        debugPrint('already reset credit today');
+        translateCredit = prefs.getInt('translateCredit') ?? 0;
+        // reset credit
+      } else {
+        translateCredit = CREDIT;
+        resetDate = today;
+        prefs.setString('resetDate', today.toIso8601String());
+        prefs.setInt('translateCredit', translateCredit);
+        debugPrint('reset credit');
+      }
+      // init credit
+    } else {
+      translateCredit = CREDIT;
+      resetDate = today;
+      debugPrint('init credit');
+      prefs.setString('resetDate', resetDate.toIso8601String());
+      prefs.setInt('translateCredit', translateCredit);
+    }
+    return translateCredit;
+  }
+
+  // use credit
+  Future<bool> useCredit() async {
+    final prefs = await SharedPreferences.getInstance();
+    translateCredit = prefs.getInt('translateCredit') ?? 0;
+    if (translateCredit == 0) return false;
+    translateCredit--;
+    prefs.setInt('translateCredit', translateCredit);
+    debugPrint('use credit:$translateCredit');
+    return true;
   }
 
   @override
@@ -122,51 +185,67 @@ class _RegistrationPageState extends State<RegistrationPage> {
             const SizedBox(
               height: 30,
             ),
-            InkWell(
-              onTap: () async {
-                http.Response response;
-                if (_originalController.text.isEmpty) {
-                  return;
-                }
-                await dotenv.load(fileName: ".env");
-                final googleApiKey = dotenv.env['GOOGLE_API_KEY']!;
-                Map<String, String> headers = {
-                  'Content-Type': 'application/json',
-                  'X-Goog-Api-Key': googleApiKey
-                };
-                Map<String, dynamic> body = {
-                  "q": _originalController.text,
-                  "target": "ja"
-                };
-                try {
-                  response = await http.post(Uri.parse(googleTranslateUrl),
-                      headers: headers, body: jsonEncode(body));
-                  Map<String, dynamic> data = jsonDecode(response.body);
-                  String translatedText =
-                      data['data']['translations'][0]['translatedText'];
-                  debugPrint('google_translate:$translatedText');
-                  _translatedController.text = translatedText;
-                } catch (e) {
-                  debugPrint('error:$e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Center(
-                        child:
-                            Text('翻訳に失敗しました', style: TextStyle(fontSize: 18)),
-                      ),
-                    ),
-                  );
-                  return;
-                }
-                setState(() {
-                  deeplResponse = false;
-                  googleResponse = true;
-                });
-              },
-              child: Image.asset(
-                'assets/images/google_translate.png',
-                width: 50,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () async {
+                    useCredit().then((value) async {
+                      if (value) {
+                        http.Response response;
+                        if (_originalController.text.isEmpty) {
+                          return;
+                        }
+                        await dotenv.load(fileName: ".env");
+                        final googleApiKey = dotenv.env['GOOGLE_API_KEY']!;
+                        Map<String, String> headers = {
+                          'Content-Type': 'application/json',
+                          'X-Goog-Api-Key': googleApiKey
+                        };
+                        Map<String, dynamic> body = {
+                          "q": _originalController.text,
+                          "target": "ja"
+                        };
+                        try {
+                          response = await http.post(
+                              Uri.parse(googleTranslateUrl),
+                              headers: headers,
+                              body: jsonEncode(body));
+                          Map<String, dynamic> data = jsonDecode(response.body);
+                          String translatedText =
+                              data['data']['translations'][0]['translatedText'];
+                          debugPrint('google_translate:$translatedText');
+                          _translatedController.text = translatedText;
+                        } catch (e) {
+                          debugPrint('error:$e');
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Center(
+                                  child: Text('翻訳に失敗しました',
+                                      style: TextStyle(fontSize: 18)),
+                                ),
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                        setState(() {
+                          googleResponse = true;
+                        });
+                      }
+                    });
+                  },
+                  child: Image.asset(
+                    'assets/images/google_translate.png',
+                    width: 50,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15, top: 30),
+                  child: bodyText(translateCredit.toString(), MyTheme.grey),
+                ),
+              ],
             ),
             Container(
               margin: const EdgeInsets.only(top: 5),
@@ -177,8 +256,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   bodyText('日本語', MyTheme.lightGrey),
                   if (googleResponse)
                     bodyText('powered by Google 翻訳', MyTheme.grey),
-                  if (deeplResponse)
-                    bodyText('powered by Deep L', MyTheme.grey),
                 ],
               ),
             ),
