@@ -86,6 +86,7 @@ class WordsNotification {
             badgeNumber: 1,
           ),
         ),
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
