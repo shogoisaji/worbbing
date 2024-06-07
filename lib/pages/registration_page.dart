@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:worbbing/application/database.dart';
+import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
+import 'package:worbbing/env/env.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
@@ -196,8 +196,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         if (_originalController.text.isEmpty) {
                           return;
                         }
-                        await dotenv.load(fileName: ".env");
-                        final googleApiKey = dotenv.env['GOOGLE_API_KEY']!;
+                        final googleApiKey = Env.translationApiKey;
                         Map<String, String> headers = {
                           'Content-Type': 'application/json',
                           'X-Goog-Api-Key': googleApiKey
@@ -302,7 +301,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 registrationDate,
                 _memoController.text,
               ];
-              String result = await DatabaseHelper.instance.addData(addData);
+              String result = await SqfliteRepository.instance.addData(addData);
               if (result == 'exist') {
                 if (context.mounted) {
                   showDialog(

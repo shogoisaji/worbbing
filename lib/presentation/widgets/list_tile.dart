@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/database.dart';
+import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/detail_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -17,7 +17,7 @@ class WordListTile extends StatefulWidget {
 
   static const HEIGHT = 90.0;
 
-  WordListTile(
+  const WordListTile(
       {super.key,
       required this.originalWord,
       required this.translatedWord,
@@ -147,13 +147,13 @@ class _WordListTileState extends State<WordListTile>
                 _animationController.animateTo(0.0);
 // I don't understand the word
                 if (_color == MyTheme.blue) {
-                  DatabaseHelper.instance.updateNoticeDown(widget.id);
+                  SqfliteRepository.instance.updateNoticeDown(widget.id);
                   await Future.delayed(const Duration(milliseconds: 300));
                   widget.onDragEnd();
                   debugPrint('Don`t understand');
 // I understand the word
                 } else if (_color == MyTheme.orange) {
-                  DatabaseHelper.instance.updateNoticeUp(widget.id);
+                  SqfliteRepository.instance.updateNoticeUp(widget.id);
                   widget.onDragEnd();
                   debugPrint('understand');
                 }
@@ -162,7 +162,6 @@ class _WordListTileState extends State<WordListTile>
                   _widget =
                       titleText(widget.translatedWord, Colors.black, null);
                 });
-                ;
               },
               onHorizontalDragCancel: () {
                 _clear();
@@ -238,7 +237,7 @@ class _SladeCard extends StatelessWidget {
                                   builder: (context) => DetailPage(id: id)),
                             );
                           },
-                          child: Container(
+                          child: SizedBox(
                               width: MediaQuery.of(context).size.width - 150,
                               child: titleText(originalWord, null, null)))),
                   Row(

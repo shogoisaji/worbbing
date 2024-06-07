@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/database.dart';
+import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/config_page.dart';
@@ -31,13 +31,13 @@ class _MainPageState extends State<MainPage>
     // tag reload
     switch (tagState) {
       case 0:
-        dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();
+        dataFuture = SqfliteRepository.instance.queryAllRowsNoticeDuration();
       case 1:
-        dataFuture = DatabaseHelper.instance.queryAllRowsAlphabet();
+        dataFuture = SqfliteRepository.instance.queryAllRowsAlphabet();
       case 2:
-        dataFuture = DatabaseHelper.instance.queryAllRowsRegistration();
+        dataFuture = SqfliteRepository.instance.queryAllRowsRegistration();
       case 3:
-        dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
+        dataFuture = SqfliteRepository.instance.queryAllRowsFlag();
     }
   }
 
@@ -48,13 +48,13 @@ class _MainPageState extends State<MainPage>
     setState(() {
       switch (tagState) {
         case 0:
-          dataFuture = DatabaseHelper.instance.queryAllRowsNoticeDuration();
+          dataFuture = SqfliteRepository.instance.queryAllRowsNoticeDuration();
         case 1:
-          dataFuture = DatabaseHelper.instance.queryAllRowsAlphabet();
+          dataFuture = SqfliteRepository.instance.queryAllRowsAlphabet();
         case 2:
-          dataFuture = DatabaseHelper.instance.queryAllRowsRegistration();
+          dataFuture = SqfliteRepository.instance.queryAllRowsRegistration();
         case 3:
-          dataFuture = DatabaseHelper.instance.queryAllRowsFlag();
+          dataFuture = SqfliteRepository.instance.queryAllRowsFlag();
       }
     });
   }
@@ -112,7 +112,7 @@ class _MainPageState extends State<MainPage>
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                                builder: (context) => RegistrationPage()),
+                                builder: (context) => const RegistrationPage()),
                           );
                         },
                         child: Transform.rotate(
@@ -244,9 +244,9 @@ class _MainPageState extends State<MainPage>
                   if (tagState == 0) {
                     for (var i = 0; i < editableList.length; i++) {
                       noticeDurationTime = noticeDurationList.noticeDuration[
-                          editableList[i][DatabaseHelper.noticeDuration]];
+                          editableList[i][SqfliteRepository.noticeDuration]];
                       updateDateTime = DateTime.parse(
-                          editableList[i][DatabaseHelper.updateDate]);
+                          editableList[i][SqfliteRepository.updateDate]);
                       forgettingDuration =
                           currentDateTime.difference(updateDateTime).inDays;
                       if (forgettingDuration >= noticeDurationTime &&
@@ -281,12 +281,14 @@ class _MainPageState extends State<MainPage>
                         children: [
                           WordListTile(
                             onDragEnd: handleReload,
-                            id: item[DatabaseHelper.columnId],
-                            originalWord: item[DatabaseHelper.originalWord],
-                            translatedWord: item[DatabaseHelper.translatedWord],
-                            noticeDuration: item[DatabaseHelper.noticeDuration],
-                            flag: item[DatabaseHelper.flag] != 0,
-                            updateDate: item[DatabaseHelper.updateDate],
+                            id: item[SqfliteRepository.columnId],
+                            originalWord: item[SqfliteRepository.originalWord],
+                            translatedWord:
+                                item[SqfliteRepository.translatedWord],
+                            noticeDuration:
+                                item[SqfliteRepository.noticeDuration],
+                            flag: item[SqfliteRepository.flag] != 0,
+                            updateDate: item[SqfliteRepository.updateDate],
                           ),
                           // under space
                           if (index == editableList.length - 1)

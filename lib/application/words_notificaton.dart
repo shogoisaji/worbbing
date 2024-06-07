@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:worbbing/application/database.dart';
+import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/config_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -36,7 +36,7 @@ class WordsNotification {
 
 // sample notification
   Future<void> nowShowNotification(String selectedWordCount) async {
-    List<Map> words = await DatabaseHelper.instance
+    List<Map> words = await SqfliteRepository.instance
         .getRandomWords(int.parse(selectedWordCount));
     await flutterLocalNotificationsPlugin.show(
       0,
@@ -63,7 +63,7 @@ class WordsNotification {
   Future<void> scheduleNotification(int notificationId,
       String selectedWordCount, TimeOfDay selectedTime) async {
     // creat notice list
-    List<Map> words = await DatabaseHelper.instance
+    List<Map> words = await SqfliteRepository.instance
         .getRandomWords(int.parse(selectedWordCount));
 
     for (int row = 0; row < words.length; row++) {

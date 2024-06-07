@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/models/notice_model.dart';
 
-class DatabaseHelper {
+class SqfliteRepository {
   static const _databaseName = "test1_Database.db";
   static const _databaseVersion = 1;
 
@@ -19,8 +19,9 @@ class DatabaseHelper {
   static const registrationDate = 'registration';
   static const memo = 'memo';
 
-  DatabaseHelper._privateConstructor();
-  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  SqfliteRepository._privateConstructor();
+  static final SqfliteRepository instance =
+      SqfliteRepository._privateConstructor();
 
   static Database? _database;
   Future<Database> get database async {
@@ -54,25 +55,25 @@ class DatabaseHelper {
   // add database row
   Future<String> addData(List<dynamic> addData) async {
     // final int _noticeDuration = 2;
-    final int _noticeDuration = addData[0];
-    final int _updateCount = addData[1];
-    final int _flag = addData[2];
-    final String _originalWord = addData[3];
-    final String _translatedWord = addData[4];
+    final int noticeDuration = addData[0];
+    final int updateCount = addData[1];
+    final int flag = addData[2];
+    final String originalWord = addData[3];
+    final String translatedWord = addData[4];
     // final String _updateDate = "2023-08-20T06:00:00.000Z";
-    final String _updateDate = addData[5];
-    final String _registrationDate = addData[6];
-    final String _memo = addData[7];
+    final String updateDate = addData[5];
+    final String registrationDate = addData[6];
+    final String memo = addData[7];
 
     final row = {
-      DatabaseHelper.noticeDuration: _noticeDuration,
-      DatabaseHelper.updateCount: _updateCount,
-      DatabaseHelper.flag: _flag,
-      DatabaseHelper.originalWord: _originalWord,
-      DatabaseHelper.translatedWord: _translatedWord,
-      DatabaseHelper.updateDate: _updateDate,
-      DatabaseHelper.registrationDate: _registrationDate,
-      DatabaseHelper.memo: _memo,
+      SqfliteRepository.noticeDuration: noticeDuration,
+      SqfliteRepository.updateCount: updateCount,
+      SqfliteRepository.flag: flag,
+      SqfliteRepository.originalWord: originalWord,
+      SqfliteRepository.translatedWord: translatedWord,
+      SqfliteRepository.updateDate: updateDate,
+      SqfliteRepository.registrationDate: registrationDate,
+      SqfliteRepository.memo: memo,
     };
 
     Database db = await instance.database;
@@ -81,7 +82,7 @@ class DatabaseHelper {
       table,
       columns: [columnId],
       where: '$originalWord = ?',
-      whereArgs: [_originalWord],
+      whereArgs: [originalWord],
     );
 
     if (maps.isNotEmpty) {
@@ -92,7 +93,7 @@ class DatabaseHelper {
 
     debugPrint('挿入された行のid: $id');
     debugPrint(
-        '挿入されたデータ: \n$_noticeDuration \n$_updateCount \n$_flag \n$_originalWord \n$_translatedWord \n$_updateDate \n$_registrationDate \n$_memo');
+        '挿入されたデータ: \n$noticeDuration \n$updateCount \n$flag \n$originalWord \n$translatedWord \n$updateDate \n$registrationDate \n$memo');
 
     return 'success';
   }
@@ -107,7 +108,8 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> queryAllRowsAlphabet() async {
     Database db = await instance.database;
 
-    return await db.query(table, orderBy: '${DatabaseHelper.originalWord} ASC');
+    return await db.query(table,
+        orderBy: '${SqfliteRepository.originalWord} ASC');
   }
 
 // get database noticeDuration sort
@@ -115,21 +117,21 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(table,
         orderBy:
-            '${DatabaseHelper.noticeDuration} ASC,${DatabaseHelper.registrationDate} DESC');
+            '${SqfliteRepository.noticeDuration} ASC,${SqfliteRepository.registrationDate} DESC');
   }
 
 // get database registration sort
   Future<List<Map<String, dynamic>>> queryAllRowsRegistration() async {
     Database db = await instance.database;
     return await db.query(table,
-        orderBy: '${DatabaseHelper.registrationDate} DESC');
+        orderBy: '${SqfliteRepository.registrationDate} DESC');
   }
 
 // get datebase flag is 1
   Future<List<Map<String, dynamic>>> queryAllRowsFlag() async {
     Database db = await instance.database;
     return await db.query(table,
-        orderBy: '${DatabaseHelper.noticeDuration} ASC',
+        orderBy: '${SqfliteRepository.noticeDuration} ASC',
         where: "$flag = ?",
         whereArgs: [1]);
   }

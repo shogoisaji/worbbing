@@ -45,3 +45,8 @@ app.*.map.json
 
 secret.properties
 .env
+
+# FVM Version Cache
+.fvm/
+
+env.g.dart

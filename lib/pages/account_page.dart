@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/database.dart';
+import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/pages/main_page.dart';
@@ -24,8 +24,8 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
-    totalWords = DatabaseHelper.instance.totalWords();
-    countNotice = DatabaseHelper.instance.countNoticeDuration();
+    totalWords = SqfliteRepository.instance.totalWords();
+    countNotice = SqfliteRepository.instance.countNoticeDuration();
   }
 
   @override

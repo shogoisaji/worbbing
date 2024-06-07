@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/database.dart';
+import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/models/notice_model.dart';
@@ -47,7 +47,7 @@ class _DetailPageState extends State<DetailPage> {
       child: Scaffold(
         body: SingleChildScrollView(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: DatabaseHelper.instance.queryRows(widget.id),
+          future: SqfliteRepository.instance.queryRows(widget.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -63,18 +63,18 @@ class _DetailPageState extends State<DetailPage> {
 
             final data = snapshot.data!;
             final formatRegistrationDate =
-                formatForDisplay(data[0][DatabaseHelper.registrationDate]);
+                formatForDisplay(data[0][SqfliteRepository.registrationDate]);
             final formatUpdateDate =
-                formatForDisplay(data[0][DatabaseHelper.updateDate]);
+                formatForDisplay(data[0][SqfliteRepository.updateDate]);
             final DateTime updateDateTime =
-                DateTime.parse(data[0][DatabaseHelper.updateDate]);
+                DateTime.parse(data[0][SqfliteRepository.updateDate]);
             final DateTime currentDateTime = DateTime.now();
             final int forgettingDuration =
                 (updateDateTime.difference(currentDateTime).inDays).abs();
 
-            flag = data[0][DatabaseHelper.flag];
+            flag = data[0][SqfliteRepository.flag];
             final notice = noticeDurationList
-                .noticeDuration[data[0][DatabaseHelper.noticeDuration]];
+                .noticeDuration[data[0][SqfliteRepository.noticeDuration]];
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,7 +164,7 @@ class _DetailPageState extends State<DetailPage> {
                                 flag = 0;
                               }
                             });
-                            await DatabaseHelper.instance
+                            await SqfliteRepository.instance
                                 .updateFlag(widget.id, flag);
                           },
                           icon: flag == 1
@@ -194,11 +194,11 @@ class _DetailPageState extends State<DetailPage> {
                             onPressed: () {
                               //
                               _originalController.text =
-                                  data[0][DatabaseHelper.originalWord];
+                                  data[0][SqfliteRepository.originalWord];
                               _translatedController.text =
-                                  data[0][DatabaseHelper.translatedWord];
+                                  data[0][SqfliteRepository.translatedWord];
                               _memoController.text =
-                                  data[0][DatabaseHelper.memo];
+                                  data[0][SqfliteRepository.memo];
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context1) =>
@@ -207,7 +207,7 @@ class _DetailPageState extends State<DetailPage> {
                                             borderRadius: BorderRadius.zero),
                                         backgroundColor: const Color.fromARGB(
                                             255, 206, 206, 206),
-                                        content: Container(
+                                        content: SizedBox(
                                           height: 300,
                                           child: SingleChildScrollView(
                                             child: Column(
@@ -288,9 +288,9 @@ class _DetailPageState extends State<DetailPage> {
                                             onPressed: () async {
 // update words
                                               debugPrint('update words');
-                                              await DatabaseHelper.instance
+                                              await SqfliteRepository.instance
                                                   .updateWords(
-                                                      data[0][DatabaseHelper
+                                                      data[0][SqfliteRepository
                                                           .columnId],
                                                       _originalController.text,
                                                       _translatedController
@@ -334,8 +334,8 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: const BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(
-                      data[0][DatabaseHelper.originalWord], Colors.white, null),
+                  child: titleText(data[0][SqfliteRepository.originalWord],
+                      Colors.white, null),
                 ),
 // translated word
                 Container(
@@ -351,7 +351,7 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: const BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(data[0][DatabaseHelper.translatedWord],
+                  child: titleText(data[0][SqfliteRepository.translatedWord],
                       Colors.white, null),
                 ),
                 const SizedBox(
@@ -377,7 +377,7 @@ class _DetailPageState extends State<DetailPage> {
                         height: 100,
                         color: Colors.white,
                         child: bodyText2(
-                            data[0][DatabaseHelper.memo], Colors.black)),
+                            data[0][SqfliteRepository.memo], Colors.black)),
                   ],
                 ),
 
@@ -417,7 +417,8 @@ class _DetailPageState extends State<DetailPage> {
                             alignment: Alignment.center,
                             width: 50,
                             child: bodyText(
-                                data[0][DatabaseHelper.updateCount].toString(),
+                                data[0][SqfliteRepository.updateCount]
+                                    .toString(),
                                 Colors.white)),
                       ],
                     )),
@@ -455,7 +456,7 @@ class _DetailPageState extends State<DetailPage> {
                                 ),
                                 onPressed: () async {
 // Delete
-                                  await DatabaseHelper.instance
+                                  await SqfliteRepository.instance
                                       .deleteRow(widget.id);
                                   if (context2.mounted) {
                                     Navigator.pop(context2);
