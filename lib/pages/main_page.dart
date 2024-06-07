@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/account_page.dart';
@@ -22,7 +23,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   int tagState = 0;
-  late Future<List<Map<String, dynamic>>> dataFuture;
+  late Future<List<WordModel>> dataFuture;
 
   @override
   void initState() {
@@ -219,7 +220,7 @@ class _MainPageState extends State<MainPage>
             ),
 // list
             Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
+              child: FutureBuilder<List<WordModel>>(
                 future: dataFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -231,8 +232,7 @@ class _MainPageState extends State<MainPage>
                     return const Text('エラーが発生しました');
                   }
 
-                  final data = snapshot.data!;
-                  var editableList = List.from(data);
+                  final wordList = snapshot.data!;
 
                   final DateTime currentDateTime = DateTime.now();
                   NoticeModel noticeDurationList = NoticeModel();
@@ -242,18 +242,17 @@ class _MainPageState extends State<MainPage>
 
                   // change list expired top of list
                   if (tagState == 0) {
-                    for (var i = 0; i < editableList.length; i++) {
-                      noticeDurationTime = noticeDurationList.noticeDuration[
-                          editableList[i][SqfliteRepository.noticeDuration]];
-                      updateDateTime = DateTime.parse(
-                          editableList[i][SqfliteRepository.updateDate]);
+                    for (var i = 0; i < wordList.length; i++) {
+                      noticeDurationTime = noticeDurationList
+                          .noticeDuration[wordList[i].noticeDuration];
+                      updateDateTime = wordList[i].updateDate;
                       forgettingDuration =
                           currentDateTime.difference(updateDateTime).inDays;
                       if (forgettingDuration >= noticeDurationTime &&
                           noticeDurationTime != 00) {
                         // insert top of array
-                        var insertData = editableList.removeAt(i);
-                        editableList.insert(0, insertData);
+                        var insertData = wordList.removeAt(i);
+                        wordList.insert(0, insertData);
                       }
                     }
                   }
@@ -274,24 +273,22 @@ class _MainPageState extends State<MainPage>
                       height: 1,
                     ),
                     padding: EdgeInsets.zero,
-                    itemCount: editableList.length,
+                    itemCount: wordList.length,
                     itemBuilder: (context, index) {
-                      final item = editableList[index];
+                      final item = wordList[index];
                       return Column(
                         children: [
                           WordListTile(
                             onDragEnd: handleReload,
-                            id: item[SqfliteRepository.columnId],
-                            originalWord: item[SqfliteRepository.originalWord],
-                            translatedWord:
-                                item[SqfliteRepository.translatedWord],
-                            noticeDuration:
-                                item[SqfliteRepository.noticeDuration],
-                            flag: item[SqfliteRepository.flag] != 0,
-                            updateDate: item[SqfliteRepository.updateDate],
+                            id: item.id,
+                            originalWord: item.originalWord,
+                            translatedWord: item.translatedWord,
+                            noticeDuration: item.noticeDuration,
+                            flag: item.flag,
+                            updateDate: item.updateDate.toIso8601String(),
                           ),
                           // under space
-                          if (index == editableList.length - 1)
+                          if (index == wordList.length - 1)
                             Column(
                               children: [
                                 Container(

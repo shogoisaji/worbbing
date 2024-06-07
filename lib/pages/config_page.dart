@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/words_notificaton.dart';
+import 'package:worbbing/application/words_notification.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -30,7 +30,7 @@ class _ConfigPageState extends State<ConfigPage> {
   TimeOfDay selectedTime1 = const TimeOfDay(hour: 0, minute: 0);
   TimeOfDay selectedTime2 = const TimeOfDay(hour: 0, minute: 0);
   TimeOfDay selectedTime3 = const TimeOfDay(hour: 0, minute: 0);
-  String selectedWordsCount = '1';
+  int selectedWordsCount = 1;
   late SharedPreferences prefs;
 
   @override
@@ -60,8 +60,8 @@ class _ConfigPageState extends State<ConfigPage> {
     final prefs = await SharedPreferences.getInstance();
     if (value is bool) prefs.setBool(key, value);
     if (value is TimeOfDay) {
-      prefs.setInt(key + 'hour', value.hour);
-      prefs.setInt(key + 'minute', value.minute);
+      prefs.setInt('${key}hour', value.hour);
+      prefs.setInt('${key}minute', value.minute);
     }
     if (value is String) prefs.setString(key, value);
     print('saved');
@@ -74,7 +74,7 @@ class _ConfigPageState extends State<ConfigPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       notificationState = prefs.getBool('notificationState') ?? false;
-      selectedWordsCount = prefs.getString('selectedWordsCount') ?? '1';
+      selectedWordsCount = prefs.getInt('selectedWordsCount') ?? 1;
       time1State = prefs.getBool('time1State') ?? false;
       time2State = prefs.getBool('time2State') ?? false;
       time3State = prefs.getBool('time3State') ?? false;
@@ -100,7 +100,7 @@ class _ConfigPageState extends State<ConfigPage> {
   }
 
 // update words count
-  void updateWordsCount(String newValue) async {
+  void updateWordsCount(int newValue) async {
     setState(() {
       selectedWordsCount = newValue;
       saveData('selectedWordsCount', newValue);
@@ -329,7 +329,7 @@ class _ConfigPageState extends State<ConfigPage> {
                                   top: 5,
                                   right: 15,
                                   child: WordsCountDropdownWidget(
-                                    setelcedWordsCount: selectedWordsCount,
+                                    selectedWordsCount: selectedWordsCount,
                                     onItemSelected: updateWordsCount,
                                   ),
                                 ),

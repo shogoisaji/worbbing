@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/config_page.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -35,13 +36,13 @@ class WordsNotification {
   }
 
 // sample notification
-  Future<void> nowShowNotification(String selectedWordCount) async {
-    List<Map> words = await SqfliteRepository.instance
-        .getRandomWords(int.parse(selectedWordCount));
+  Future<void> nowShowNotification(int selectedWordCount) async {
+    List<WordModel> words =
+        await SqfliteRepository.instance.getRandomWords(selectedWordCount);
     await flutterLocalNotificationsPlugin.show(
       0,
-      words[0]['original'],
-      words[0]['translated'],
+      words[0].originalWord,
+      words[0].translatedWord,
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'show notification', 'show notification',
@@ -60,17 +61,17 @@ class WordsNotification {
   }
 
 // schedule notification
-  Future<void> scheduleNotification(int notificationId,
-      String selectedWordCount, TimeOfDay selectedTime) async {
-    // creat notice list
-    List<Map> words = await SqfliteRepository.instance
-        .getRandomWords(int.parse(selectedWordCount));
+  Future<void> scheduleNotification(
+      int notificationId, int selectedWordCount, TimeOfDay selectedTime) async {
+    // create notice list
+    List<WordModel> words =
+        await SqfliteRepository.instance.getRandomWords(selectedWordCount);
 
     for (int row = 0; row < words.length; row++) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId + row,
-        words[row]['original'],
-        words[row]['translated'],
+        words[row].originalWord,
+        words[row].translatedWord,
         _nextInstance(selectedTime),
         const NotificationDetails(
           android: AndroidNotificationDetails(

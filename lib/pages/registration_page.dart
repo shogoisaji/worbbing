@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/env/env.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -115,8 +116,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     const int noticeDuration = 0; // 初期値
     const int updateCount = 0; // 初期値
-    final String updateDate = getCurrentDate();
-    final String registrationDate = getCurrentDate();
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -291,17 +290,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 return;
               }
 // save
-              final List<dynamic> addData = [
-                noticeDuration,
-                updateCount,
-                flag,
-                _originalController.text,
-                _translatedController.text,
-                updateDate,
-                registrationDate,
-                _memoController.text,
-              ];
-              String result =
+              final addData = WordModel(
+                id: const Uuid().v4(),
+                noticeDuration: noticeDuration,
+                updateCount: updateCount,
+                flag: flag != 0,
+                originalWord: _originalController.text,
+                translatedWord: _translatedController.text,
+                updateDate: DateTime.now(),
+                registrationDate: DateTime.now(),
+                memo: _memoController.text,
+              );
+              String? result =
                   await SqfliteRepository.instance.insertData(addData);
               if (result == 'exist') {
                 if (context.mounted) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/main_page.dart';
@@ -10,7 +11,7 @@ import 'package:worbbing/presentation/widgets/notice_block.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.id});
-  final int id;
+  final String id;
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -22,7 +23,7 @@ TextEditingController _memoController = TextEditingController();
 
 class _DetailPageState extends State<DetailPage> {
   NoticeModel noticeDurationList = NoticeModel();
-  int flag = 0;
+  bool flag = false;
   @override
   void initState() {
     super.initState();
@@ -46,7 +47,7 @@ class _DetailPageState extends State<DetailPage> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         body: SingleChildScrollView(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
+            child: FutureBuilder<WordModel>(
           future: SqfliteRepository.instance.queryRows(widget.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -63,18 +64,18 @@ class _DetailPageState extends State<DetailPage> {
 
             final data = snapshot.data!;
             final formatRegistrationDate =
-                formatForDisplay(data[0][SqfliteRepository.registrationDate]);
+                formatForDisplay(data.registrationDate.toIso8601String());
             final formatUpdateDate =
-                formatForDisplay(data[0][SqfliteRepository.updateDate]);
+                formatForDisplay(data.updateDate.toIso8601String());
             final DateTime updateDateTime =
-                DateTime.parse(data[0][SqfliteRepository.updateDate]);
+                DateTime.parse(data.updateDate.toIso8601String());
             final DateTime currentDateTime = DateTime.now();
             final int forgettingDuration =
                 (updateDateTime.difference(currentDateTime).inDays).abs();
 
-            flag = data[0][SqfliteRepository.flag];
-            final notice = noticeDurationList
-                .noticeDuration[data[0][SqfliteRepository.noticeDuration]];
+            flag = data.flag;
+            final notice =
+                noticeDurationList.noticeDuration[data.noticeDuration];
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -158,10 +159,10 @@ class _DetailPageState extends State<DetailPage> {
                           onPressed: () async {
                             // change flag state
                             setState(() {
-                              if (flag == 0) {
-                                flag = 1;
+                              if (!flag) {
+                                flag = true;
                               } else {
-                                flag = 0;
+                                flag = false;
                               }
                             });
                             await SqfliteRepository.instance
@@ -193,12 +194,9 @@ class _DetailPageState extends State<DetailPage> {
                           IconButton(
                             onPressed: () {
                               //
-                              _originalController.text =
-                                  data[0][SqfliteRepository.originalWord];
-                              _translatedController.text =
-                                  data[0][SqfliteRepository.translatedWord];
-                              _memoController.text =
-                                  data[0][SqfliteRepository.memo];
+                              _originalController.text = data.originalWord;
+                              _translatedController.text = data.translatedWord;
+                              _memoController.text = data.memo ?? '';
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context1) =>
@@ -290,8 +288,7 @@ class _DetailPageState extends State<DetailPage> {
                                               debugPrint('update words');
                                               await SqfliteRepository.instance
                                                   .updateWords(
-                                                      data[0][SqfliteRepository
-                                                          .columnId],
+                                                      data.id,
                                                       _originalController.text,
                                                       _translatedController
                                                           .text,
@@ -334,8 +331,7 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: const BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(data[0][SqfliteRepository.originalWord],
-                      Colors.white, null),
+                  child: titleText(data.originalWord, Colors.white, null),
                 ),
 // translated word
                 Container(
@@ -351,8 +347,7 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: const BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(data[0][SqfliteRepository.translatedWord],
-                      Colors.white, null),
+                  child: titleText(data.translatedWord, Colors.white, null),
                 ),
                 const SizedBox(
                   height: 40,
@@ -376,8 +371,7 @@ class _DetailPageState extends State<DetailPage> {
                         width: 300,
                         height: 100,
                         color: Colors.white,
-                        child: bodyText2(
-                            data[0][SqfliteRepository.memo], Colors.black)),
+                        child: bodyText2(data.memo ?? '', Colors.black)),
                   ],
                 ),
 
@@ -417,9 +411,7 @@ class _DetailPageState extends State<DetailPage> {
                             alignment: Alignment.center,
                             width: 50,
                             child: bodyText(
-                                data[0][SqfliteRepository.updateCount]
-                                    .toString(),
-                                Colors.white)),
+                                data.updateCount.toString(), Colors.white)),
                       ],
                     )),
                 const SizedBox(

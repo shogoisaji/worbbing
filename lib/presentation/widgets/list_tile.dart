@@ -12,7 +12,7 @@ class WordListTile extends StatefulWidget {
   final int noticeDuration;
   final bool flag;
   final String updateDate;
-  final int id;
+  final String id;
   final Function onDragEnd;
 
   static const HEIGHT = 90.0;
@@ -147,13 +147,13 @@ class _WordListTileState extends State<WordListTile>
                 _animationController.animateTo(0.0);
 // I don't understand the word
                 if (_color == MyTheme.blue) {
-                  SqfliteRepository.instance.updateNoticeDown(widget.id);
+                  SqfliteRepository.instance.downDuration(widget.id);
                   await Future.delayed(const Duration(milliseconds: 300));
                   widget.onDragEnd();
                   debugPrint('Don`t understand');
 // I understand the word
                 } else if (_color == MyTheme.orange) {
-                  SqfliteRepository.instance.updateNoticeUp(widget.id);
+                  SqfliteRepository.instance.upDuration(widget.id);
                   widget.onDragEnd();
                   debugPrint('understand');
                 }
@@ -185,7 +185,7 @@ class _SladeCard extends StatelessWidget {
   final int noticeDuration;
   final bool flag;
   final String updateDate;
-  final int id;
+  final String id;
   const _SladeCard({
     super.key,
     required this.translatedWord,

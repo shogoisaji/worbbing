@@ -7,9 +7,9 @@ class ConfigModel {
     '12',
     '24',
   ];
-  static List<String> wordCount = [
-    '1',
-    '3',
-    '5',
+  static List<int> wordCount = [
+    1,
+    3,
+    5,
   ];
 }

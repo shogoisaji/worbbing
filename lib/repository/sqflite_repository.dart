@@ -3,18 +3,18 @@ import 'package:path/path.dart';
 import 'package:worbbing/models/word_model.dart';
 
 class SqfliteRepository {
-  static const _databaseName = "test1_Database.db";
+  static const _databaseName = "test_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
   static const columnId = 'id';
-  static const noticeDuration = 'duration';
-  static const updateCount = 'count';
+  static const noticeDuration = 'notice_duration';
+  static const updateCount = 'update_count';
   static const flag = 'flag';
-  static const originalWord = 'original';
-  static const translatedWord = 'translated';
-  static const updateDate = 'date';
-  static const registrationDate = 'registration';
+  static const originalWord = 'original_word';
+  static const translatedWord = 'translated_word';
+  static const updateDate = 'update_date';
+  static const registrationDate = 'registration_date';
   static const memo = 'memo';
 
   SqfliteRepository._privateConstructor();
@@ -51,13 +51,26 @@ class SqfliteRepository {
   }
 
   /// insert database row
-  Future<void> insertData(WordModel wordModel) async {
-    final row = wordModel.toJson();
+  Future<String?> insertData(WordModel wordModel) async {
     Database db = await instance.database;
+
+    /// 重複チェック
+    final maps = await db.query(
+      table,
+      columns: [columnId],
+      where: '$originalWord = ?',
+      whereArgs: [wordModel.originalWord],
+    );
+    if (maps.isNotEmpty) {
+      return 'exist';
+    }
+
+    final row = wordModel.toJson();
 
     await db.insert(table, row).catchError((e) {
       throw Exception('sqflite error: $e');
     });
+    return null;
   }
   // Future<String> addData(List<dynamic> addData) async {
   //   // final int _noticeDuration = 2;
@@ -83,17 +96,6 @@ class SqfliteRepository {
   //   };
 
   //   Database db = await instance.database;
-
-  //   final maps = await db.query(
-  //     table,
-  //     columns: [columnId],
-  //     where: '$originalWord = ?',
-  //     whereArgs: [originalWord],
-  //   );
-
-  //   if (maps.isNotEmpty) {
-  //     return 'exist';
-  //   }
 
   //   final id = await db.insert(table, row);
 
@@ -278,8 +280,7 @@ class SqfliteRepository {
 // notification words get random words
   Future<List<WordModel>> getRandomWords(int count) async {
     final db = await database;
-    String query =
-        "SELECT $originalWord, $translatedWord FROM $table ORDER BY RANDOM() LIMIT $count";
+    String query = "SELECT * FROM $table ORDER BY RANDOM() LIMIT $count";
     List<Map<String, Object?>> result = await db.rawQuery(query);
     return result.map((e) => WordModel.fromJson(e)).toList();
   }
