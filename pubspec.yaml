@@ -21,7 +21,6 @@ dependencies:
   google_fonts:
   sqflite:
   rive:
-  flutter_launcher_icons:
   flutter_local_notifications:
   device_info_plus:
   intl:
@@ -31,11 +30,17 @@ dependencies:
   receive_sharing_intent:
   flutter_animate:
   envied:
+  uuid:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  freezed:
+  flutter_gen_runner:
   build_runner:
+  json_serializable:
+  flutter_launcher_icons:
+  riverpod_generator:
   envied_generator:
 
   flutter_lints: ^2.0.0

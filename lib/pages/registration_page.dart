@@ -301,7 +301,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 registrationDate,
                 _memoController.text,
               ];
-              String result = await SqfliteRepository.instance.addData(addData);
+              String result =
+                  await SqfliteRepository.instance.insertData(addData);
               if (result == 'exist') {
                 if (context.mounted) {
                   showDialog(

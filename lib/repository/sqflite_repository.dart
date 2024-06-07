@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:worbbing/application/date_format.dart';
-import 'package:worbbing/models/notice_model.dart';
+import 'package:worbbing/models/word_model.dart';
 
 class SqfliteRepository {
   static const _databaseName = "test1_Database.db";
@@ -39,7 +37,7 @@ class SqfliteRepository {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
           CREATE TABLE $table (
-            $columnId INTEGER PRIMARY KEY,
+            $columnId TEXT PRIMARY KEY,
             $noticeDuration INTEGER,
             $updateCount INTEGER,
             $flag INTEGER,
@@ -52,189 +50,193 @@ class SqfliteRepository {
           ''');
   }
 
-  // add database row
-  Future<String> addData(List<dynamic> addData) async {
-    // final int _noticeDuration = 2;
-    final int noticeDuration = addData[0];
-    final int updateCount = addData[1];
-    final int flag = addData[2];
-    final String originalWord = addData[3];
-    final String translatedWord = addData[4];
-    // final String _updateDate = "2023-08-20T06:00:00.000Z";
-    final String updateDate = addData[5];
-    final String registrationDate = addData[6];
-    final String memo = addData[7];
-
-    final row = {
-      SqfliteRepository.noticeDuration: noticeDuration,
-      SqfliteRepository.updateCount: updateCount,
-      SqfliteRepository.flag: flag,
-      SqfliteRepository.originalWord: originalWord,
-      SqfliteRepository.translatedWord: translatedWord,
-      SqfliteRepository.updateDate: updateDate,
-      SqfliteRepository.registrationDate: registrationDate,
-      SqfliteRepository.memo: memo,
-    };
-
+  /// insert database row
+  Future<void> insertData(WordModel wordModel) async {
+    final row = wordModel.toJson();
     Database db = await instance.database;
 
-    final maps = await db.query(
-      table,
-      columns: [columnId],
-      where: '$originalWord = ?',
-      whereArgs: [originalWord],
-    );
-
-    if (maps.isNotEmpty) {
-      return 'exist';
-    }
-
-    final id = await db.insert(table, row);
-
-    debugPrint('挿入された行のid: $id');
-    debugPrint(
-        '挿入されたデータ: \n$noticeDuration \n$updateCount \n$flag \n$originalWord \n$translatedWord \n$updateDate \n$registrationDate \n$memo');
-
-    return 'success';
+    await db.insert(table, row).catchError((e) {
+      throw Exception('sqflite error: $e');
+    });
   }
+  // Future<String> addData(List<dynamic> addData) async {
+  //   // final int _noticeDuration = 2;
+  //   final int noticeDuration = addData[0];
+  //   final int updateCount = addData[1];
+  //   final int flag = addData[2];
+  //   final String originalWord = addData[3];
+  //   final String translatedWord = addData[4];
+  //   // final String _updateDate = "2023-08-20T06:00:00.000Z";
+  //   final String updateDate = addData[5];
+  //   final String registrationDate = addData[6];
+  //   final String memo = addData[7];
+
+  //   final row = {
+  //     SqfliteRepository.noticeDuration: noticeDuration,
+  //     SqfliteRepository.updateCount: updateCount,
+  //     SqfliteRepository.flag: flag,
+  //     SqfliteRepository.originalWord: originalWord,
+  //     SqfliteRepository.translatedWord: translatedWord,
+  //     SqfliteRepository.updateDate: updateDate,
+  //     SqfliteRepository.registrationDate: registrationDate,
+  //     SqfliteRepository.memo: memo,
+  //   };
+
+  //   Database db = await instance.database;
+
+  //   final maps = await db.query(
+  //     table,
+  //     columns: [columnId],
+  //     where: '$originalWord = ?',
+  //     whereArgs: [originalWord],
+  //   );
+
+  //   if (maps.isNotEmpty) {
+  //     return 'exist';
+  //   }
+
+  //   final id = await db.insert(table, row);
+
+  //   debugPrint('挿入された行のid: $id');
+  //   debugPrint(
+  //       '挿入されたデータ: \n$noticeDuration \n$updateCount \n$flag \n$originalWord \n$translatedWord \n$updateDate \n$registrationDate \n$memo');
+
+  //   return 'success';
+  // }
 
 // get database
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
+  Future<List<WordModel>> queryAllRows({bool isDesc = true}) async {
     Database db = await instance.database;
-    return await db.query(table);
+    final dataList = await db.query(table,
+        orderBy:
+            '${SqfliteRepository.registrationDate} ${isDesc ? 'DESC' : 'ASC'}');
+    return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 
   // get database alphabet sort
-  Future<List<Map<String, dynamic>>> queryAllRowsAlphabet() async {
+  Future<List<WordModel>> queryAllRowsAlphabet() async {
     Database db = await instance.database;
-
-    return await db.query(table,
-        orderBy: '${SqfliteRepository.originalWord} ASC');
+    final dataList =
+        await db.query(table, orderBy: '${SqfliteRepository.originalWord} ASC');
+    return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 
 // get database noticeDuration sort
-  Future<List<Map<String, dynamic>>> queryAllRowsNoticeDuration() async {
+  Future<List<WordModel>> queryAllRowsNoticeDuration() async {
     Database db = await instance.database;
-    return await db.query(table,
+    final dataList = await db.query(table,
         orderBy:
             '${SqfliteRepository.noticeDuration} ASC,${SqfliteRepository.registrationDate} DESC');
+    return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 
 // get database registration sort
-  Future<List<Map<String, dynamic>>> queryAllRowsRegistration() async {
+  Future<List<WordModel>> queryAllRowsRegistration() async {
     Database db = await instance.database;
-    return await db.query(table,
+    final dataList = await db.query(table,
         orderBy: '${SqfliteRepository.registrationDate} DESC');
+    return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 
-// get datebase flag is 1
-  Future<List<Map<String, dynamic>>> queryAllRowsFlag() async {
+// get database flag is 1
+  Future<List<WordModel>> queryAllRowsFlag() async {
     Database db = await instance.database;
-    return await db.query(table,
+    final dataList = await db.query(table,
         orderBy: '${SqfliteRepository.noticeDuration} ASC',
         where: "$flag = ?",
         whereArgs: [1]);
+    return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 
 // get Row
-  Future<List<Map<String, dynamic>>> queryRows(int id) async {
+  Future<WordModel> queryRows(String id) async {
     Database db = await instance.database;
-    return await db.query(
+    final data = await db.query(
       table,
       where: '$columnId = ?',
       whereArgs: [id],
     );
+    return WordModel.fromJson(data.first);
   }
 
 // delete row
-  Future<int> deleteRow(int id) async {
+  Future<void> deleteRow(String id) async {
     Database db = await instance.database;
-    return await db.delete(
+    await db.delete(
       table,
       where: '$columnId = ?',
       whereArgs: [id],
-    );
+    ).catchError((e) {
+      throw Exception('sqflite error: $e');
+    });
   }
 
   // count up duration
-  Future<int> updateNoticeUp(int id) async {
-    NoticeModel noticeModel = NoticeModel();
-    final String currentDate = getCurrentDate();
+  Future<void> upDuration(String id) async {
     Database db = await instance.database;
-    List<Map<String, dynamic>> queryResult = await db.query(
+    final res = await db.query(
       table,
       where: '$columnId = ?',
       whereArgs: [id],
     );
+    final wordModel = WordModel.fromJson(res.first);
+    final updateWordModel = wordModel.upNoticeDuration();
+    final row = updateWordModel.toJson();
 
-    int currentCount = queryResult.first['count'];
-    int currentDuration = queryResult.first['duration'];
-    int updateDuration = currentDuration < noticeModel.noticeDuration.length - 1
-        ? currentDuration + 1
-        : currentDuration;
-    debugPrint('currentDuration変更: $currentDuration');
-    debugPrint('noticeDuration変更: $updateDuration');
-
-    return await db.update(
+    await db.update(
       table,
-      {
-        noticeDuration: updateDuration,
-        updateCount: currentCount + 1,
-        updateDate: currentDate
-      },
+      row,
       where: '$columnId = ?',
       whereArgs: [id],
-    );
+    ).catchError((e) {
+      throw Exception('sqflite error: $e');
+    });
   }
 
-  // count down duration
-  Future<int> updateNoticeDown(int id) async {
-    final String currentDate = getCurrentDate();
+  Future<void> downDuration(String id) async {
     Database db = await instance.database;
-    List<Map<String, dynamic>> queryResult = await db.query(
+    final res = await db.query(
       table,
       where: '$columnId = ?',
       whereArgs: [id],
     );
+    final wordModel = WordModel.fromJson(res.first);
+    final updateWordModel = wordModel.downNoticeDuration();
+    final row = updateWordModel.toJson();
 
-    int currentCount = queryResult.first['count'];
-    int currentDuration = queryResult.first['duration'];
-    int updateDuration = currentDuration != 0 ? currentDuration - 1 : 0;
-    debugPrint('currentDuration変更: $currentDuration');
-    debugPrint('noticeDuration変更: $updateDuration');
-
-    return await db.update(
+    await db.update(
       table,
-      {
-        noticeDuration: updateDuration,
-        updateCount: currentCount + 1,
-        updateDate: currentDate
-      },
+      row,
       where: '$columnId = ?',
       whereArgs: [id],
-    );
+    ).catchError((e) {
+      throw Exception('sqflite error: $e');
+    });
   }
 
   // update flag
-  Future<int> updateFlag(int id, int flagState) async {
+  Future<void> updateFlag(String id, bool flagState) async {
     Database db = await instance.database;
-    debugPrint('flag変更: $flagState');
-    return await db.update(
+    await db
+        .update(
       table,
       {
-        flag: flagState,
+        flag: flagState ? 1 : 0,
       },
       where: '$columnId = ?',
       whereArgs: [id],
-    );
+    )
+        .catchError((e) {
+      throw Exception('sqflite error: $e');
+    });
   }
 
   // update original,translated,memo
-  Future<int> updateWords(
-      int id, String newOriginal, String newTranslated, String newMemo) async {
+  Future<void> updateWords(String id, String newOriginal, String newTranslated,
+      String newMemo) async {
     Database db = await instance.database;
-    debugPrint('Words変更: $newOriginal, $newTranslated, $newMemo}');
-    return await db.update(
+    await db
+        .update(
       table,
       {
         originalWord: newOriginal,
@@ -243,7 +245,10 @@ class SqfliteRepository {
       },
       where: '$columnId = ?',
       whereArgs: [id],
-    );
+    )
+        .catchError((e) {
+      throw Exception('sqflite error: $e');
+    });
   }
 
   // total words
@@ -270,12 +275,12 @@ class SqfliteRepository {
     return noticeCounts;
   }
 
-// notificaton words get random words
-  Future<List<Map>> getRandomWords(int num) async {
+// notification words get random words
+  Future<List<WordModel>> getRandomWords(int count) async {
     final db = await database;
     String query =
-        "SELECT $originalWord, $translatedWord FROM $table ORDER BY RANDOM() LIMIT $num";
-    List<Map> result = await db.rawQuery(query);
-    return result;
+        "SELECT $originalWord, $translatedWord FROM $table ORDER BY RANDOM() LIMIT $count";
+    List<Map<String, Object?>> result = await db.rawQuery(query);
+    return result.map((e) => WordModel.fromJson(e)).toList();
   }
 }
