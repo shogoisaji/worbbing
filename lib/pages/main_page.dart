@@ -63,70 +63,48 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-// floating Action Button
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 5, right: 10.0),
-          child:
-              // customFloatingActionButton(
-              //     context, animationController, translateAnimation),
-              Stack(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(65),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(20.0, 15.0),
-                      blurRadius: 15.0,
-                      spreadRadius: 50.0,
-                    ),
-                  ],
-                ),
-              ),
-              Transform.rotate(
-                angle: 1.5,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.zero,
-                    color: MyTheme.grey,
-                  ),
-                ),
-              ),
-              Transform.rotate(
-                angle: 1.2,
-                child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.zero,
-                      color: MyTheme.orange,
-                    ),
-                    child: FloatingActionButton(
-                        elevation: 0,
-                        backgroundColor: MyTheme.orange,
-                        // FAB onPressed
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) => const RegistrationPage()),
-                          );
-                        },
-                        child: Transform.rotate(
-                          angle: -1.2,
-                          child: const Icon(
-                            Icons.add,
-                            size: 32,
-                          ),
-                        ))),
-              ),
-            ],
+        appBar: AppBar(
+          backgroundColor: MyTheme.grey,
+          elevation: 0,
+          title: Image.asset(
+            'assets/images/worbbing_logo.png',
+            width: 200,
           ),
+          leadingWidth: 40,
+          leading: IconButton(
+              padding: const EdgeInsets.only(top: 5, left: 10),
+              onPressed: () {
+                //
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const ConfigPage()),
+                );
+              },
+              icon: const Icon(
+                Icons.settings,
+                color: Colors.white,
+                size: 30,
+              )),
+          actions: [
+            IconButton(
+                padding: const EdgeInsets.only(top: 5, right: 10),
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => const AccountPage()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.account_circle,
+                  color: Colors.white,
+                  size: 30,
+                )),
+          ],
         ),
+
+        /// floating Action Button
+        floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 5, right: 10.0),
+            child: _customFloatingActionButton()),
         body: Column(
           children: [
             Container(
@@ -134,88 +112,43 @@ class _MainPageState extends State<MainPage>
                   color: MyTheme.grey,
                   border: const Border(
                       bottom: BorderSide(color: Colors.white, width: 3))),
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-// icon
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                            padding: const EdgeInsets.only(top: 5, left: 10),
-                            onPressed: () {
-                              //
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const ConfigPage()),
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.settings,
-                              color: Colors.white,
-                              size: 30,
-                            )),
-                        Image.asset(
-                          'assets/images/worbbing_logo.png',
-                          width: 200,
-                        ),
-                        IconButton(
-                            padding: const EdgeInsets.only(top: 5, right: 10),
-                            onPressed: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const AccountPage()),
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.account_circle,
-                              color: Colors.white,
-                              size: 30,
-                            )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-// tag
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        tagSelect('Notice', tagState, 0, () {
-                          setState(() {
-                            tagState = 0;
-                          });
-                          handleReload();
-                        }),
-                        tagSelect('Alphabet', tagState, 1, () {
-                          setState(() {
-                            tagState = 1;
-                          });
-                          handleReload();
-                        }),
-                        tagSelect('Register', tagState, 2, () {
-                          setState(() {
-                            tagState = 2;
-                          });
-                          handleReload();
-                        }),
-                        tagSelect('Flagged', tagState, 3, () {
-                          setState(() {
-                            tagState = 3;
-                          });
-                          handleReload();
-                        }),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  /// tag
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      tagSelect('Notice', tagState, 0, () {
+                        setState(() {
+                          tagState = 0;
+                        });
+                        handleReload();
+                      }),
+                      tagSelect('Alphabet', tagState, 1, () {
+                        setState(() {
+                          tagState = 1;
+                        });
+                        handleReload();
+                      }),
+                      tagSelect('Register', tagState, 2, () {
+                        setState(() {
+                          tagState = 2;
+                        });
+                        handleReload();
+                      }),
+                      tagSelect('Flagged', tagState, 3, () {
+                        setState(() {
+                          tagState = 3;
+                        });
+                        handleReload();
+                      }),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                ],
               ),
             ),
 // list
@@ -321,5 +254,65 @@ class _MainPageState extends State<MainPage>
             )
           ],
         ));
+  }
+
+  Widget _customFloatingActionButton() {
+    return Stack(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(65),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black,
+                offset: Offset(20.0, 15.0),
+                blurRadius: 15.0,
+                spreadRadius: 50.0,
+              ),
+            ],
+          ),
+        ),
+        Transform.rotate(
+          angle: 1.5,
+          child: Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.zero,
+              color: MyTheme.grey,
+            ),
+          ),
+        ),
+        Transform.rotate(
+          angle: 1.2,
+          child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.zero,
+                color: MyTheme.orange,
+              ),
+              child: FloatingActionButton(
+                  elevation: 0,
+                  backgroundColor: MyTheme.orange,
+                  // FAB onPressed
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const RegistrationPage()),
+                    );
+                  },
+                  child: Transform.rotate(
+                    angle: -1.2,
+                    child: const Icon(
+                      Icons.add,
+                      size: 32,
+                    ),
+                  ))),
+        ),
+      ],
+    );
   }
 }

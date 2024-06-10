@@ -55,6 +55,11 @@ class _ConfigPageState extends State<ConfigPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  void handleTapSample() async {
+    await WordsNotification().requestPermissions();
+    await WordsNotification().nowShowNotification(selectedWordsCount);
+  }
+
 // shared preferences save data
   void saveData(String key, value) async {
     final prefs = await SharedPreferences.getInstance();
@@ -524,7 +529,6 @@ class _ConfigPageState extends State<ConfigPage> {
           const SizedBox(
             height: 70,
           ),
-          // sample notification bottom
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.only(bottom: 2, left: 8, right: 8),
@@ -533,9 +537,8 @@ class _ConfigPageState extends State<ConfigPage> {
               ),
               backgroundColor: MyTheme.orange,
             ),
-            onPressed: () async {
-              await WordsNotification().requestPermissions();
-              await WordsNotification().nowShowNotification(selectedWordsCount);
+            onPressed: () {
+              handleTapSample();
             },
             child: SizedBox(
               width: 230,
