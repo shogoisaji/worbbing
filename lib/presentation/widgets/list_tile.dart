@@ -227,14 +227,9 @@ class _SlideCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: noticeBlock(
                               48,
-                              noticeDurationList
-                                  .noticeDuration[wordModel.noticeDuration],
-                              (forgettingDuration <
-                                          noticeDurationList.noticeDuration[
-                                              wordModel.noticeDuration]) ||
-                                      (noticeDurationList.noticeDuration[
-                                              wordModel.noticeDuration] ==
-                                          00)
+                              wordModel.noticeDuration,
+                              (forgettingDuration < wordModel.noticeDuration) ||
+                                      (wordModel.noticeDuration == 00)
                                   ? MyTheme.lemon
                                   : MyTheme.orange)),
                     ],
