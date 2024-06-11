@@ -35,8 +35,9 @@ class _MainPageState extends State<MainPage>
 
   void handleTapFAB(BuildContext context) async {
     await showModalBottomSheet(
-        backgroundColor: MyTheme.grey,
+        backgroundColor: Colors.transparent,
         enableDrag: false,
+        isDismissible: false,
         isScrollControlled: true,
         context: context,
         builder: (context) => const RegistrationBottomSheet());

@@ -123,7 +123,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       debugPrint('error:$e');
       return null;
     });
-    return translatedResponse;
+    return translatedResponse[0];
   }
 
   Future<void> saveWord() async {
