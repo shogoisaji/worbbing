@@ -34,7 +34,9 @@ mixin _$WordModel {
   @JsonKey(name: 'registration_date')
   DateTime get registrationDate => throw _privateConstructorUsedError;
   bool get flag => throw _privateConstructorUsedError;
-  String? get memo => throw _privateConstructorUsedError;
+  String? get example => throw _privateConstructorUsedError;
+  @JsonKey(name: 'example_translated')
+  String? get exampleTranslated => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -56,7 +58,8 @@ abstract class $WordModelCopyWith<$Res> {
       @JsonKey(name: 'update_date') DateTime updateDate,
       @JsonKey(name: 'registration_date') DateTime registrationDate,
       bool flag,
-      String? memo});
+      String? example,
+      @JsonKey(name: 'example_translated') String? exampleTranslated});
 }
 
 /// @nodoc
@@ -80,7 +83,8 @@ class _$WordModelCopyWithImpl<$Res, $Val extends WordModel>
     Object? updateDate = null,
     Object? registrationDate = null,
     Object? flag = null,
-    Object? memo = freezed,
+    Object? example = freezed,
+    Object? exampleTranslated = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -115,9 +119,13 @@ class _$WordModelCopyWithImpl<$Res, $Val extends WordModel>
           ? _value.flag
           : flag // ignore: cast_nullable_to_non_nullable
               as bool,
-      memo: freezed == memo
-          ? _value.memo
-          : memo // ignore: cast_nullable_to_non_nullable
+      example: freezed == example
+          ? _value.example
+          : example // ignore: cast_nullable_to_non_nullable
+              as String?,
+      exampleTranslated: freezed == exampleTranslated
+          ? _value.exampleTranslated
+          : exampleTranslated // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -140,7 +148,8 @@ abstract class _$$WordModelImplCopyWith<$Res>
       @JsonKey(name: 'update_date') DateTime updateDate,
       @JsonKey(name: 'registration_date') DateTime registrationDate,
       bool flag,
-      String? memo});
+      String? example,
+      @JsonKey(name: 'example_translated') String? exampleTranslated});
 }
 
 /// @nodoc
@@ -162,7 +171,8 @@ class __$$WordModelImplCopyWithImpl<$Res>
     Object? updateDate = null,
     Object? registrationDate = null,
     Object? flag = null,
-    Object? memo = freezed,
+    Object? example = freezed,
+    Object? exampleTranslated = freezed,
   }) {
     return _then(_$WordModelImpl(
       id: null == id
@@ -197,9 +207,13 @@ class __$$WordModelImplCopyWithImpl<$Res>
           ? _value.flag
           : flag // ignore: cast_nullable_to_non_nullable
               as bool,
-      memo: freezed == memo
-          ? _value.memo
-          : memo // ignore: cast_nullable_to_non_nullable
+      example: freezed == example
+          ? _value.example
+          : example // ignore: cast_nullable_to_non_nullable
+              as String?,
+      exampleTranslated: freezed == exampleTranslated
+          ? _value.exampleTranslated
+          : exampleTranslated // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -217,7 +231,8 @@ class _$WordModelImpl implements _WordModel {
       @JsonKey(name: 'update_date') required this.updateDate,
       @JsonKey(name: 'registration_date') required this.registrationDate,
       this.flag = false,
-      this.memo});
+      this.example,
+      @JsonKey(name: 'example_translated') this.exampleTranslated});
 
   factory _$WordModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$WordModelImplFromJson(json);
@@ -246,11 +261,14 @@ class _$WordModelImpl implements _WordModel {
   @JsonKey()
   final bool flag;
   @override
-  final String? memo;
+  final String? example;
+  @override
+  @JsonKey(name: 'example_translated')
+  final String? exampleTranslated;
 
   @override
   String toString() {
-    return 'WordModel(id: $id, originalWord: $originalWord, translatedWord: $translatedWord, noticeDuration: $noticeDuration, updateCount: $updateCount, updateDate: $updateDate, registrationDate: $registrationDate, flag: $flag, memo: $memo)';
+    return 'WordModel(id: $id, originalWord: $originalWord, translatedWord: $translatedWord, noticeDuration: $noticeDuration, updateCount: $updateCount, updateDate: $updateDate, registrationDate: $registrationDate, flag: $flag, example: $example, exampleTranslated: $exampleTranslated)';
   }
 
   @override
@@ -272,13 +290,25 @@ class _$WordModelImpl implements _WordModel {
             (identical(other.registrationDate, registrationDate) ||
                 other.registrationDate == registrationDate) &&
             (identical(other.flag, flag) || other.flag == flag) &&
-            (identical(other.memo, memo) || other.memo == memo));
+            (identical(other.example, example) || other.example == example) &&
+            (identical(other.exampleTranslated, exampleTranslated) ||
+                other.exampleTranslated == exampleTranslated));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, originalWord, translatedWord,
-      noticeDuration, updateCount, updateDate, registrationDate, flag, memo);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      originalWord,
+      translatedWord,
+      noticeDuration,
+      updateCount,
+      updateDate,
+      registrationDate,
+      flag,
+      example,
+      exampleTranslated);
 
   @JsonKey(ignore: true)
   @override
@@ -305,7 +335,9 @@ abstract class _WordModel implements WordModel {
       @JsonKey(name: 'registration_date')
       required final DateTime registrationDate,
       final bool flag,
-      final String? memo}) = _$WordModelImpl;
+      final String? example,
+      @JsonKey(name: 'example_translated')
+      final String? exampleTranslated}) = _$WordModelImpl;
 
   factory _WordModel.fromJson(Map<String, dynamic> json) =
       _$WordModelImpl.fromJson;
@@ -333,7 +365,10 @@ abstract class _WordModel implements WordModel {
   @override
   bool get flag;
   @override
-  String? get memo;
+  String? get example;
+  @override
+  @JsonKey(name: 'example_translated')
+  String? get exampleTranslated;
   @override
   @JsonKey(ignore: true)
   _$$WordModelImplCopyWith<_$WordModelImpl> get copyWith =>

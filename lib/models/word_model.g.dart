@@ -16,7 +16,8 @@ _$WordModelImpl _$$WordModelImplFromJson(Map<String, dynamic> json) =>
       updateDate: DateTime.parse(json['update_date'] as String),
       registrationDate: DateTime.parse(json['registration_date'] as String),
       flag: json['flag'] as bool? ?? false,
-      memo: json['memo'] as String?,
+      example: json['example'] as String?,
+      exampleTranslated: json['example_translated'] as String?,
     );
 
 Map<String, dynamic> _$$WordModelImplToJson(_$WordModelImpl instance) =>
@@ -29,5 +30,6 @@ Map<String, dynamic> _$$WordModelImplToJson(_$WordModelImpl instance) =>
       'update_date': instance.updateDate.toIso8601String(),
       'registration_date': instance.registrationDate.toIso8601String(),
       'flag': instance.flag,
-      'memo': instance.memo,
+      'example': instance.example,
+      'example_translated': instance.exampleTranslated,
     };

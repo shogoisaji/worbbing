@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:worbbing/models/word_model.dart';
 
 class SqfliteRepository {
-  static const _databaseName = "test_Database.db";
+  static const _databaseName = "test1_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
@@ -15,7 +15,8 @@ class SqfliteRepository {
   static const translatedWord = 'translated_word';
   static const updateDate = 'update_date';
   static const registrationDate = 'registration_date';
-  static const memo = 'memo';
+  static const example = 'example';
+  static const exampleTranslated = 'example_translated';
 
   SqfliteRepository._privateConstructor();
   static final SqfliteRepository instance =
@@ -45,7 +46,8 @@ class SqfliteRepository {
             $translatedWord TEXT,
             $updateDate TEXT,
             $registrationDate TEXT,
-            $memo TEXT
+            $example TEXT,
+            $exampleTranslated TEXT
           )
           ''');
   }
@@ -235,7 +237,7 @@ class SqfliteRepository {
 
   // update original,translated,memo
   Future<void> updateWords(String id, String newOriginal, String newTranslated,
-      String newMemo) async {
+      String newExample, String newExampleTranslated) async {
     Database db = await instance.database;
     await db
         .update(
@@ -243,7 +245,8 @@ class SqfliteRepository {
       {
         originalWord: newOriginal,
         translatedWord: newTranslated,
-        memo: newMemo,
+        example: newExample,
+        exampleTranslated: newExampleTranslated,
       },
       where: '$columnId = ?',
       whereArgs: [id],

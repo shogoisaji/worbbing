@@ -6,7 +6,7 @@ Widget customButton(Widget widget, Function() function) {
       onTap: () {
         function();
       },
-      child: Container(
+      child: SizedBox(
         width: 170,
         height: 50,
         child: Stack(
@@ -18,11 +18,11 @@ Widget customButton(Widget widget, Function() function) {
                 child: Container(
                   width: 155,
                   height: 60,
-                  color: MyTheme.grey,
+                  color: MyTheme.darkGrey,
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               child: Row(
                 children: [
                   Container(

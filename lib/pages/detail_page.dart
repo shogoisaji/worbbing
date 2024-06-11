@@ -19,7 +19,8 @@ class DetailPage extends StatefulWidget {
 
 TextEditingController _originalController = TextEditingController();
 TextEditingController _translatedController = TextEditingController();
-TextEditingController _memoController = TextEditingController();
+TextEditingController _exampleController = TextEditingController();
+TextEditingController _exampleTranslatedController = TextEditingController();
 
 class _DetailPageState extends State<DetailPage> {
   NoticeModel noticeDurationList = NoticeModel();
@@ -29,14 +30,15 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
     _originalController = TextEditingController();
     _translatedController = TextEditingController();
-    _memoController = TextEditingController();
+    _exampleController = TextEditingController();
+    _exampleTranslatedController = TextEditingController();
   }
 
   @override
   void dispose() {
     _originalController.dispose();
     _translatedController.dispose();
-    _memoController.dispose();
+    _exampleController.dispose();
 
     super.dispose();
   }
@@ -196,7 +198,7 @@ class _DetailPageState extends State<DetailPage> {
                               //
                               _originalController.text = data.originalWord;
                               _translatedController.text = data.translatedWord;
-                              _memoController.text = data.memo ?? '';
+                              _exampleController.text = data.example ?? '';
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context1) =>
@@ -254,7 +256,8 @@ class _DetailPageState extends State<DetailPage> {
                                                   keyboardType:
                                                       TextInputType.multiline,
                                                   maxLines: 3,
-                                                  controller: _memoController,
+                                                  controller:
+                                                      _exampleController,
                                                   decoration:
                                                       const InputDecoration(
                                                     border: InputBorder.none,
@@ -292,7 +295,9 @@ class _DetailPageState extends State<DetailPage> {
                                                       _originalController.text,
                                                       _translatedController
                                                           .text,
-                                                      _memoController.text);
+                                                      _exampleController.text,
+                                                      _exampleTranslatedController
+                                                          .text);
                                               setState(() {});
                                               if (context1.mounted) {
                                                 Navigator.pop(context1);
@@ -371,7 +376,7 @@ class _DetailPageState extends State<DetailPage> {
                         width: 300,
                         height: 100,
                         color: Colors.white,
-                        child: bodyText2(data.memo ?? '', Colors.black)),
+                        child: bodyText2(data.example ?? '', Colors.black)),
                   ],
                 ),
 
