@@ -39,8 +39,30 @@ class _DetailPageState extends State<DetailPage> {
     _originalController.dispose();
     _translatedController.dispose();
     _exampleController.dispose();
+    _exampleTranslatedController.dispose();
 
     super.dispose();
+  }
+
+  Future<void> handleTapFlag() async {
+    // change flag state
+    await SqfliteRepository.instance
+        .updateFlag(widget.id, !flag)
+        .catchError((e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('データの更新に失敗しました'),
+          backgroundColor: Colors.red.shade300,
+        ),
+      );
+    });
+    setState(() {
+      if (!flag) {
+        flag = true;
+      } else {
+        flag = false;
+      }
+    });
   }
 
   @override
@@ -64,20 +86,18 @@ class _DetailPageState extends State<DetailPage> {
               return const Text('エラーが発生しました');
             }
 
-            final data = snapshot.data!;
+            final wordModel = snapshot.data!;
             final formatRegistrationDate =
-                formatForDisplay(data.registrationDate.toIso8601String());
+                formatForDisplay(wordModel.registrationDate.toIso8601String());
             final formatUpdateDate =
-                formatForDisplay(data.updateDate.toIso8601String());
+                formatForDisplay(wordModel.updateDate.toIso8601String());
             final DateTime updateDateTime =
-                DateTime.parse(data.updateDate.toIso8601String());
+                DateTime.parse(wordModel.updateDate.toIso8601String());
             final DateTime currentDateTime = DateTime.now();
             final int forgettingDuration =
                 (updateDateTime.difference(currentDateTime).inDays).abs();
 
-            flag = data.flag;
-            final notice =
-                noticeDurationList.noticeDuration[data.noticeDuration];
+            flag = wordModel.flag;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,7 +149,8 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 8,
                         ),
-                        noticeBlock(72, notice, MyTheme.lemon),
+                        noticeBlock(
+                            72, wordModel.noticeDuration, MyTheme.lemon),
                       ],
                     ),
                     Column(
@@ -159,18 +180,9 @@ class _DetailPageState extends State<DetailPage> {
                       children: [
                         IconButton(
                           onPressed: () async {
-                            // change flag state
-                            setState(() {
-                              if (!flag) {
-                                flag = true;
-                              } else {
-                                flag = false;
-                              }
-                            });
-                            await SqfliteRepository.instance
-                                .updateFlag(widget.id, flag);
+                            handleTapFlag();
                           },
-                          icon: flag == 1
+                          icon: flag
                               ? Icon(Icons.flag, size: 48, color: MyTheme.lemon)
                               : const Icon(Icons.flag_outlined,
                                   size: 48, color: Colors.white24),
@@ -196,9 +208,10 @@ class _DetailPageState extends State<DetailPage> {
                           IconButton(
                             onPressed: () {
                               //
-                              _originalController.text = data.originalWord;
-                              _translatedController.text = data.translatedWord;
-                              _exampleController.text = data.example ?? '';
+                              _originalController.text = wordModel.originalWord;
+                              _translatedController.text =
+                                  wordModel.translatedWord;
+                              _exampleController.text = wordModel.example ?? '';
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context1) =>
@@ -291,7 +304,7 @@ class _DetailPageState extends State<DetailPage> {
                                               debugPrint('update words');
                                               await SqfliteRepository.instance
                                                   .updateWords(
-                                                      data.id,
+                                                      wordModel.id,
                                                       _originalController.text,
                                                       _translatedController
                                                           .text,
@@ -336,7 +349,7 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: const BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(data.originalWord, Colors.white, null),
+                  child: titleText(wordModel.originalWord, Colors.white, null),
                 ),
 // translated word
                 Container(
@@ -352,7 +365,8 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: const BoxDecoration(
                       border: Border(
                           bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(data.translatedWord, Colors.white, null),
+                  child:
+                      titleText(wordModel.translatedWord, Colors.white, null),
                 ),
                 const SizedBox(
                   height: 40,
@@ -376,7 +390,8 @@ class _DetailPageState extends State<DetailPage> {
                         width: 300,
                         height: 100,
                         color: Colors.white,
-                        child: bodyText2(data.example ?? '', Colors.black)),
+                        child:
+                            bodyText2(wordModel.example ?? '', Colors.black)),
                   ],
                 ),
 
@@ -415,8 +430,8 @@ class _DetailPageState extends State<DetailPage> {
                         Container(
                             alignment: Alignment.center,
                             width: 50,
-                            child: bodyText(
-                                data.updateCount.toString(), Colors.white)),
+                            child: bodyText(wordModel.updateCount.toString(),
+                                Colors.white)),
                       ],
                     )),
                 const SizedBox(
