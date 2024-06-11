@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/detail_page.dart';
@@ -7,25 +8,16 @@ import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 
 class WordListTile extends StatefulWidget {
-  final String originalWord;
-  final String translatedWord;
-  final int noticeDuration;
-  final bool flag;
-  final String updateDate;
-  final String id;
+  final WordModel wordModel;
   final Function onDragEnd;
 
   static const HEIGHT = 90.0;
 
-  const WordListTile(
-      {super.key,
-      required this.originalWord,
-      required this.translatedWord,
-      required this.noticeDuration,
-      required this.flag,
-      required this.id,
-      required this.onDragEnd,
-      required this.updateDate});
+  const WordListTile({
+    super.key,
+    required this.wordModel,
+    required this.onDragEnd,
+  });
 
   @override
   State<WordListTile> createState() => _WordListTileState();
@@ -50,7 +42,7 @@ class _WordListTileState extends State<WordListTile>
   void initState() {
     super.initState();
     _color = MyTheme.lemon;
-    _widget = titleText(widget.translatedWord, Colors.black, null);
+    _widget = titleText(widget.wordModel.translatedWord, Colors.black, null);
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
   }
@@ -75,13 +67,8 @@ class _WordListTileState extends State<WordListTile>
               end: const Offset(1, 0),
             ).animate(_animationController),
 // slide page
-            child: _SladeCard(
-              originalWord: widget.originalWord,
-              translatedWord: widget.translatedWord,
-              noticeDuration: widget.noticeDuration,
-              flag: widget.flag,
-              id: widget.id,
-              updateDate: widget.updateDate,
+            child: _SlideCard(
+              wordModel: widget.wordModel,
             ),
           ),
           LayoutBuilder(
@@ -135,8 +122,8 @@ class _WordListTileState extends State<WordListTile>
                 } else {
                   setState(() {
                     _color = MyTheme.lemon;
-                    _widget =
-                        titleText(widget.translatedWord, Colors.black, 28);
+                    _widget = titleText(
+                        widget.wordModel.translatedWord, Colors.black, 28);
                   });
                 }
 
@@ -145,22 +132,23 @@ class _WordListTileState extends State<WordListTile>
               },
               onHorizontalDragEnd: (details) async {
                 _animationController.animateTo(0.0);
-// I don't understand the word
+
+                /// I don't understand the word
                 if (_color == MyTheme.blue) {
-                  SqfliteRepository.instance.downDuration(widget.id);
-                  await Future.delayed(const Duration(milliseconds: 300));
+                  await SqfliteRepository.instance
+                      .downDuration(widget.wordModel.id);
                   widget.onDragEnd();
-                  debugPrint('Don`t understand');
-// I understand the word
+
+                  /// I understand the word
                 } else if (_color == MyTheme.orange) {
-                  SqfliteRepository.instance.upDuration(widget.id);
+                  await SqfliteRepository.instance
+                      .upDuration(widget.wordModel.id);
                   widget.onDragEnd();
-                  debugPrint('understand');
                 }
                 setState(() {
                   _color = MyTheme.lemon;
-                  _widget =
-                      titleText(widget.translatedWord, Colors.black, null);
+                  _widget = titleText(
+                      widget.wordModel.translatedWord, Colors.black, null);
                 });
               },
               onHorizontalDragCancel: () {
@@ -179,30 +167,19 @@ class _WordListTileState extends State<WordListTile>
   }
 }
 
-class _SladeCard extends StatelessWidget {
-  final String originalWord;
-  final String translatedWord;
-  final int noticeDuration;
-  final bool flag;
-  final String updateDate;
-  final String id;
-  const _SladeCard({
+class _SlideCard extends StatelessWidget {
+  final WordModel wordModel;
+  const _SlideCard({
     super.key,
-    required this.translatedWord,
-    required this.originalWord,
-    required this.noticeDuration,
-    required this.flag,
-    required this.id,
-    required this.updateDate,
+    required this.wordModel,
   });
 
   @override
   Widget build(BuildContext context) {
     NoticeModel noticeDurationList = NoticeModel();
-    final DateTime updateDateTime = DateTime.parse(updateDate);
     final DateTime currentDateTime = DateTime.now();
     final int forgettingDuration =
-        currentDateTime.difference(updateDateTime).inDays;
+        currentDateTime.difference(wordModel.updateDate).inDays;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.black,
@@ -234,26 +211,29 @@ class _SladeCard extends StatelessWidget {
                           onTap: () {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (context) => DetailPage(id: id)),
+                                  builder: (context) =>
+                                      DetailPage(id: wordModel.id)),
                             );
                           },
                           child: SizedBox(
                               width: MediaQuery.of(context).size.width - 150,
-                              child: titleText(originalWord, null, null)))),
+                              child: titleText(
+                                  wordModel.originalWord, null, null)))),
                   Row(
                     children: [
-                      if (flag)
+                      if (wordModel.flag)
                         const Icon(Icons.flag, color: Colors.white, size: 32),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: noticeBlock(
                               48,
-                              noticeDurationList.noticeDuration[noticeDuration],
+                              noticeDurationList
+                                  .noticeDuration[wordModel.noticeDuration],
                               (forgettingDuration <
                                           noticeDurationList.noticeDuration[
-                                              noticeDuration]) ||
-                                      (noticeDurationList
-                                              .noticeDuration[noticeDuration] ==
+                                              wordModel.noticeDuration]) ||
+                                      (noticeDurationList.noticeDuration[
+                                              wordModel.noticeDuration] ==
                                           00)
                                   ? MyTheme.lemon
                                   : MyTheme.orange)),

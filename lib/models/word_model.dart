@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'word_model.freezed.dart';
 part 'word_model.g.dart';
@@ -32,6 +33,24 @@ class WordModel with _$WordModel {
         flag: json['flag'] as int != 0, // 0:false 1:true
         memo: json['memo'] as String?,
       );
+
+  factory WordModel.createNewWord(
+      {required String originalWord,
+      required String translatedWord,
+      bool flag = false,
+      String? memo}) {
+    return WordModel(
+      id: const Uuid().v4(),
+      originalWord: originalWord,
+      translatedWord: translatedWord,
+      noticeDuration: 1,
+      updateCount: 0,
+      updateDate: DateTime.now(),
+      registrationDate: DateTime.now(),
+      flag: flag,
+      memo: memo,
+    );
+  }
 
   @override
   Map<String, dynamic> toJson() {

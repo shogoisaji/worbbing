@@ -1,17 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
+import 'package:worbbing/models/translated_response.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/env/env.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/registration_text_field.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worbbing/application/usecase/gemini_translate_usecase.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({
@@ -112,11 +109,83 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return true;
   }
 
+  Future<void> translateWord(String inputWord) async {
+    final translatedResponse = await translateWithGemini(inputWord);
+    if (translatedResponse == null) return;
+    print('translatedResponse:$translatedResponse');
+    _translatedController.text = translatedResponse.translated[0];
+  }
+
+  Future<TranslatedResponse?> translateWithGemini(String inputWord) async {
+    final gemini = Gemini();
+    final translatedResponse =
+        await gemini.translateWithGemini(inputWord).catchError((e) {
+      debugPrint('error:$e');
+      return null;
+    });
+    return translatedResponse;
+  }
+
+  Future<void> saveWord() async {
+    /// validation
+    if (_originalController.text == "" || _translatedController.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(
+            child:
+                Text('English & 日本語 は入力必須です', style: TextStyle(fontSize: 18)),
+          ),
+        ),
+      );
+      return;
+    }
+    final newWord = WordModel.createNewWord(
+      originalWord: _originalController.text,
+      translatedWord: _translatedController.text,
+      flag: flag != 0,
+      memo: _memoController.text,
+    );
+
+    /// save sqflite
+    String? result = await SqfliteRepository.instance.insertData(newWord);
+    if (result == 'exist') {
+      if (!context.mounted) return;
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero),
+                backgroundColor: const Color.fromARGB(255, 206, 206, 206),
+                title: subText('Already registered', Colors.black),
+                actions: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      backgroundColor: MyTheme.orange,
+                    ),
+                    onPressed: () {
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: subText('OK', Colors.white),
+                  ),
+                ],
+              ));
+      return;
+    }
+    if (context.mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    const int noticeDuration = 0; // 初期値
-    const int updateCount = 0; // 初期値
-
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -189,50 +258,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               children: [
                 InkWell(
                   onTap: () async {
-                    useCredit().then((value) async {
-                      if (value) {
-                        http.Response response;
-                        if (_originalController.text.isEmpty) {
-                          return;
-                        }
-                        final googleApiKey = Env.translationApiKey;
-                        Map<String, String> headers = {
-                          'Content-Type': 'application/json',
-                          'X-Goog-Api-Key': googleApiKey
-                        };
-                        Map<String, dynamic> body = {
-                          "q": _originalController.text,
-                          "target": "ja"
-                        };
-                        try {
-                          response = await http.post(
-                              Uri.parse(googleTranslateUrl),
-                              headers: headers,
-                              body: jsonEncode(body));
-                          Map<String, dynamic> data = jsonDecode(response.body);
-                          String translatedText =
-                              data['data']['translations'][0]['translatedText'];
-                          debugPrint('google_translate:$translatedText');
-                          _translatedController.text = translatedText;
-                        } catch (e) {
-                          debugPrint('error:$e');
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Center(
-                                  child: Text('翻訳に失敗しました',
-                                      style: TextStyle(fontSize: 18)),
-                                ),
-                              ),
-                            );
-                          }
-                          return;
-                        }
-                        setState(() {
-                          googleResponse = true;
-                        });
-                      }
-                    });
+                    translateWord(_originalController.text);
                   },
                   child: Image.asset(
                     'assets/images/google_translate.png',
@@ -276,71 +302,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         color: Colors.black.withOpacity(0.6),
                         fontSize: 28,
                         fontWeight: FontWeight.bold)), () async {
-// original or translated word is empty then return
-              if (_originalController.text == "" ||
-                  _translatedController.text == "") {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Center(
-                      child: Text('English & 日本語 は入力必須です',
-                          style: TextStyle(fontSize: 18)),
-                    ),
-                  ),
-                );
-                return;
-              }
-// save
-              final addData = WordModel(
-                id: const Uuid().v4(),
-                noticeDuration: noticeDuration,
-                updateCount: updateCount,
-                flag: flag != 0,
-                originalWord: _originalController.text,
-                translatedWord: _translatedController.text,
-                updateDate: DateTime.now(),
-                registrationDate: DateTime.now(),
-                memo: _memoController.text,
-              );
-              String? result =
-                  await SqfliteRepository.instance.insertData(addData);
-              if (result == 'exist') {
-                if (context.mounted) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero),
-                            backgroundColor:
-                                const Color.fromARGB(255, 206, 206, 206),
-                            title: subText('Already registered', Colors.black),
-                            actions: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.only(left: 8, right: 8),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero,
-                                  ),
-                                  backgroundColor: MyTheme.orange,
-                                ),
-                                onPressed: () {
-                                  if (context.mounted) {
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: subText('OK', Colors.white),
-                              ),
-                            ],
-                          ));
-                }
-                return;
-              }
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const MainPage()),
-                );
-              }
-              debugPrint('save');
+              await saveWord();
             }),
             const SizedBox(
               height: 70,

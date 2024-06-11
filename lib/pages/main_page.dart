@@ -23,23 +23,13 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   int tagState = 0;
-  late Future<List<WordModel>> dataFuture;
+
+  Future<List<WordModel>> dataFuture =
+      SqfliteRepository.instance.queryAllRowsNoticeDuration();
 
   @override
   void initState() {
     super.initState();
-
-    // tag reload
-    switch (tagState) {
-      case 0:
-        dataFuture = SqfliteRepository.instance.queryAllRowsNoticeDuration();
-      case 1:
-        dataFuture = SqfliteRepository.instance.queryAllRowsAlphabet();
-      case 2:
-        dataFuture = SqfliteRepository.instance.queryAllRowsRegistration();
-      case 3:
-        dataFuture = SqfliteRepository.instance.queryAllRowsFlag();
-    }
   }
 
   Future<void> handleReload() async {
@@ -213,12 +203,7 @@ class _MainPageState extends State<MainPage>
                         children: [
                           WordListTile(
                             onDragEnd: handleReload,
-                            id: item.id,
-                            originalWord: item.originalWord,
-                            translatedWord: item.translatedWord,
-                            noticeDuration: item.noticeDuration,
-                            flag: item.flag,
-                            updateDate: item.updateDate.toIso8601String(),
+                            wordModel: item,
                           ),
                           // under space
                           if (index == wordList.length - 1)

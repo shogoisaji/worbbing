@@ -2,8 +2,8 @@ name: worbbing
 description: A new Flutter project.
 publish_to: "none"
 
-# 2024.6.7 -> 1.0.0+1
-version: 1.0.0+1
+# 2024.6.10 -> 1.0.0+2
+version: 1.0.0+2
 
 environment:
   sdk: ">=3.3.4 <4.0.0"
@@ -32,6 +32,7 @@ dependencies:
   flutter_animate:
   envied:
   uuid:
+  google_generative_ai:
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +57,6 @@ flutter:
 flutter_icons:
   ios: true
   android: true
-  image_path: "assets/images/worbbing_icon.png"
+  image_path: "assets/images/worbbing_icon_ios.png"
   adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "assets/images/worbbing_icon.png"
+  adaptive_icon_foreground: "assets/images/worbbing_icon_ios.png"

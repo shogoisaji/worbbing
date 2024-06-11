@@ -44,9 +44,13 @@ class $AssetsImagesGen {
   AssetGenImage get spacedRepetition =>
       const AssetGenImage('assets/images/spacedRepetition.png');
 
-  /// File path: assets/images/worbbing_icon.png
-  AssetGenImage get worbbingIcon =>
-      const AssetGenImage('assets/images/worbbing_icon.png');
+  /// File path: assets/images/worbbing_icon_android.png
+  AssetGenImage get worbbingIconAndroid =>
+      const AssetGenImage('assets/images/worbbing_icon_android.png');
+
+  /// File path: assets/images/worbbing_icon_ios.png
+  AssetGenImage get worbbingIconIos =>
+      const AssetGenImage('assets/images/worbbing_icon_ios.png');
 
   /// File path: assets/images/worbbing_logo.png
   AssetGenImage get worbbingLogo =>
@@ -63,7 +67,8 @@ class $AssetsImagesGen {
         googleTranslate,
         registration,
         spacedRepetition,
-        worbbingIcon,
+        worbbingIconAndroid,
+        worbbingIconIos,
         worbbingLogo
       ];
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/words_notification.dart';
+import 'package:worbbing/application/usecase/words_notification.dart';
 import 'package:worbbing/pages/main_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -57,21 +57,20 @@ class _ConfigPageState extends State<ConfigPage> {
 
   void handleTapSample() async {
     await WordsNotification().requestPermissions();
-    await WordsNotification().nowShowNotification(selectedWordsCount);
+    await WordsNotification().sampleNotification();
   }
 
 // shared preferences save data
-  void saveData(String key, value) async {
+  void saveData<T>(String key, T value) async {
     final prefs = await SharedPreferences.getInstance();
-    if (value is bool) prefs.setBool(key, value);
-    if (value is TimeOfDay) {
+    if (value is bool) {
+      prefs.setBool(key, value);
+    } else if (value is TimeOfDay) {
       prefs.setInt('${key}hour', value.hour);
       prefs.setInt('${key}minute', value.minute);
+    } else if (value is String) {
+      prefs.setString(key, value);
     }
-    if (value is String) prefs.setString(key, value);
-    print('saved');
-    print(' → $key');
-    print(' → $value');
   }
 
 // shared preferences load data
@@ -93,18 +92,9 @@ class _ConfigPageState extends State<ConfigPage> {
           hour: prefs.getInt('selectedTime3hour') ?? 0,
           minute: prefs.getInt('selectedTime3minute') ?? 0);
     });
-    print('loaded');
-    print(' → notificationState : $notificationState');
-    print(' → selectedWordsCount : $selectedWordsCount');
-    print(' → time1State : $time1State');
-    print(' → time2State : $time2State');
-    print(' → time3State : $time3State');
-    print(' → selectedTime1 : $selectedTime1');
-    print(' → selectedTime2 : $selectedTime2');
-    print(' → selectedTime3 : $selectedTime3');
   }
 
-// update words count
+  /// update words count
   void updateWordsCount(int newValue) async {
     setState(() {
       selectedWordsCount = newValue;

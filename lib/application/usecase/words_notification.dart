@@ -8,7 +8,7 @@ import 'package:worbbing/pages/config_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class WordsNotification {
-  // permissions
+  /// permissions
   Future<void> requestPermissions() async {
     if (Platform.isIOS || Platform.isMacOS) {
       await flutterLocalNotificationsPlugin
@@ -16,7 +16,7 @@ class WordsNotification {
               IOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(
             alert: true,
-            badge: true,
+            // badge: true,
             sound: true,
           );
       await flutterLocalNotificationsPlugin
@@ -24,7 +24,7 @@ class WordsNotification {
               MacOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(
             alert: true,
-            badge: true,
+            // badge: true,
             sound: true,
           );
     } else if (Platform.isAndroid) {
@@ -35,10 +35,9 @@ class WordsNotification {
     }
   }
 
-// sample notification
-  Future<void> nowShowNotification(int selectedWordCount) async {
-    List<WordModel> words =
-        await SqfliteRepository.instance.getRandomWords(selectedWordCount);
+  /// sample notification
+  Future<void> sampleNotification() async {
+    List<WordModel> words = await SqfliteRepository.instance.getRandomWords(1);
     await flutterLocalNotificationsPlugin.show(
       0,
       words[0].originalWord,
@@ -54,16 +53,16 @@ class WordsNotification {
           // actions: [AndroidNotificationAction('1', 'ok')]
         ),
         iOS: DarwinNotificationDetails(
-          badgeNumber: 1,
-        ),
+            // badgeNumber: 1,
+            ),
       ),
     );
   }
 
-// schedule notification
+  /// schedule notification
   Future<void> scheduleNotification(
       int notificationId, int selectedWordCount, TimeOfDay selectedTime) async {
-    // create notice list
+    /// create notice word list
     List<WordModel> words =
         await SqfliteRepository.instance.getRandomWords(selectedWordCount);
 
@@ -84,8 +83,8 @@ class WordsNotification {
             priority: Priority.max,
           ),
           iOS: DarwinNotificationDetails(
-            badgeNumber: 1,
-          ),
+              // badgeNumber: 1,
+              ),
         ),
         androidScheduleMode: AndroidScheduleMode.alarmClock,
         uiLocalNotificationDateInterpretation:
@@ -93,8 +92,6 @@ class WordsNotification {
         matchDateTimeComponents: DateTimeComponents.time,
         androidAllowWhileIdle: true,
       );
-      debugPrint(
-          "notificaton set time${notificationId + row} => ${selectedTime.hour}:${selectedTime.minute}");
     }
   }
 

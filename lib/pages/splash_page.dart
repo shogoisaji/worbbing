@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rive/rive.dart';
 
 class AppSplashPage extends StatefulWidget {
+  const AppSplashPage({super.key});
+
   @override
   State<StatefulWidget> createState() => _AppSplashPageState();
 }
@@ -22,8 +24,8 @@ class _AppSplashPageState extends State<AppSplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Container(
         width: double.infinity,
         height: double.infinity,
