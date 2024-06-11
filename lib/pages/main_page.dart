@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/account_page.dart';
@@ -30,6 +31,16 @@ class _MainPageState extends State<MainPage>
   @override
   void initState() {
     super.initState();
+  }
+
+  void handleTapFAB(BuildContext context) async {
+    await showModalBottomSheet(
+        backgroundColor: MyTheme.grey,
+        enableDrag: false,
+        isScrollControlled: true,
+        context: context,
+        builder: (context) => const RegistrationBottomSheet());
+    handleReload();
   }
 
   Future<void> handleReload() async {
@@ -94,6 +105,10 @@ class _MainPageState extends State<MainPage>
         /// floating Action Button
         floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 5, right: 10.0),
+            // child: IconButton(
+            //   onPressed: () => handleTapFAB(context),
+            //   icon: const Icon(Icons.add),
+            // ),
             child: _customFloatingActionButton()),
         body: Column(
           children: [
@@ -284,10 +299,11 @@ class _MainPageState extends State<MainPage>
                   backgroundColor: MyTheme.orange,
                   // FAB onPressed
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const RegistrationPage()),
-                    );
+                    // Navigator.of(context).pushReplacement(
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const RegistrationPage()),
+                    // );
+                    handleTapFAB(context);
                   },
                   child: Transform.rotate(
                     angle: -1.2,

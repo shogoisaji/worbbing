@@ -41,9 +41,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),
-      home: AppSplashPage(),
+      home: const AppSplashPage(),
       routes: {
-        '/splash': (context) => AppSplashPage(),
+        '/splash': (context) => const AppSplashPage(),
         '/main': (context) => const MainPage(),
       },
     );

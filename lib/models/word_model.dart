@@ -19,7 +19,8 @@ class WordModel with _$WordModel {
     @JsonKey(name: 'update_date') required DateTime updateDate,
     @JsonKey(name: 'registration_date') required DateTime registrationDate,
     @Default(false) bool flag,
-    String? memo,
+    String? example,
+    @JsonKey(name: 'example_translated') String? exampleTranslated,
   }) = _WordModel;
 
   factory WordModel.fromJson(Map<String, dynamic> json) => WordModel(
@@ -31,14 +32,16 @@ class WordModel with _$WordModel {
         updateDate: DateTime.parse(json['update_date'] as String),
         registrationDate: DateTime.parse(json['registration_date'] as String),
         flag: json['flag'] as int != 0, // 0:false 1:true
-        memo: json['memo'] as String?,
+        example: json['example'] as String?,
+        exampleTranslated: json['example_translated'] as String?,
       );
 
   factory WordModel.createNewWord(
       {required String originalWord,
       required String translatedWord,
       bool flag = false,
-      String? memo}) {
+      String? example,
+      String? exampleTranslated}) {
     return WordModel(
       id: const Uuid().v4(),
       originalWord: originalWord,
@@ -48,7 +51,8 @@ class WordModel with _$WordModel {
       updateDate: DateTime.now(),
       registrationDate: DateTime.now(),
       flag: flag,
-      memo: memo,
+      example: example,
+      exampleTranslated: exampleTranslated,
     );
   }
 
@@ -63,7 +67,8 @@ class WordModel with _$WordModel {
       'update_date': updateDate.toIso8601String(),
       'registration_date': registrationDate.toIso8601String(),
       'flag': flag ? 1 : 0,
-      'memo': memo,
+      'example': example,
+      'example_translated': exampleTranslated,
     };
   }
 }

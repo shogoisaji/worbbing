@@ -20,9 +20,9 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  TextEditingController _originalController = TextEditingController();
-  TextEditingController _translatedController = TextEditingController();
-  TextEditingController _memoController = TextEditingController();
+  final TextEditingController _originalController = TextEditingController();
+  final TextEditingController _translatedController = TextEditingController();
+  final TextEditingController _memoController = TextEditingController();
   int flag = 0;
   final int CREDIT = 20;
   late SharedPreferences prefs;
@@ -37,9 +37,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
     super.initState();
     initPrefs();
     _loadDate();
-    _originalController = TextEditingController();
-    _translatedController = TextEditingController();
-    _memoController = TextEditingController();
+    // _originalController = TextEditingController();
+    // _translatedController = TextEditingController();
+    // _memoController = TextEditingController();
   }
 
   _loadDate() async {
@@ -143,7 +143,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       originalWord: _originalController.text,
       translatedWord: _translatedController.text,
       flag: flag != 0,
-      memo: _memoController.text,
     );
 
     /// save sqflite
