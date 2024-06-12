@@ -45,6 +45,7 @@ dev_dependencies:
   flutter_launcher_icons:
   riverpod_generator:
   envied_generator:
+  lottie:
 
   flutter_lints: ^2.0.0
 
@@ -54,6 +55,7 @@ flutter:
   assets:
     - assets/images/
     - assets/rive/
+    - assets/lottie/
 
 flutter_icons:
   ios: true

@@ -8,6 +8,7 @@ import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:lottie/lottie.dart';
 
 class RegistrationBottomSheet extends StatefulWidget {
   const RegistrationBottomSheet({super.key});
@@ -186,11 +187,11 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              const Center(
+              Center(
                 child: SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: CircularProgressIndicator(),
+                  width: 200,
+                  height: 200,
+                  child: Lottie.asset('assets/lottie/w_loading.json'),
                 ),
               ),
               Align(
