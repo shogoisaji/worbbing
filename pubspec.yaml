@@ -33,6 +33,7 @@ dependencies:
   envied:
   uuid:
   google_generative_ai:
+  dio:
 
 dev_dependencies:
   flutter_test:

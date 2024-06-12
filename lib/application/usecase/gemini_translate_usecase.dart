@@ -57,7 +57,6 @@ class Gemini {
     if (response.text == null) {
       throw Exception('Failed to translate : response is null');
     }
-    print(response.text);
     final translatedResponseList = <TranslatedResponse>[];
     try {
       translatedResponseList.add(

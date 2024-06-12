@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:worbbing/application/api/translate_api.dart';
 import 'package:worbbing/application/usecase/gemini_translate_usecase.dart';
 import 'package:worbbing/models/translated_response.dart';
 import 'package:worbbing/models/word_model.dart';
@@ -53,34 +56,38 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     /// focus を外す
     FocusScope.of(context).unfocus();
     try {
-      final translatedResponse =
-          await translateWithGemini(_inputWordController.text);
-      if (translatedResponse[0].translated[0] == '-') {
+      final res = await TranslateApi.postRequest(_inputWordController.text);
+      final translatedResponse = jsonDecode(res);
+      final inputTranslatedModel =
+          TranslatedResponse.fromJson(translatedResponse['input']);
+      if (inputTranslatedModel.translated[0] == '-') {
         _translatedController.text = '-';
       } else {
         _translatedController.text =
-            "${translatedResponse[0].translated[0]}, ${translatedResponse[0].translated[1]}, ${translatedResponse[0].translated[2]}";
+            "${inputTranslatedModel.translated[0]}, ${inputTranslatedModel.translated[1]}, ${inputTranslatedModel.translated[2]}";
       }
-      _exampleController.text = translatedResponse[0].example;
+      _exampleController.text = inputTranslatedModel.example;
       _exampleTranslatedController.text =
-          translatedResponse[0].exampleTranslated;
-      if (translatedResponse.length > 1) {
+          inputTranslatedModel.exampleTranslated;
+      if (translatedResponse['suggestion'] != null) {
+        final suggestionTranslatedModel =
+            TranslatedResponse.fromJson(translatedResponse['suggestion']);
         if (!mounted) return;
         TwoWayDialog.show(
             context,
             'もしかして',
             const Icon(Icons.check),
-            "${translatedResponse[1].original}\n${translatedResponse[1].translated[0]}",
+            "${suggestionTranslatedModel.original}\n${suggestionTranslatedModel.translated[0]}",
             'いいえ',
             'はい', () {
           //
         }, () {
-          _inputWordController.text = translatedResponse[1].original;
+          _inputWordController.text = suggestionTranslatedModel.original;
           _translatedController.text =
-              "${translatedResponse[1].translated[0]}, ${translatedResponse[1].translated[1]}, ${translatedResponse[1].translated[2]}";
-          _exampleController.text = translatedResponse[1].example;
+              "${suggestionTranslatedModel.translated[0]}, ${suggestionTranslatedModel.translated[1]}, ${suggestionTranslatedModel.translated[2]}";
+          _exampleController.text = suggestionTranslatedModel.example;
           _exampleTranslatedController.text =
-              translatedResponse[1].exampleTranslated;
+              suggestionTranslatedModel.exampleTranslated;
         });
       }
     } catch (e) {
@@ -94,6 +101,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   }
 
   Future<List<TranslatedResponse>> translateWithGemini(String inputWord) async {
+    final res = await TranslateApi.postRequest(inputWord);
+    print('res:$res');
     final gemini = Gemini();
     final translatedResponseList =
         await gemini.translateWithGemini(inputWord).catchError((e) {

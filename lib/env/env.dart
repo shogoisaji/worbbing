@@ -8,4 +8,6 @@ abstract class Env {
   static String translationApiKey = _Env.translationApiKey;
   @EnviedField(varName: 'GEMINI_API_KEY', obfuscate: true)
   static String geminiApiKey = _Env.geminiApiKey;
+  @EnviedField(varName: 'X_API_KEY', obfuscate: true)
+  static String xApiKey = _Env.xApiKey;
 }
