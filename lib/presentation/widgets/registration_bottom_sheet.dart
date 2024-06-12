@@ -50,6 +50,9 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       isLoading = true;
     });
     _animationController.forward();
+    _translatedController.text = "";
+    _exampleController.text = "";
+    _exampleTranslatedController.text = "";
 
     /// focus を外す
     FocusScope.of(context).unfocus();
@@ -263,13 +266,16 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                     focusNode: _focusNode,
                                     isInput: true,
                                     isEnglish: true),
-                                IconButton(
-                                    onPressed: () {
-                                      translateWord();
-                                    },
-                                    icon: Icon(Icons.check,
-                                        color: MyTheme.lemon)),
                                 const SizedBox(height: 16),
+                                InkWell(
+                                  onTap: () {
+                                    translateWord();
+                                  },
+                                  child: Image.asset(
+                                      'assets/images/translate.png',
+                                      width: 100,
+                                      height: 100),
+                                ),
                                 Align(
                                     alignment: const Alignment(-0.95, 0.0),
                                     child: bodyText('日本語', MyTheme.lightGrey)),
@@ -294,8 +300,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                 customButton(
                                     Text('SAVE',
                                         style: TextStyle(
-                                            color:
-                                                Colors.black.withOpacity(0.6),
+                                            color: Colors.grey.shade800,
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold)),
                                     () async {

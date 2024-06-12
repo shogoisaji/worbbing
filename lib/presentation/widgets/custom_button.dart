@@ -18,7 +18,7 @@ Widget customButton(Widget widget, Function() function) {
                 child: Container(
                   width: 155,
                   height: 60,
-                  color: MyTheme.darkGrey,
+                  color: Colors.grey.shade600,
                 ),
               ),
             ),
