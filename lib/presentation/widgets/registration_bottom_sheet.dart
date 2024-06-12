@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:worbbing/application/api/translate_api.dart';
 import 'package:worbbing/application/usecase/gemini_translate_usecase.dart';
 import 'package:worbbing/models/translated_response.dart';
@@ -9,6 +10,8 @@ import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class RegistrationBottomSheet extends StatefulWidget {
   const RegistrationBottomSheet({super.key});
@@ -57,17 +60,97 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
 
     /// focus を外す
     FocusScope.of(context).unfocus();
+    _focusNode.unfocus();
     try {
       final res = await TranslateApi.postRequest(_inputWordController.text);
       final translatedModel = TranslatedResponse.fromJson(res);
 
       if (translatedModel.type == TranslatedResponseType.suggestion) {
         if (!mounted) return;
-        TwoWayDialog.show(
+        await TwoWayDialog.show(
             context,
             'もしかして',
-            const Icon(Icons.check),
-            "${translatedModel.original}\n${translatedModel.translated[0]}",
+            RiveAnimatedIcon(
+                riveIcon: RiveIcon.graduate,
+                width: 70,
+                height: 70,
+                color: Colors.black,
+                loopAnimation: true,
+                onTap: () {},
+                onHover: (value) {}),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/svg/a.svg',
+                      width: 30,
+                      height: 30,
+                      colorFilter: ColorFilter.mode(
+                          Colors.grey.shade800, BlendMode.srcIn),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 6),
+                        child: AutoSizeText(
+                          translatedModel.original,
+                          style: const TextStyle(fontSize: 30),
+                          minFontSize: 16,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/svg/a_j.svg',
+                      width: 30,
+                      height: 30,
+                      colorFilter: ColorFilter.mode(
+                          Colors.grey.shade800, BlendMode.srcIn),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 6),
+                        child: AutoSizeText(
+                          translatedModel.translated[0],
+                          style: const TextStyle(fontSize: 30),
+                          minFontSize: 16,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    // Text(translatedModel.translated[0],
+                    //     style:
+                    //         const TextStyle(fontSize: 24, color: Colors.black)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
             'いいえ',
             'はい', () {
           //
@@ -130,6 +213,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     String? result = await SqfliteRepository.instance.insertData(newWord);
     if (result == 'exist') {
       if (!mounted) return;
+
+      /// TODO
       showDialog(
           context: context,
           builder: (BuildContext context) => AlertDialog(
@@ -165,6 +250,11 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   @override
   void dispose() {
     _animationController.dispose();
+    _focusNode.dispose();
+    _inputWordController.dispose();
+    _translatedController.dispose();
+    _exampleController.dispose();
+    _exampleTranslatedController.dispose();
     super.dispose();
   }
 

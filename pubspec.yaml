@@ -34,6 +34,7 @@ dependencies:
   uuid:
   google_generative_ai:
   dio:
+  rive_animated_icon:
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +47,8 @@ dev_dependencies:
   riverpod_generator:
   envied_generator:
   lottie:
+  flutter_svg:
+  auto_size_text:
 
   flutter_lints: ^2.0.0
 
@@ -56,6 +59,7 @@ flutter:
     - assets/images/
     - assets/rive/
     - assets/lottie/
+    - assets/svg/
 
 flutter_icons:
   ios: true

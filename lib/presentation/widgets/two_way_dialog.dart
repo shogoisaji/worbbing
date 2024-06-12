@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:worbbing/presentation/theme/theme.dart';
 
 class TwoWayDialog {
-  static void show(
+  static Future<void> show(
       BuildContext context,
       String title,
       Widget? icon,
-      String? content,
+      Widget? content,
       String leftButtonText,
       String rightButtonText,
       Function onLeftButtonPressed,
-      Function onRightButtonPressed) {
+      Function onRightButtonPressed) async {
     showDialog(
         context: context,
         builder: (context) => Align(
@@ -30,7 +31,7 @@ class TwoWayDialog {
 class TwoWayDialogWidget extends StatelessWidget {
   final String title;
   final Widget? icon;
-  final String? content;
+  final Widget? content;
   final String leftButtonText;
   final String rightButtonText;
   final Function onLeftButtonPressed;
@@ -59,7 +60,7 @@ class TwoWayDialogWidget extends StatelessWidget {
             maxWidth: 400,
           ),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.grey.shade400,
             borderRadius: const BorderRadius.all(Radius.circular(24)),
             boxShadow: [
               BoxShadow(
@@ -95,13 +96,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     )),
               ),
-              content != null
-                  ? Text(content!,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ))
-                  : const SizedBox.shrink(),
+              content != null ? content! : const SizedBox.shrink(),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -115,7 +110,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                     child: Container(
                       height: 50,
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: MyTheme.grey,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(18),
                           bottomLeft: Radius.circular(18),
@@ -134,8 +129,8 @@ class TwoWayDialogWidget extends StatelessWidget {
                           child: Text(leftButtonText,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ))),
                     ),
                   )),
@@ -150,7 +145,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                       child: Container(
                           height: 50,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: MyTheme.orange,
                             borderRadius: const BorderRadius.only(
                               topRight: Radius.circular(18),
                               bottomRight: Radius.circular(18),
@@ -167,10 +162,10 @@ class TwoWayDialogWidget extends StatelessWidget {
                           ),
                           child: Center(
                               child: Text(rightButtonText,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: MyTheme.grey,
+                                    fontWeight: FontWeight.bold,
                                   )))),
                     ),
                   ),
