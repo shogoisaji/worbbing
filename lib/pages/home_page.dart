@@ -7,21 +7,20 @@ import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/account_page.dart';
 import 'package:worbbing/pages/config_page.dart';
-import 'package:worbbing/pages/registration_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({
+class HomePage extends StatefulWidget {
+  const HomePage({
     super.key,
   });
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MainPageState extends State<MainPage>
+class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   int tagState = 0;
 

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:worbbing/application/usecase/words_notification.dart';
-import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
@@ -182,7 +182,7 @@ class _ConfigPageState extends State<ConfigPage> {
                       onTap: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                              builder: (context) => const MainPage()),
+                              builder: (context) => const HomePage()),
                         );
                       }),
                 ),

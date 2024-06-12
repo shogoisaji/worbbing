@@ -20,16 +20,12 @@ TranslatedResponse _$TranslatedResponseFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TranslatedResponse {
-  @JsonKey(name: 'source_language')
-  String get sourceLanguage => throw _privateConstructorUsedError;
-  @JsonKey(name: 'target_language')
-  String get targetLanguage => throw _privateConstructorUsedError;
   String get original => throw _privateConstructorUsedError;
   List<String> get translated => throw _privateConstructorUsedError;
   String get example => throw _privateConstructorUsedError;
   @JsonKey(name: 'example_translated')
   String get exampleTranslated => throw _privateConstructorUsedError;
-  String? get suggestion => throw _privateConstructorUsedError;
+  TranslatedResponseType get type => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,13 +40,11 @@ abstract class $TranslatedResponseCopyWith<$Res> {
       _$TranslatedResponseCopyWithImpl<$Res, TranslatedResponse>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'source_language') String sourceLanguage,
-      @JsonKey(name: 'target_language') String targetLanguage,
-      String original,
+      {String original,
       List<String> translated,
       String example,
       @JsonKey(name: 'example_translated') String exampleTranslated,
-      String? suggestion});
+      TranslatedResponseType type});
 }
 
 /// @nodoc
@@ -66,23 +60,13 @@ class _$TranslatedResponseCopyWithImpl<$Res, $Val extends TranslatedResponse>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? sourceLanguage = null,
-    Object? targetLanguage = null,
     Object? original = null,
     Object? translated = null,
     Object? example = null,
     Object? exampleTranslated = null,
-    Object? suggestion = freezed,
+    Object? type = null,
   }) {
     return _then(_value.copyWith(
-      sourceLanguage: null == sourceLanguage
-          ? _value.sourceLanguage
-          : sourceLanguage // ignore: cast_nullable_to_non_nullable
-              as String,
-      targetLanguage: null == targetLanguage
-          ? _value.targetLanguage
-          : targetLanguage // ignore: cast_nullable_to_non_nullable
-              as String,
       original: null == original
           ? _value.original
           : original // ignore: cast_nullable_to_non_nullable
@@ -99,10 +83,10 @@ class _$TranslatedResponseCopyWithImpl<$Res, $Val extends TranslatedResponse>
           ? _value.exampleTranslated
           : exampleTranslated // ignore: cast_nullable_to_non_nullable
               as String,
-      suggestion: freezed == suggestion
-          ? _value.suggestion
-          : suggestion // ignore: cast_nullable_to_non_nullable
-              as String?,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as TranslatedResponseType,
     ) as $Val);
   }
 }
@@ -116,13 +100,11 @@ abstract class _$$TranslatedResponseImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'source_language') String sourceLanguage,
-      @JsonKey(name: 'target_language') String targetLanguage,
-      String original,
+      {String original,
       List<String> translated,
       String example,
       @JsonKey(name: 'example_translated') String exampleTranslated,
-      String? suggestion});
+      TranslatedResponseType type});
 }
 
 /// @nodoc
@@ -136,23 +118,13 @@ class __$$TranslatedResponseImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? sourceLanguage = null,
-    Object? targetLanguage = null,
     Object? original = null,
     Object? translated = null,
     Object? example = null,
     Object? exampleTranslated = null,
-    Object? suggestion = freezed,
+    Object? type = null,
   }) {
     return _then(_$TranslatedResponseImpl(
-      sourceLanguage: null == sourceLanguage
-          ? _value.sourceLanguage
-          : sourceLanguage // ignore: cast_nullable_to_non_nullable
-              as String,
-      targetLanguage: null == targetLanguage
-          ? _value.targetLanguage
-          : targetLanguage // ignore: cast_nullable_to_non_nullable
-              as String,
       original: null == original
           ? _value.original
           : original // ignore: cast_nullable_to_non_nullable
@@ -169,10 +141,10 @@ class __$$TranslatedResponseImplCopyWithImpl<$Res>
           ? _value.exampleTranslated
           : exampleTranslated // ignore: cast_nullable_to_non_nullable
               as String,
-      suggestion: freezed == suggestion
-          ? _value.suggestion
-          : suggestion // ignore: cast_nullable_to_non_nullable
-              as String?,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as TranslatedResponseType,
     ));
   }
 }
@@ -181,24 +153,16 @@ class __$$TranslatedResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$TranslatedResponseImpl implements _TranslatedResponse {
   const _$TranslatedResponseImpl(
-      {@JsonKey(name: 'source_language') required this.sourceLanguage,
-      @JsonKey(name: 'target_language') required this.targetLanguage,
-      required this.original,
+      {required this.original,
       required final List<String> translated,
       required this.example,
       @JsonKey(name: 'example_translated') required this.exampleTranslated,
-      this.suggestion})
+      required this.type})
       : _translated = translated;
 
   factory _$TranslatedResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$TranslatedResponseImplFromJson(json);
 
-  @override
-  @JsonKey(name: 'source_language')
-  final String sourceLanguage;
-  @override
-  @JsonKey(name: 'target_language')
-  final String targetLanguage;
   @override
   final String original;
   final List<String> _translated;
@@ -215,11 +179,11 @@ class _$TranslatedResponseImpl implements _TranslatedResponse {
   @JsonKey(name: 'example_translated')
   final String exampleTranslated;
   @override
-  final String? suggestion;
+  final TranslatedResponseType type;
 
   @override
   String toString() {
-    return 'TranslatedResponse(sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage, original: $original, translated: $translated, example: $example, exampleTranslated: $exampleTranslated, suggestion: $suggestion)';
+    return 'TranslatedResponse(original: $original, translated: $translated, example: $example, exampleTranslated: $exampleTranslated, type: $type)';
   }
 
   @override
@@ -227,10 +191,6 @@ class _$TranslatedResponseImpl implements _TranslatedResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TranslatedResponseImpl &&
-            (identical(other.sourceLanguage, sourceLanguage) ||
-                other.sourceLanguage == sourceLanguage) &&
-            (identical(other.targetLanguage, targetLanguage) ||
-                other.targetLanguage == targetLanguage) &&
             (identical(other.original, original) ||
                 other.original == original) &&
             const DeepCollectionEquality()
@@ -238,21 +198,18 @@ class _$TranslatedResponseImpl implements _TranslatedResponse {
             (identical(other.example, example) || other.example == example) &&
             (identical(other.exampleTranslated, exampleTranslated) ||
                 other.exampleTranslated == exampleTranslated) &&
-            (identical(other.suggestion, suggestion) ||
-                other.suggestion == suggestion));
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      sourceLanguage,
-      targetLanguage,
       original,
       const DeepCollectionEquality().hash(_translated),
       example,
       exampleTranslated,
-      suggestion);
+      type);
 
   @JsonKey(ignore: true)
   @override
@@ -271,24 +228,16 @@ class _$TranslatedResponseImpl implements _TranslatedResponse {
 
 abstract class _TranslatedResponse implements TranslatedResponse {
   const factory _TranslatedResponse(
-      {@JsonKey(name: 'source_language') required final String sourceLanguage,
-      @JsonKey(name: 'target_language') required final String targetLanguage,
-      required final String original,
+      {required final String original,
       required final List<String> translated,
       required final String example,
       @JsonKey(name: 'example_translated')
       required final String exampleTranslated,
-      final String? suggestion}) = _$TranslatedResponseImpl;
+      required final TranslatedResponseType type}) = _$TranslatedResponseImpl;
 
   factory _TranslatedResponse.fromJson(Map<String, dynamic> json) =
       _$TranslatedResponseImpl.fromJson;
 
-  @override
-  @JsonKey(name: 'source_language')
-  String get sourceLanguage;
-  @override
-  @JsonKey(name: 'target_language')
-  String get targetLanguage;
   @override
   String get original;
   @override
@@ -299,7 +248,7 @@ abstract class _TranslatedResponse implements TranslatedResponse {
   @JsonKey(name: 'example_translated')
   String get exampleTranslated;
   @override
-  String? get suggestion;
+  TranslatedResponseType get type;
   @override
   @JsonKey(ignore: true)
   _$$TranslatedResponseImplCopyWith<_$TranslatedResponseImpl> get copyWith =>

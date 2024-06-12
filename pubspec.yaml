@@ -2,8 +2,8 @@ name: worbbing
 description: A new Flutter project.
 publish_to: "none"
 
-# 2024.6.10 -> 1.0.0+2
-version: 1.0.0+2
+# 2024.6.12 -> 1.0.0+3
+version: 1.0.0+3
 
 environment:
   sdk: ">=3.3.4 <4.0.0"

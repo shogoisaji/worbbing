@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:worbbing/env/env.dart';
 
 class TranslateApi {
-  static Future<String> postRequest(String text) async {
+  static Future<Map<String, dynamic>> postRequest(String text) async {
     final response = await Dio().post(
       'https://worbbing-api.simacsimac9.workers.dev/api/translate',
       data: {
@@ -10,6 +10,7 @@ class TranslateApi {
       },
       options: Options(headers: {'X-API-Key': Env.xApiKey}),
     );
+    print(response);
     return response.data;
   }
 }

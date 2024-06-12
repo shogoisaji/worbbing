@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
-import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button2.dart';
@@ -122,7 +122,7 @@ class _DetailPageState extends State<DetailPage> {
                             onTap: () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => const MainPage()),
+                                    builder: (context) => const HomePage()),
                               );
                             }),
                       ),
@@ -318,7 +318,7 @@ class _DetailPageState extends State<DetailPage> {
                                                     .pushReplacement(
                                                   MaterialPageRoute(
                                                       builder: (context1) =>
-                                                          const MainPage()),
+                                                          const HomePage()),
                                                 );
                                               }
                                             },
@@ -475,7 +475,7 @@ class _DetailPageState extends State<DetailPage> {
                                     Navigator.of(context2).pushReplacement(
                                       MaterialPageRoute(
                                           builder: (context2) =>
-                                              const MainPage()),
+                                              const HomePage()),
                                     );
                                   }
                                 },

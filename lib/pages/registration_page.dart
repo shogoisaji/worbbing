@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/models/translated_response.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -178,7 +178,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     if (context.mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const MainPage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     }
   }
@@ -210,7 +210,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         onTap: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                                builder: (context) => const MainPage()),
+                                builder: (context) => const HomePage()),
                           );
                         }),
                   ),

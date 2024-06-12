@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/pages/splash_page.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       home: const AppSplashPage(),
       routes: {
         '/splash': (context) => const AppSplashPage(),
-        '/main': (context) => const MainPage(),
+        '/home': (context) => const HomePage(),
       },
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
-import 'package:worbbing/pages/main_page.dart';
+import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -53,7 +53,7 @@ class _AccountPageState extends State<AccountPage> {
                     onTap: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (context) => const MainPage()),
+                            builder: (context) => const HomePage()),
                       );
                     }),
               ),
