@@ -8,6 +8,29 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button2.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+
+enum ContentType {
+  original,
+  translated,
+  example,
+  exampleTranslated,
+}
+
+extension ContentTypeExtension on ContentType {
+  String get string {
+    switch (this) {
+      case ContentType.original:
+        return 'English';
+      case ContentType.translated:
+        return '日本語';
+      case ContentType.example:
+        return '例文';
+      case ContentType.exampleTranslated:
+        return '例文翻訳';
+    }
+  }
+}
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.id});
@@ -44,6 +67,128 @@ class _DetailPageState extends State<DetailPage> {
     super.dispose();
   }
 
+  void handleTapEdit(String id, String originalWord, String translatedWord,
+      String example, String exampleTranslated) {
+    _originalController.text = originalWord;
+    _translatedController.text = translatedWord;
+    _exampleController.text = example;
+    _exampleTranslatedController.text = exampleTranslated;
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context1) => Stack(
+              children: [
+                AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2)),
+                  backgroundColor: MyTheme.grey,
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        bodyText('English', MyTheme.lemon.withOpacity(0.9)),
+                        TextField(
+                          keyboardType: TextInputType.visiblePassword,
+                          style: const TextStyle(fontSize: 20),
+                          controller: _originalController,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        bodyText('日本語', Colors.orangeAccent.withOpacity(0.9)),
+                        TextField(
+                          style: const TextStyle(fontSize: 20),
+                          controller: _translatedController,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        bodyText('例文', MyTheme.lemon.withOpacity(0.9)),
+                        TextField(
+                          style: const TextStyle(fontSize: 20),
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 3,
+                          controller: _exampleController,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        bodyText('例文翻訳', Colors.orangeAccent.withOpacity(0.9)),
+                        TextField(
+                          style: const TextStyle(fontSize: 20),
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 3,
+                          controller: _exampleTranslatedController,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context1);
+                      },
+                      child: subText('Cancel', MyTheme.orange),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, bottom: 4, top: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        backgroundColor: MyTheme.orange,
+                      ),
+                      onPressed: () async {
+                        // update words
+                        await SqfliteRepository.instance.updateWords(
+                            id,
+                            _originalController.text,
+                            _translatedController.text,
+                            _exampleController.text,
+                            _exampleTranslatedController.text);
+                        setState(() {});
+                        if (context1.mounted) {
+                          Navigator.pop(context1);
+                          Navigator.of(context1).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (context1) => const HomePage()),
+                          );
+                        }
+                      },
+                      child: const Text('Update',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24)),
+                    ),
+                  ],
+                ),
+              ],
+            ));
+  }
+
   Future<void> handleTapFlag() async {
     // change flag state
     await SqfliteRepository.instance
@@ -67,431 +212,313 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        body: SingleChildScrollView(
-            child: FutureBuilder<WordModel>(
-          future: SqfliteRepository.instance.queryRows(widget.id),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: CircularProgressIndicator()));
-            }
+    return Scaffold(
+      appBar: AppBar(
+        title: Align(
+          alignment: Alignment.center,
+          child: Image.asset(
+            'assets/images/detail.png',
+            width: 200,
+          ),
+        ),
+        leading: InkWell(
+            child: Align(
+              child: Image.asset(
+                'assets/images/custom_arrow.png',
+                width: 35,
+                height: 35,
+              ),
+            ),
+            onTap: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+            }),
+        backgroundColor: Colors.transparent,
+      ),
+      body: SingleChildScrollView(
+          child: FutureBuilder<WordModel>(
+        future: SqfliteRepository.instance.queryRows(widget.id),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: CircularProgressIndicator()));
+          }
 
-            if (snapshot.hasError) {
-              return const Text('エラーが発生しました');
-            }
+          if (snapshot.hasError) {
+            return const Text('エラーが発生しました');
+          }
 
-            final wordModel = snapshot.data!;
-            final formatRegistrationDate =
-                formatForDisplay(wordModel.registrationDate.toIso8601String());
-            final formatUpdateDate =
-                formatForDisplay(wordModel.updateDate.toIso8601String());
-            final DateTime updateDateTime =
-                DateTime.parse(wordModel.updateDate.toIso8601String());
-            final DateTime currentDateTime = DateTime.now();
-            final int forgettingDuration =
-                (updateDateTime.difference(currentDateTime).inDays).abs();
+          final wordModel = snapshot.data!;
+          final formatRegistrationDate =
+              formatForDisplay(wordModel.registrationDate.toIso8601String());
+          final formatUpdateDate =
+              formatForDisplay(wordModel.updateDate.toIso8601String());
+          final DateTime updateDateTime =
+              DateTime.parse(wordModel.updateDate.toIso8601String());
+          final DateTime currentDateTime = DateTime.now();
+          final int forgettingDuration =
+              (updateDateTime.difference(currentDateTime).inDays).abs();
 
-            flag = wordModel.flag;
+          flag = wordModel.flag;
 
-            return Column(
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(
-                  height: 50,
-                ),
-                // title
-                SizedBox(
-                  width: double.infinity,
-                  height: 80,
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: const Alignment(-0.89, -0.1),
-                        child: InkWell(
-                            child: Image.asset(
-                              'assets/images/custom_arrow.png',
-                              width: 35,
-                              height: 35,
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const HomePage()),
-                              );
-                            }),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Image.asset(
-                          'assets/images/detail.png',
-                          width: 200,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 40,
+                  height: 30,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Column(
-                      children: [
-                        bodyText('NoticeDuration', MyTheme.grey),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        noticeBlock(
-                            72, wordModel.noticeDuration, MyTheme.lemon),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        bodyText('Previous Update', MyTheme.grey),
-                        bodyText(formatUpdateDate.split(' ')[0], MyTheme.grey),
-                        Container(
-                          margin: const EdgeInsets.only(top: 2),
-                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey)),
-                          child: Row(
-                            children: [
-                              bodyText('Forgetting\n  Duration', Colors.white),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              // change forgetting duration
-                              titleText(forgettingDuration.toString(),
-                                  MyTheme.orange, null),
-                            ],
+                    noticeBlock(72, wordModel.noticeDuration, MyTheme.lemon),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Column(
+                        children: [
+                          bodyText('Prev : ${formatUpdateDate.split(' ')[0]}',
+                              Colors.grey.shade600),
+                          Container(
+                            margin: const EdgeInsets.only(top: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(2),
+                                border: Border.all(color: Colors.grey)),
+                            child: Row(
+                              children: [
+                                const Text('Forgetting\nDuration',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white)),
+                                // bodyText('Forgetting\n  Duration', Colors.white),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                // change forgetting duration
+                                Text(forgettingDuration.toString(),
+                                    style: TextStyle(
+                                        color: MyTheme.orange, fontSize: 34)),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        IconButton(
-                          onPressed: () async {
-                            handleTapFlag();
-                          },
-                          icon: flag
-                              ? Icon(Icons.flag, size: 48, color: MyTheme.lemon)
-                              : const Icon(Icons.flag_outlined,
-                                  size: 48, color: Colors.white24),
-                        ),
-                        const SizedBox(
-                          height: 7,
-                        ),
-                      ],
+                    GestureDetector(
+                      onTap: () async {
+                        handleTapFlag();
+                      },
+                      child: flag
+                          ? Icon(Icons.flag_rounded,
+                              size: 54, color: MyTheme.lemon)
+                          : const Icon(Icons.outlined_flag_rounded,
+                              size: 54, color: Colors.white24),
                     ),
                   ],
                 ),
-// original word
-                Container(
-                  margin: const EdgeInsets.only(top: 30),
-                  width: 300,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 42.0),
+                  child: Column(
                     children: [
-                      bodyText('English', MyTheme.grey),
-                      Column(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              //
-                              _originalController.text = wordModel.originalWord;
-                              _translatedController.text =
-                                  wordModel.translatedWord;
-                              _exampleController.text = wordModel.example ?? '';
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context1) =>
-                                      AlertDialog(
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.zero),
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 206, 206, 206),
-                                        content: SizedBox(
-                                          height: 300,
-                                          child: SingleChildScrollView(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                subText(
-                                                    'English', Colors.black54),
-                                                TextField(
-                                                  keyboardType: TextInputType
-                                                      .visiblePassword,
-                                                  style: const TextStyle(
-                                                      fontSize: 20),
-                                                  controller:
-                                                      _originalController,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border: InputBorder.none,
-                                                    filled: true,
-                                                    fillColor: Colors.white,
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 10,
-                                                ),
-                                                subText('日本語', Colors.black54),
-                                                TextField(
-                                                  style: const TextStyle(
-                                                      fontSize: 20),
-                                                  controller:
-                                                      _translatedController,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border: InputBorder.none,
-                                                    filled: true,
-                                                    fillColor: Colors.white,
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 10,
-                                                ),
-                                                subText('Memo', Colors.black54),
-                                                TextField(
-                                                  style: const TextStyle(
-                                                      fontSize: 20),
-                                                  keyboardType:
-                                                      TextInputType.multiline,
-                                                  maxLines: 3,
-                                                  controller:
-                                                      _exampleController,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border: InputBorder.none,
-                                                    filled: true,
-                                                    fillColor: Colors.white,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context1);
-                                            },
-                                            child: subText(
-                                                'Cancel', MyTheme.orange),
-                                          ),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              padding: const EdgeInsets.all(8),
-                                              shape:
-                                                  const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.zero,
-                                              ),
-                                              backgroundColor: MyTheme.orange,
-                                            ),
-                                            onPressed: () async {
-// update words
-                                              debugPrint('update words');
-                                              await SqfliteRepository.instance
-                                                  .updateWords(
-                                                      wordModel.id,
-                                                      _originalController.text,
-                                                      _translatedController
-                                                          .text,
-                                                      _exampleController.text,
-                                                      _exampleTranslatedController
-                                                          .text);
-                                              setState(() {});
-                                              if (context1.mounted) {
-                                                Navigator.pop(context1);
-                                                Navigator.of(context1)
-                                                    .pushReplacement(
-                                                  MaterialPageRoute(
-                                                      builder: (context1) =>
-                                                          const HomePage()),
-                                                );
-                                              }
-                                            },
-                                            child:
-                                                subText('Update', Colors.white),
-                                          ),
-                                        ],
-                                      ));
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 32.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              handleTapEdit(
+                                wordModel.id,
+                                wordModel.originalWord,
+                                wordModel.translatedWord,
+                                wordModel.example ?? '',
+                                wordModel.exampleTranslated ?? '',
+                              );
                             },
-                            icon: const Icon(
+                            child: const Icon(
                               Icons.create,
                               color: Colors.white,
-                              size: 28,
+                              size: 32,
                             ),
                           ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                        ],
+                        ),
+                      ),
+                      _detailWordContent(
+                          ContentType.original, wordModel.originalWord),
+                      _detailWordContent(
+                          ContentType.translated, wordModel.translatedWord),
+                      _detailWordContent(
+                          ContentType.example, wordModel.example ?? ''),
+                      _detailWordContent(ContentType.exampleTranslated,
+                          wordModel.exampleTranslated ?? ''),
+                      Container(
+                          margin: const EdgeInsets.only(top: 24),
+                          alignment: Alignment.center,
+                          width: 230,
+                          height: 30,
+                          decoration: const BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: Colors.white, width: 1.0))),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // change registration data
+                              bodyText('Registration Date', Colors.white),
+                              bodyText(formatRegistrationDate.split(' ')[0],
+                                  Colors.white),
+                            ],
+                          )),
+                      Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          alignment: Alignment.center,
+                          width: 230,
+                          height: 30,
+                          decoration: const BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: Colors.white, width: 1.0))),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // change update count
+                              bodyText('Update Count', Colors.white),
+                              Container(
+                                  alignment: Alignment.center,
+                                  width: 50,
+                                  child: bodyText(
+                                      wordModel.updateCount.toString(),
+                                      Colors.white)),
+                            ],
+                          )),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      customButton2(
+                          MyTheme.red, titleText('Delete', Colors.white, 20),
+                          () async {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context2) =>
+                                // deleteDialog(context, widget.id),
+                                AlertDialog(
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero),
+                                  backgroundColor: MyTheme.grey,
+                                  title: const Text(
+                                    'このデータを削除しますか?',
+                                    style: TextStyle(
+                                        overflow: TextOverflow.clip,
+                                        color: Colors.white,
+                                        fontSize: 20),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context2);
+                                      },
+                                      child: subText('Cancel', MyTheme.red),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.only(
+                                            left: 12,
+                                            right: 12,
+                                            bottom: 4,
+                                            top: 4),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                        ),
+                                        backgroundColor: MyTheme.red,
+                                      ),
+                                      onPressed: () async {
+                                        // Delete
+                                        await SqfliteRepository.instance
+                                            .deleteRow(widget.id);
+                                        if (context2.mounted) {
+                                          Navigator.pop(context2);
+                                          Navigator.of(context2)
+                                              .pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context2) =>
+                                                    const HomePage()),
+                                          );
+                                        }
+                                      },
+                                      child: subText('Delete', Colors.white),
+                                    ),
+                                  ],
+                                ));
+                      }),
+                      const SizedBox(
+                        height: 100,
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  alignment: Alignment.center,
-                  width: 300,
-                  height: 50,
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child: titleText(wordModel.originalWord, Colors.white, null),
-                ),
-// translated word
-                Container(
-                  margin: const EdgeInsets.only(top: 40),
-                  alignment: Alignment.topLeft,
-                  width: 300,
-                  child: bodyText('日本語', MyTheme.grey),
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  width: 300,
-                  height: 50,
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: Colors.white, width: 1.0))),
-                  child:
-                      titleText(wordModel.translatedWord, Colors.white, null),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                Container(
-                  width: 300,
-                  alignment: Alignment.topLeft,
-                  child: bodyText('Memo', Colors.grey),
-                ),
-                Stack(
-                  children: [
-                    Transform.translate(
-                      offset: const Offset(6, 5),
-                      child: Transform.rotate(
-                          angle: 0.02,
-                          child: Container(
-                              width: 300, height: 100, color: MyTheme.orange)),
-                    ),
-                    Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        width: 300,
-                        height: 100,
-                        color: Colors.white,
-                        child:
-                            bodyText2(wordModel.example ?? '', Colors.black)),
-                  ],
-                ),
-
-                Container(
-                    margin: const EdgeInsets.only(top: 40),
-                    alignment: Alignment.center,
-                    width: 230,
-                    height: 30,
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom:
-                                BorderSide(color: Colors.white, width: 1.0))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // change registration data
-                        bodyText('Registration Date', Colors.white),
-                        bodyText(
-                            formatRegistrationDate.split(' ')[0], Colors.white),
-                      ],
-                    )),
-                Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    alignment: Alignment.center,
-                    width: 230,
-                    height: 30,
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom:
-                                BorderSide(color: Colors.white, width: 1.0))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // change update count
-                        bodyText('Update Count', Colors.white),
-                        Container(
-                            alignment: Alignment.center,
-                            width: 50,
-                            child: bodyText(wordModel.updateCount.toString(),
-                                Colors.white)),
-                      ],
-                    )),
-                const SizedBox(
-                  height: 40,
-                ),
-                customButton2(
-                    MyTheme.red, titleText('Delete', Colors.white, 20),
-                    () async {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context2) =>
-                          // deleteDialog(context, widget.id),
-                          AlertDialog(
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero),
-                            backgroundColor:
-                                const Color.fromARGB(255, 206, 206, 206),
-                            title: subText('Really?', Colors.black),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context2);
-                                },
-                                child: subText('Cancel', MyTheme.red),
-                              ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.only(left: 8, right: 8),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero,
-                                  ),
-                                  backgroundColor: MyTheme.red,
-                                ),
-                                onPressed: () async {
-// Delete
-                                  await SqfliteRepository.instance
-                                      .deleteRow(widget.id);
-                                  if (context2.mounted) {
-                                    Navigator.pop(context2);
-                                    Navigator.of(context2).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context2) =>
-                                              const HomePage()),
-                                    );
-                                  }
-                                },
-                                child: subText('Delete', Colors.white),
-                              ),
-                            ],
-                          ));
-                }),
-                const SizedBox(
-                  height: 100,
-                ),
               ],
-            );
-          },
-        )),
-      ),
+            ),
+          );
+        },
+      )),
+    );
+  }
+
+  Widget _detailWordContent(
+    ContentType type,
+    String word,
+  ) {
+    final maxLines = switch (type) {
+      ContentType.original => 1,
+      ContentType.translated => 1,
+      ContentType.example => 2,
+      ContentType.exampleTranslated => 2,
+    };
+    final fontSize = switch (type) {
+      ContentType.original => 30.0,
+      ContentType.translated => 30.0,
+      ContentType.example => 20.0,
+      ContentType.exampleTranslated => 20.0,
+    };
+    final titleColor = switch (type) {
+      ContentType.original => MyTheme.lemon.withOpacity(0.6),
+      ContentType.translated => Colors.orangeAccent.withOpacity(0.6),
+      ContentType.example => MyTheme.lemon.withOpacity(0.6),
+      ContentType.exampleTranslated => Colors.orangeAccent.withOpacity(0.6),
+    };
+
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          width: double.infinity,
+          child: bodyText(type.string, titleColor),
+        ),
+        Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: 50,
+          decoration: const BoxDecoration(
+              border:
+                  Border(bottom: BorderSide(color: Colors.white, width: 1.0))),
+          child: AutoSizeText(
+            word,
+            maxLines: maxLines,
+            style: TextStyle(color: Colors.white, fontSize: fontSize),
+          ),
+        ),
+        const SizedBox(
+          height: 32,
+        )
+      ],
     );
   }
 }
