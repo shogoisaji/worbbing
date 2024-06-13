@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 Widget customButton(Widget widget, Function() function) {
   return GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         function();
       },
       child: SizedBox(

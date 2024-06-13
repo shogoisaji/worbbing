@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
@@ -21,13 +23,13 @@ extension ContentTypeExtension on ContentType {
   String get string {
     switch (this) {
       case ContentType.original:
-        return 'English';
+        return 'Original';
       case ContentType.translated:
-        return '日本語';
+        return 'Translated';
       case ContentType.example:
-        return '例文';
+        return 'Example';
       case ContentType.exampleTranslated:
-        return '例文翻訳';
+        return 'Translated Example';
     }
   }
 }
@@ -87,7 +89,7 @@ class _DetailPageState extends State<DetailPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        bodyText('English', MyTheme.lemon.withOpacity(0.9)),
+                        bodyText('Original', MyTheme.lemon.withOpacity(0.9)),
                         TextField(
                           keyboardType: TextInputType.visiblePassword,
                           style: const TextStyle(fontSize: 20),
@@ -101,7 +103,8 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        bodyText('日本語', Colors.orangeAccent.withOpacity(0.9)),
+                        bodyText(
+                            'Translated', Colors.orangeAccent.withOpacity(0.9)),
                         TextField(
                           style: const TextStyle(fontSize: 20),
                           controller: _translatedController,
@@ -114,7 +117,7 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        bodyText('例文', MyTheme.lemon.withOpacity(0.9)),
+                        bodyText('Example', MyTheme.lemon.withOpacity(0.9)),
                         TextField(
                           style: const TextStyle(fontSize: 20),
                           keyboardType: TextInputType.multiline,
@@ -129,7 +132,8 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        bodyText('例文翻訳', Colors.orangeAccent.withOpacity(0.9)),
+                        bodyText('Translated Example',
+                            Colors.orangeAccent.withOpacity(0.9)),
                         TextField(
                           style: const TextStyle(fontSize: 20),
                           keyboardType: TextInputType.multiline,
@@ -147,6 +151,7 @@ class _DetailPageState extends State<DetailPage> {
                   actions: [
                     TextButton(
                       onPressed: () {
+                        HapticFeedback.lightImpact();
                         Navigator.pop(context1);
                       },
                       child: subText('Cancel', MyTheme.orange),
@@ -161,6 +166,7 @@ class _DetailPageState extends State<DetailPage> {
                         backgroundColor: MyTheme.orange,
                       ),
                       onPressed: () async {
+                        HapticFeedback.lightImpact();
                         // update words
                         await SqfliteRepository.instance.updateWords(
                             id,
@@ -210,6 +216,55 @@ class _DetailPageState extends State<DetailPage> {
     });
   }
 
+  Future<void> handleTapDelete() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context2) =>
+            // deleteDialog(context, widget.id),
+            AlertDialog(
+              shape:
+                  const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              backgroundColor: MyTheme.grey,
+              title: const Text(
+                'このデータを削除しますか?',
+                style: TextStyle(
+                    overflow: TextOverflow.clip,
+                    color: Colors.white,
+                    fontSize: 20),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context2);
+                  },
+                  child: subText('Cancel', MyTheme.red),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(
+                        left: 12, right: 12, bottom: 4, top: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    backgroundColor: MyTheme.red,
+                  ),
+                  onPressed: () async {
+                    // Delete
+                    await SqfliteRepository.instance.deleteRow(widget.id);
+                    if (context2.mounted) {
+                      Navigator.pop(context2);
+                      Navigator.of(context2).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context2) => const HomePage()),
+                      );
+                    }
+                  },
+                  child: subText('Delete', Colors.white),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,6 +285,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             onTap: () {
+              HapticFeedback.lightImpact();
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const HomePage()),
               );
@@ -314,7 +370,8 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        handleTapFlag();
+                        HapticFeedback.lightImpact();
+                        await handleTapFlag();
                       },
                       child: flag
                           ? Icon(Icons.flag_rounded,
@@ -328,27 +385,54 @@ class _DetailPageState extends State<DetailPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 42.0),
                   child: Column(
                     children: [
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 32.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              handleTapEdit(
-                                wordModel.id,
-                                wordModel.originalWord,
-                                wordModel.translatedWord,
-                                wordModel.example ?? '',
-                                wordModel.exampleTranslated ?? '',
-                              );
-                            },
-                            child: const Icon(
-                              Icons.create,
-                              color: Colors.white,
-                              size: 32,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              // width: 50,
+                              // color: Colors.red,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: MyTheme.blue),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                              margin: const EdgeInsets.only(
+                                  top: 30.0,
+                                  bottom: 16.0,
+                                  left: 0.0,
+                                  right: 24.0),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 12.0),
+
+                              child: AutoSizeText(
+                                  "${wordModel.originalLang.string} → ${wordModel.translatedLang.string}",
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: MyTheme.blue, fontSize: 20)),
                             ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                handleTapEdit(
+                                  wordModel.id,
+                                  wordModel.originalWord,
+                                  wordModel.translatedWord,
+                                  wordModel.example ?? '',
+                                  wordModel.exampleTranslated ?? '',
+                                );
+                              },
+                              child: const Icon(
+                                Icons.create,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       _detailWordContent(
                           ContentType.original, wordModel.originalWord),
@@ -404,59 +488,7 @@ class _DetailPageState extends State<DetailPage> {
                       customButton2(
                           MyTheme.red, titleText('Delete', Colors.white, 20),
                           () async {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context2) =>
-                                // deleteDialog(context, widget.id),
-                                AlertDialog(
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.zero),
-                                  backgroundColor: MyTheme.grey,
-                                  title: const Text(
-                                    'このデータを削除しますか?',
-                                    style: TextStyle(
-                                        overflow: TextOverflow.clip,
-                                        color: Colors.white,
-                                        fontSize: 20),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context2);
-                                      },
-                                      child: subText('Cancel', MyTheme.red),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.only(
-                                            left: 12,
-                                            right: 12,
-                                            bottom: 4,
-                                            top: 4),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                        ),
-                                        backgroundColor: MyTheme.red,
-                                      ),
-                                      onPressed: () async {
-                                        // Delete
-                                        await SqfliteRepository.instance
-                                            .deleteRow(widget.id);
-                                        if (context2.mounted) {
-                                          Navigator.pop(context2);
-                                          Navigator.of(context2)
-                                              .pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (context2) =>
-                                                    const HomePage()),
-                                          );
-                                        }
-                                      },
-                                      child: subText('Delete', Colors.white),
-                                    ),
-                                  ],
-                                ));
+                        handleTapDelete();
                       }),
                       const SizedBox(
                         height: 100,

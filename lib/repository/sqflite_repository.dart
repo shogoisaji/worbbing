@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:worbbing/models/word_model.dart';
 
 class SqfliteRepository {
-  static const _databaseName = "test1_Database.db";
+  static const _databaseName = "test6_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
@@ -17,6 +17,8 @@ class SqfliteRepository {
   static const registrationDate = 'registration_date';
   static const example = 'example';
   static const exampleTranslated = 'example_translated';
+  static const originalLang = 'original_lang';
+  static const translatedLang = 'translated_lang';
 
   SqfliteRepository._privateConstructor();
   static final SqfliteRepository instance =
@@ -47,7 +49,9 @@ class SqfliteRepository {
             $updateDate TEXT,
             $registrationDate TEXT,
             $example TEXT,
-            $exampleTranslated TEXT
+            $exampleTranslated TEXT,
+            $originalLang TEXT,
+            $translatedLang TEXT
           )
           ''');
   }

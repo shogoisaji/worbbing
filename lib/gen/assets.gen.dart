@@ -36,13 +36,28 @@ class $AssetsImagesGen {
   AssetGenImage get googleTranslate =>
       const AssetGenImage('assets/images/google_translate.png');
 
+  /// File path: assets/images/notice.png
+  AssetGenImage get notice => const AssetGenImage('assets/images/notice.png');
+
   /// File path: assets/images/registration.png
   AssetGenImage get registration =>
       const AssetGenImage('assets/images/registration.png');
 
+  /// File path: assets/images/settings.png
+  AssetGenImage get settings =>
+      const AssetGenImage('assets/images/settings.png');
+
   /// File path: assets/images/spacedRepetition.png
   AssetGenImage get spacedRepetition =>
       const AssetGenImage('assets/images/spacedRepetition.png');
+
+  /// File path: assets/images/translate.png
+  AssetGenImage get translate =>
+      const AssetGenImage('assets/images/translate.png');
+
+  /// File path: assets/images/translate_a.png
+  AssetGenImage get translateA =>
+      const AssetGenImage('assets/images/translate_a.png');
 
   /// File path: assets/images/worbbing_icon_android.png
   AssetGenImage get worbbingIconAndroid =>
@@ -51,6 +66,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/worbbing_icon_ios.png
   AssetGenImage get worbbingIconIos =>
       const AssetGenImage('assets/images/worbbing_icon_ios.png');
+
+  /// File path: assets/images/worbbing_icon_ios_2.png
+  AssetGenImage get worbbingIconIos2 =>
+      const AssetGenImage('assets/images/worbbing_icon_ios_2.png');
 
   /// File path: assets/images/worbbing_logo.png
   AssetGenImage get worbbingLogo =>
@@ -65,12 +84,27 @@ class $AssetsImagesGen {
         detail,
         ebbinghaus,
         googleTranslate,
+        notice,
         registration,
+        settings,
         spacedRepetition,
+        translate,
+        translateA,
         worbbingIconAndroid,
         worbbingIconIos,
+        worbbingIconIos2,
         worbbingLogo
       ];
+}
+
+class $AssetsLottieGen {
+  const $AssetsLottieGen();
+
+  /// File path: assets/lottie/w_loading.json
+  String get wLoading => 'assets/lottie/w_loading.json';
+
+  /// List of all assets
+  List<String> get values => [wLoading];
 }
 
 class $AssetsRiveGen {
@@ -83,11 +117,26 @@ class $AssetsRiveGen {
   List<String> get values => [worbbing];
 }
 
+class $AssetsSvgGen {
+  const $AssetsSvgGen();
+
+  /// File path: assets/svg/a.svg
+  String get a => 'assets/svg/a.svg';
+
+  /// File path: assets/svg/a_j.svg
+  String get aJ => 'assets/svg/a_j.svg';
+
+  /// List of all assets
+  List<String> get values => [a, aJ];
+}
+
 class Assets {
   Assets._();
 
   static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsLottieGen lottie = $AssetsLottieGen();
   static const $AssetsRiveGen rive = $AssetsRiveGen();
+  static const $AssetsSvgGen svg = $AssetsSvgGen();
 }
 
 class AssetGenImage {

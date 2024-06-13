@@ -2,8 +2,8 @@ name: worbbing
 description: A new Flutter project.
 publish_to: "none"
 
-# 2024.6.12 -> 1.0.0+3
-version: 1.0.0+3
+# 2024.6.13 -> 1.0.0+4
+version: 1.0.0+4
 
 environment:
   sdk: ">=3.3.4 <4.0.0"
@@ -35,6 +35,7 @@ dependencies:
   google_generative_ai:
   dio:
   rive_animated_icon:
+  app_settings:
 
 dev_dependencies:
   flutter_test:

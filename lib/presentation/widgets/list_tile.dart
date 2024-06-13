@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
@@ -42,7 +43,9 @@ class _WordListTileState extends State<WordListTile>
   void initState() {
     super.initState();
     _color = MyTheme.lemon;
-    _widget = titleText(widget.wordModel.translatedWord, Colors.black, null);
+    _widget = Text(widget.wordModel.translatedWord,
+        style: const TextStyle(
+            color: Colors.black, fontSize: 28, fontWeight: FontWeight.w600));
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
   }
@@ -102,28 +105,37 @@ class _WordListTileState extends State<WordListTile>
                 final diffY = newY - dragStartY;
 
                 if (diffY > 100 && diffX > 80) {
-                  setState(() {
-                    _color = MyTheme.blue;
-                    _widget = const Icon(
-                      Icons.thumb_down,
-                      color: Colors.white,
-                      size: 48,
-                    );
-                  });
+                  if (_color != MyTheme.blue) {
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      _color = MyTheme.blue;
+                      _widget = const Icon(
+                        Icons.thumb_down,
+                        color: Colors.white,
+                        size: 48,
+                      );
+                    });
+                  }
                 } else if (diffY < -100 && diffX > 80) {
-                  setState(() {
-                    _color = MyTheme.orange;
-                    _widget = const Icon(
-                      Icons.thumb_up,
-                      color: Colors.white,
-                      size: 48,
-                    );
-                  });
+                  if (_color != MyTheme.orange) {
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      _color = MyTheme.orange;
+                      _widget = const Icon(
+                        Icons.thumb_up,
+                        color: Colors.white,
+                        size: 48,
+                      );
+                    });
+                  }
                 } else {
                   setState(() {
                     _color = MyTheme.lemon;
-                    _widget = titleText(
-                        widget.wordModel.translatedWord, Colors.black, 28);
+                    _widget = Text(widget.wordModel.translatedWord,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600));
                   });
                 }
 
@@ -147,8 +159,11 @@ class _WordListTileState extends State<WordListTile>
                 }
                 setState(() {
                   _color = MyTheme.lemon;
-                  _widget = titleText(
-                      widget.wordModel.translatedWord, Colors.black, null);
+                  _widget = Text(widget.wordModel.translatedWord,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600));
                 });
               },
               onHorizontalDragCancel: () {
@@ -209,6 +224,7 @@ class _SlideCard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: GestureDetector(
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) =>

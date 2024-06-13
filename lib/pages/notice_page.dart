@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:worbbing/application/usecase/words_notification.dart';
@@ -7,6 +8,7 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_settings/app_settings.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -15,14 +17,14 @@ const AndroidInitializationSettings initializationSettingsAndroid =
 const InitializationSettings initializationSettings =
     InitializationSettings(android: initializationSettingsAndroid);
 
-class ConfigPage extends StatefulWidget {
-  const ConfigPage({super.key});
+class NoticePage extends StatefulWidget {
+  const NoticePage({super.key});
 
   @override
-  State<ConfigPage> createState() => _ConfigPageState();
+  State<NoticePage> createState() => _NoticePageState();
 }
 
-class _ConfigPageState extends State<ConfigPage> {
+class _NoticePageState extends State<NoticePage> {
   bool notificationState = false;
   bool time1State = false;
   bool time2State = false;
@@ -57,8 +59,24 @@ class _ConfigPageState extends State<ConfigPage> {
 
   void handleTapSample() async {
     await WordsNotification().requestPermissions();
+    final isEnable = await WordsNotification().checkNotificationPermissions();
+    if (!isEnable) {
+      await showNoticePermissionDialog();
+      return;
+    }
+    if (!isEnable) {
+      await showNoticePermissionDialog();
+      return;
+    }
     await WordsNotification().sampleNotification();
   }
+
+  // ElevatedButton(
+  //             onPressed: () {
+  //               AppSettings.openAppSettings();
+  //             },
+  //             child: Text('Open settings', style: lightTextTheme.bodyMedium),
+  //           ),
 
 // shared preferences save data
   void saveData<T>(String key, T value) async {
@@ -114,6 +132,42 @@ class _ConfigPageState extends State<ConfigPage> {
             .scheduleNotification(30, selectedWordsCount, selectedTime3);
       }
     }
+  }
+
+  Future<void> showNoticePermissionDialog() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context2) =>
+            // deleteDialog(context, widget.id),
+            AlertDialog(
+              shape:
+                  const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              backgroundColor: MyTheme.grey,
+              title: const Text(
+                '通知設定がOFFです。\n通知設定をONにしてください。',
+                style: TextStyle(
+                    overflow: TextOverflow.clip,
+                    color: Colors.white,
+                    fontSize: 20),
+              ),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(
+                        left: 12, right: 12, bottom: 6, top: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    backgroundColor: MyTheme.lemon,
+                  ),
+                  onPressed: () async {
+                    AppSettings.openAppSettings();
+                    Navigator.pop(context2);
+                  },
+                  child: subText('設定画面へ', Colors.black),
+                ),
+              ],
+            ));
   }
 
 // time select
@@ -180,6 +234,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         height: 35,
                       ),
                       onTap: () {
+                        HapticFeedback.lightImpact();
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                               builder: (context) => const HomePage()),
@@ -189,7 +244,7 @@ class _ConfigPageState extends State<ConfigPage> {
                 Align(
                   alignment: Alignment.center,
                   child: Image.asset(
-                    'assets/images/config.png',
+                    'assets/images/notice.png',
                     width: 200,
                   ),
                 ),
@@ -205,7 +260,7 @@ class _ConfigPageState extends State<ConfigPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    mediumText('Notification', Colors.white),
+                    mediumText('Word Notification', Colors.white),
                     Switch(
                       activeTrackColor: MyTheme.lemon,
                       inactiveThumbColor: Colors.grey,
@@ -213,12 +268,20 @@ class _ConfigPageState extends State<ConfigPage> {
                       value: notificationState,
                       activeColor: MyTheme.grey,
                       onChanged: (bool value) async {
+                        HapticFeedback.lightImpact();
+                        if (value) {
+                          final isEnable = await WordsNotification()
+                              .checkNotificationPermissions();
+                          if (!isEnable) {
+                            await showNoticePermissionDialog();
+                            return;
+                          }
+                        }
                         setState(() {
                           notificationState = value;
                           saveData('notificationState', notificationState);
                         });
                         if (notificationState) {
-                          await WordsNotification().requestPermissions();
                           if (time1State) {
                             await WordsNotification().scheduleNotification(
                                 10, selectedWordsCount, selectedTime1);
@@ -235,40 +298,6 @@ class _ConfigPageState extends State<ConfigPage> {
                         } else {
                           await flutterLocalNotificationsPlugin.cancelAll();
                           debugPrint("canceled all");
-                        }
-                        if (context.mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                                icon: Icon(
-                                  notificationState
-                                      ? Icons.alarm
-                                      : Icons.alarm_off,
-                                  size: 42,
-                                ),
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 206, 206, 206),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.only(
-                                          bottom: 2, left: 8, right: 8),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.zero,
-                                      ),
-                                      backgroundColor: MyTheme.orange,
-                                    ),
-                                    child: subText('OK', Colors.white),
-                                  )
-                                ],
-                                content: notificationState
-                                    ? subText('Notification ON', Colors.black)
-                                    : subText(
-                                        'Notification OFF', Colors.black)),
-                          );
                         }
                       },
                     )
@@ -342,6 +371,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         children: [
                           InkWell(
                             onTap: () async {
+                              HapticFeedback.lightImpact();
                               setState(() {
                                 time1State = !time1State;
                                 saveData('time1State', time1State);
@@ -401,6 +431,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         children: [
                           InkWell(
                             onTap: () async {
+                              HapticFeedback.lightImpact();
                               setState(() {
                                 time2State = !time2State;
                                 saveData('time2State', time2State);
@@ -460,6 +491,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         children: [
                           InkWell(
                             onTap: () async {
+                              HapticFeedback.lightImpact();
                               setState(() {
                                 time3State = !time3State;
                                 saveData('time3State', time3State);
@@ -521,27 +553,27 @@ class _ConfigPageState extends State<ConfigPage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.only(bottom: 2, left: 8, right: 8),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
+              padding: const EdgeInsets.only(bottom: 2, left: 16, right: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(3),
               ),
               backgroundColor: MyTheme.orange,
             ),
             onPressed: () {
+              HapticFeedback.lightImpact();
               handleTapSample();
             },
-            child: SizedBox(
-              width: 230,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 5.0, right: 10),
-                    child: Icon(Icons.chat, color: Colors.black54, size: 24),
-                  ),
-                  subText('Notice Sample', Colors.black54),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 5.0, right: 10),
+                  child: Icon(Icons.notifications_active_rounded,
+                      color: Colors.black, size: 24),
+                ),
+                subText('Notice Sample', Colors.black),
+              ],
             ),
           ),
           const SizedBox(

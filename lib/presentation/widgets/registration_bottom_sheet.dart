@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:worbbing/application/api/translate_api.dart';
-import 'package:worbbing/application/usecase/gemini_translate_usecase.dart';
+import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/translated_response.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
+import 'package:worbbing/presentation/widgets/language_dropdown.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:lottie/lottie.dart';
@@ -25,12 +27,14 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation _animation;
-  final TextEditingController _inputWordController = TextEditingController();
+  final TextEditingController _originalWordController = TextEditingController();
   final TextEditingController _translatedController = TextEditingController();
   final TextEditingController _exampleController = TextEditingController();
   final TextEditingController _exampleTranslatedController =
       TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  TranslateLanguage originalLanguage = TranslateLanguage.english;
+  TranslateLanguage translateLanguage = TranslateLanguage.japanese;
 
   bool isLoading = false;
 
@@ -49,7 +53,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   }
 
   Future<void> translateWord() async {
-    if (_inputWordController.text == "") return;
+    if (_originalWordController.text == "") return;
     setState(() {
       isLoading = true;
     });
@@ -62,14 +66,15 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     FocusScope.of(context).unfocus();
     _focusNode.unfocus();
     try {
-      final res = await TranslateApi.postRequest(_inputWordController.text);
+      final res = await TranslateApi.postRequest(_originalWordController.text,
+          originalLanguage.lowerString, translateLanguage.lowerString);
       final translatedModel = TranslatedResponse.fromJson(res);
 
       if (translatedModel.type == TranslatedResponseType.suggestion) {
         if (!mounted) return;
         await TwoWayDialog.show(
             context,
-            'もしかして',
+            'Maybe...',
             RiveAnimatedIcon(
                 riveIcon: RiveIcon.graduate,
                 width: 70,
@@ -151,18 +156,18 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 const SizedBox(height: 8),
               ],
             ),
-            'いいえ',
-            'はい', () {
+            'No',
+            'Yes', () {
           //
         }, () {
-          _inputWordController.text = translatedModel.original;
+          _originalWordController.text = translatedModel.original;
           _translatedController.text =
               "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
           _exampleController.text = translatedModel.example;
           _exampleTranslatedController.text = translatedModel.exampleTranslated;
         });
       } else {
-        _inputWordController.text = translatedModel.original;
+        _originalWordController.text = translatedModel.original;
         _translatedController.text =
             "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
         _exampleController.text = translatedModel.example;
@@ -178,35 +183,38 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     }
   }
 
-  Future<List<TranslatedResponse>> translateWithGemini(String inputWord) async {
-    await TranslateApi.postRequest(inputWord);
-    final gemini = Gemini();
-    final translatedResponseList =
-        await gemini.translateWithGemini(inputWord).catchError((e) {
-      throw Exception('error:$e');
-    });
-    return translatedResponseList;
-  }
+  // Future<List<TranslatedResponse>> translateWithGemini(String inputWord) async {
+  //   await TranslateApi.postRequest(inputWord);
+  //   final gemini = Gemini();
+  //   final translatedResponseList =
+  //       await gemini.translateWithGemini(inputWord).catchError((e) {
+  //     throw Exception('error:$e');
+  //   });
+  //   return translatedResponseList;
+  // }
 
   Future<void> saveWord() async {
     /// validation
-    if (_inputWordController.text == "" || _translatedController.text == "") {
+    if (_originalWordController.text == "" ||
+        _translatedController.text == "") {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red.shade400,
           content: const Center(
-            child:
-                Text('English & 日本語 は入力必須です', style: TextStyle(fontSize: 18)),
+            child: Text('Original & Translated は入力必須です',
+                style: TextStyle(fontSize: 18)),
           ),
         ),
       );
       return;
     }
     final newWord = WordModel.createNewWord(
-      originalWord: _inputWordController.text,
+      originalWord: _originalWordController.text,
       translatedWord: _translatedController.text,
       example: _exampleController.text,
       exampleTranslated: _exampleTranslatedController.text,
+      originalLang: originalLanguage,
+      translatedLang: translateLanguage,
     );
 
     /// save sqflite
@@ -214,33 +222,38 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     if (result == 'exist') {
       if (!mounted) return;
 
-      /// TODO
       showDialog(
           context: context,
-          builder: (BuildContext context) => AlertDialog(
+          builder: (BuildContext context2) =>
+              // deleteDialog(context, widget.id),
+              AlertDialog(
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero),
-                backgroundColor: const Color.fromARGB(255, 206, 206, 206),
-                title: subText('Already registered', Colors.black),
+                backgroundColor: MyTheme.grey,
+                title: Text(
+                  '"${_originalWordController.text}" is\nalready registered.',
+                  style: const TextStyle(
+                      overflow: TextOverflow.clip,
+                      color: Colors.white,
+                      fontSize: 24),
+                ),
                 actions: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                      padding: const EdgeInsets.only(
+                          left: 12, right: 12, bottom: 4, top: 4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3),
                       ),
-                      backgroundColor: MyTheme.orange,
+                      backgroundColor: MyTheme.lemon,
                     ),
-                    onPressed: () {
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
+                    onPressed: () async {
+                      //
                     },
-                    child: subText('OK', Colors.white),
+                    child: subText('OK', Colors.black),
                   ),
                 ],
               ));
-      return;
     }
     if (mounted) {
       Navigator.of(context).pop();
@@ -251,7 +264,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   void dispose() {
     _animationController.dispose();
     _focusNode.dispose();
-    _inputWordController.dispose();
+    _originalWordController.dispose();
     _translatedController.dispose();
     _exampleController.dispose();
     _exampleTranslatedController.dispose();
@@ -325,6 +338,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                               right: -10,
                                               child: IconButton(
                                                 onPressed: () {
+                                                  HapticFeedback.lightImpact();
                                                   Navigator.of(context).pop();
                                                 },
                                                 icon: Icon(Icons.cancel_rounded,
@@ -334,7 +348,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                             ),
                                             const Center(
                                               child: Text(
-                                                '単語登録',
+                                                'Registration',
                                                 style: TextStyle(
                                                     fontSize: 32,
                                                     color: Colors.white,
@@ -350,41 +364,63 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                 ),
                                 Align(
                                     alignment: const Alignment(-0.95, 0.0),
-                                    child:
-                                        bodyText('English', MyTheme.lightGrey)),
-                                _customTextField(
-                                    _inputWordController, MyTheme.lemon,
+                                    child: bodyText(
+                                        'Original', MyTheme.lightGrey)),
+                                customTextField(
+                                    _originalWordController, MyTheme.lemon,
                                     focusNode: _focusNode,
                                     isInput: true,
                                     isEnglish: true),
-                                const SizedBox(height: 16),
-                                InkWell(
-                                  onTap: () {
-                                    translateWord();
-                                  },
-                                  child: Image.asset(
-                                      'assets/images/translate.png',
-                                      width: 100,
-                                      height: 100),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    LanguageDropdownWidget(
+                                      originalLanguage: originalLanguage,
+                                      translateLanguage: translateLanguage,
+                                      onOriginalSelected:
+                                          (TranslateLanguage value) {
+                                        originalLanguage = value;
+                                      },
+                                      onTranslateSelected:
+                                          (TranslateLanguage value) {
+                                        translateLanguage = value;
+                                      },
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        translateWord();
+                                      },
+                                      child: Image.asset(
+                                          'assets/images/translate.png',
+                                          width: 100,
+                                          height: 100),
+                                    ),
+                                  ],
                                 ),
                                 Align(
                                     alignment: const Alignment(-0.95, 0.0),
-                                    child: bodyText('日本語', MyTheme.lightGrey)),
-                                _customTextField(
+                                    child: bodyText(
+                                        'Translated', MyTheme.lightGrey)),
+                                customTextField(
                                     _translatedController, MyTheme.lemon,
                                     isEnglish: false),
                                 const SizedBox(height: 16),
                                 Align(
                                     alignment: const Alignment(-0.95, 0.0),
-                                    child: bodyText('例文', MyTheme.lightGrey)),
-                                _customTextField(
+                                    child:
+                                        bodyText('Example', MyTheme.lightGrey)),
+                                customTextField(
                                     _exampleController, MyTheme.orange,
                                     lines: 2, isEnglish: true),
                                 const SizedBox(height: 16),
                                 Align(
                                     alignment: const Alignment(-0.95, 0.0),
-                                    child: bodyText('例文翻訳', MyTheme.lightGrey)),
-                                _customTextField(_exampleTranslatedController,
+                                    child: bodyText('Translated Example',
+                                        MyTheme.lightGrey)),
+                                customTextField(_exampleTranslatedController,
                                     MyTheme.orange,
                                     lines: 2, isEnglish: false),
                                 const SizedBox(height: 32),
@@ -414,7 +450,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     );
   }
 
-  Widget _customTextField(controller, color,
+  Widget customTextField(controller, color,
       {FocusNode? focusNode,
       bool isInput = false,
       int lines = 1,

@@ -33,10 +33,15 @@ mixin _$WordModel {
   DateTime get updateDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'registration_date')
   DateTime get registrationDate => throw _privateConstructorUsedError;
+  @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson)
   bool get flag => throw _privateConstructorUsedError;
   String? get example => throw _privateConstructorUsedError;
   @JsonKey(name: 'example_translated')
   String? get exampleTranslated => throw _privateConstructorUsedError;
+  @JsonKey(name: 'original_lang')
+  TranslateLanguage get originalLang => throw _privateConstructorUsedError;
+  @JsonKey(name: 'translated_lang')
+  TranslateLanguage get translatedLang => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -57,9 +62,11 @@ abstract class $WordModelCopyWith<$Res> {
       @JsonKey(name: 'update_count') int updateCount,
       @JsonKey(name: 'update_date') DateTime updateDate,
       @JsonKey(name: 'registration_date') DateTime registrationDate,
-      bool flag,
+      @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson) bool flag,
       String? example,
-      @JsonKey(name: 'example_translated') String? exampleTranslated});
+      @JsonKey(name: 'example_translated') String? exampleTranslated,
+      @JsonKey(name: 'original_lang') TranslateLanguage originalLang,
+      @JsonKey(name: 'translated_lang') TranslateLanguage translatedLang});
 }
 
 /// @nodoc
@@ -85,6 +92,8 @@ class _$WordModelCopyWithImpl<$Res, $Val extends WordModel>
     Object? flag = null,
     Object? example = freezed,
     Object? exampleTranslated = freezed,
+    Object? originalLang = null,
+    Object? translatedLang = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -127,6 +136,14 @@ class _$WordModelCopyWithImpl<$Res, $Val extends WordModel>
           ? _value.exampleTranslated
           : exampleTranslated // ignore: cast_nullable_to_non_nullable
               as String?,
+      originalLang: null == originalLang
+          ? _value.originalLang
+          : originalLang // ignore: cast_nullable_to_non_nullable
+              as TranslateLanguage,
+      translatedLang: null == translatedLang
+          ? _value.translatedLang
+          : translatedLang // ignore: cast_nullable_to_non_nullable
+              as TranslateLanguage,
     ) as $Val);
   }
 }
@@ -147,9 +164,11 @@ abstract class _$$WordModelImplCopyWith<$Res>
       @JsonKey(name: 'update_count') int updateCount,
       @JsonKey(name: 'update_date') DateTime updateDate,
       @JsonKey(name: 'registration_date') DateTime registrationDate,
-      bool flag,
+      @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson) bool flag,
       String? example,
-      @JsonKey(name: 'example_translated') String? exampleTranslated});
+      @JsonKey(name: 'example_translated') String? exampleTranslated,
+      @JsonKey(name: 'original_lang') TranslateLanguage originalLang,
+      @JsonKey(name: 'translated_lang') TranslateLanguage translatedLang});
 }
 
 /// @nodoc
@@ -173,6 +192,8 @@ class __$$WordModelImplCopyWithImpl<$Res>
     Object? flag = null,
     Object? example = freezed,
     Object? exampleTranslated = freezed,
+    Object? originalLang = null,
+    Object? translatedLang = null,
   }) {
     return _then(_$WordModelImpl(
       id: null == id
@@ -215,6 +236,14 @@ class __$$WordModelImplCopyWithImpl<$Res>
           ? _value.exampleTranslated
           : exampleTranslated // ignore: cast_nullable_to_non_nullable
               as String?,
+      originalLang: null == originalLang
+          ? _value.originalLang
+          : originalLang // ignore: cast_nullable_to_non_nullable
+              as TranslateLanguage,
+      translatedLang: null == translatedLang
+          ? _value.translatedLang
+          : translatedLang // ignore: cast_nullable_to_non_nullable
+              as TranslateLanguage,
     ));
   }
 }
@@ -230,9 +259,11 @@ class _$WordModelImpl implements _WordModel {
       @JsonKey(name: 'update_count') required this.updateCount,
       @JsonKey(name: 'update_date') required this.updateDate,
       @JsonKey(name: 'registration_date') required this.registrationDate,
-      this.flag = false,
+      @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson) this.flag = false,
       this.example,
-      @JsonKey(name: 'example_translated') this.exampleTranslated});
+      @JsonKey(name: 'example_translated') this.exampleTranslated,
+      @JsonKey(name: 'original_lang') required this.originalLang,
+      @JsonKey(name: 'translated_lang') required this.translatedLang});
 
   factory _$WordModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$WordModelImplFromJson(json);
@@ -258,17 +289,23 @@ class _$WordModelImpl implements _WordModel {
   @JsonKey(name: 'registration_date')
   final DateTime registrationDate;
   @override
-  @JsonKey()
+  @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson)
   final bool flag;
   @override
   final String? example;
   @override
   @JsonKey(name: 'example_translated')
   final String? exampleTranslated;
+  @override
+  @JsonKey(name: 'original_lang')
+  final TranslateLanguage originalLang;
+  @override
+  @JsonKey(name: 'translated_lang')
+  final TranslateLanguage translatedLang;
 
   @override
   String toString() {
-    return 'WordModel(id: $id, originalWord: $originalWord, translatedWord: $translatedWord, noticeDuration: $noticeDuration, updateCount: $updateCount, updateDate: $updateDate, registrationDate: $registrationDate, flag: $flag, example: $example, exampleTranslated: $exampleTranslated)';
+    return 'WordModel(id: $id, originalWord: $originalWord, translatedWord: $translatedWord, noticeDuration: $noticeDuration, updateCount: $updateCount, updateDate: $updateDate, registrationDate: $registrationDate, flag: $flag, example: $example, exampleTranslated: $exampleTranslated, originalLang: $originalLang, translatedLang: $translatedLang)';
   }
 
   @override
@@ -292,7 +329,11 @@ class _$WordModelImpl implements _WordModel {
             (identical(other.flag, flag) || other.flag == flag) &&
             (identical(other.example, example) || other.example == example) &&
             (identical(other.exampleTranslated, exampleTranslated) ||
-                other.exampleTranslated == exampleTranslated));
+                other.exampleTranslated == exampleTranslated) &&
+            (identical(other.originalLang, originalLang) ||
+                other.originalLang == originalLang) &&
+            (identical(other.translatedLang, translatedLang) ||
+                other.translatedLang == translatedLang));
   }
 
   @JsonKey(ignore: true)
@@ -308,7 +349,9 @@ class _$WordModelImpl implements _WordModel {
       registrationDate,
       flag,
       example,
-      exampleTranslated);
+      exampleTranslated,
+      originalLang,
+      translatedLang);
 
   @JsonKey(ignore: true)
   @override
@@ -334,10 +377,13 @@ abstract class _WordModel implements WordModel {
       @JsonKey(name: 'update_date') required final DateTime updateDate,
       @JsonKey(name: 'registration_date')
       required final DateTime registrationDate,
-      final bool flag,
+      @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson) final bool flag,
       final String? example,
-      @JsonKey(name: 'example_translated')
-      final String? exampleTranslated}) = _$WordModelImpl;
+      @JsonKey(name: 'example_translated') final String? exampleTranslated,
+      @JsonKey(name: 'original_lang')
+      required final TranslateLanguage originalLang,
+      @JsonKey(name: 'translated_lang')
+      required final TranslateLanguage translatedLang}) = _$WordModelImpl;
 
   factory _WordModel.fromJson(Map<String, dynamic> json) =
       _$WordModelImpl.fromJson;
@@ -363,12 +409,19 @@ abstract class _WordModel implements WordModel {
   @JsonKey(name: 'registration_date')
   DateTime get registrationDate;
   @override
+  @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson)
   bool get flag;
   @override
   String? get example;
   @override
   @JsonKey(name: 'example_translated')
   String? get exampleTranslated;
+  @override
+  @JsonKey(name: 'original_lang')
+  TranslateLanguage get originalLang;
+  @override
+  @JsonKey(name: 'translated_lang')
+  TranslateLanguage get translatedLang;
   @override
   @JsonKey(ignore: true)
   _$$WordModelImplCopyWith<_$WordModelImpl> get copyWith =>
