@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
@@ -32,14 +34,31 @@ class _HomePageState extends State<HomePage>
     super.initState();
   }
 
+  Future<List<TranslateLanguage>> loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final loadedOriginalString = prefs.getString("original_lang") ?? "english";
+    final loadedTranslateString =
+        prefs.getString("translate_lang") ?? "japanese";
+    final original = TranslateLanguage.values
+        .firstWhere((e) => e.lowerString == loadedOriginalString);
+    final translate = TranslateLanguage.values
+        .firstWhere((e) => e.lowerString == loadedTranslateString);
+    return [original, translate];
+  }
+
   void handleTapFAB(BuildContext context) async {
+    final langs = await loadPreferences();
+    if (!mounted) return;
     await showModalBottomSheet(
         backgroundColor: Colors.transparent,
         enableDrag: false,
         isDismissible: false,
         isScrollControlled: true,
         context: context,
-        builder: (context) => const RegistrationBottomSheet());
+        builder: (context) => RegistrationBottomSheet(
+              initialOriginalLang: langs[0],
+              initialTranslateLang: langs[1],
+            ));
     handleReload();
   }
 

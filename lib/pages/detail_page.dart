@@ -5,7 +5,6 @@ import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/home_page.dart';
-import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button2.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -48,7 +47,6 @@ TextEditingController _exampleController = TextEditingController();
 TextEditingController _exampleTranslatedController = TextEditingController();
 
 class _DetailPageState extends State<DetailPage> {
-  NoticeModel noticeDurationList = NoticeModel();
   bool flag = false;
   @override
   void initState() {
@@ -273,7 +271,7 @@ class _DetailPageState extends State<DetailPage> {
           alignment: Alignment.center,
           child: Image.asset(
             'assets/images/detail.png',
-            width: 200,
+            width: 120,
           ),
         ),
         leading: InkWell(

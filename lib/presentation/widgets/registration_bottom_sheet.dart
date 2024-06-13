@@ -16,7 +16,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class RegistrationBottomSheet extends StatefulWidget {
-  const RegistrationBottomSheet({super.key});
+  final TranslateLanguage initialOriginalLang;
+  final TranslateLanguage initialTranslateLang;
+  const RegistrationBottomSheet(
+      {super.key,
+      required this.initialOriginalLang,
+      required this.initialTranslateLang});
 
   @override
   State<RegistrationBottomSheet> createState() =>
@@ -50,7 +55,25 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       curve: Curves.easeInOut,
     );
     _focusNode.requestFocus();
+    originalLanguage = widget.initialOriginalLang;
+    translateLanguage = widget.initialTranslateLang;
   }
+
+  // Future<List<TranslateLanguage>> loadPreferences() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final loadedOriginalString = prefs.getString("original_lang") ?? "english";
+  //   final loadedTranslateString =
+  //       prefs.getString("translate_lang") ?? "japanese";
+  //   final original = TranslateLanguage.values
+  //       .firstWhere((e) => e.lowerString == loadedOriginalString);
+  //   final translate = TranslateLanguage.values
+  //       .firstWhere((e) => e.lowerString == loadedTranslateString);
+  //   setState(() {
+  //     originalLanguage = original;
+  //     translateLanguage = translate;
+  //   });
+  //   return [original, translate];
+  // }
 
   Future<void> translateWord() async {
     if (_originalWordController.text == "") return;
@@ -148,9 +171,6 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                         ),
                       ),
                     ),
-                    // Text(translatedModel.translated[0],
-                    //     style:
-                    //         const TextStyle(fontSize: 24, color: Colors.black)),
                   ],
                 ),
                 const SizedBox(height: 8),
