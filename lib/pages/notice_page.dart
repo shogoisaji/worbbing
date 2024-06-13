@@ -88,6 +88,8 @@ class _NoticePageState extends State<NoticePage> {
       prefs.setInt('${key}minute', value.minute);
     } else if (value is String) {
       prefs.setString(key, value);
+    } else if (value is int) {
+      prefs.setInt(key, value);
     }
   }
 
@@ -96,7 +98,7 @@ class _NoticePageState extends State<NoticePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       notificationState = prefs.getBool('notificationState') ?? false;
-      selectedWordsCount = prefs.getInt('selectedWordsCount') ?? 1;
+      selectedWordsCount = prefs.getInt('selectedWordCount') ?? 1;
       time1State = prefs.getBool('time1State') ?? false;
       time2State = prefs.getBool('time2State') ?? false;
       time3State = prefs.getBool('time3State') ?? false;
@@ -113,10 +115,11 @@ class _NoticePageState extends State<NoticePage> {
   }
 
   /// update words count
-  void updateWordsCount(int newValue) async {
+  void updateWordCount(int newValue) async {
     setState(() {
       selectedWordsCount = newValue;
-      saveData('selectedWordsCount', newValue);
+      saveData('selectedWordCount', newValue);
+      print('selectedWordCount: $selectedWordsCount');
     });
     if (notificationState) {
       if (notificationState && time1State) {
@@ -260,7 +263,11 @@ class _NoticePageState extends State<NoticePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    mediumText('Word Notification', Colors.white),
+                    const Text('Random word \nNotifications',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500)),
                     Switch(
                       activeTrackColor: MyTheme.lemon,
                       inactiveThumbColor: Colors.grey,
@@ -294,10 +301,8 @@ class _NoticePageState extends State<NoticePage> {
                             await WordsNotification().scheduleNotification(
                                 30, selectedWordsCount, selectedTime1);
                           }
-                          debugPrint("notificaton ON");
                         } else {
                           await flutterLocalNotificationsPlugin.cancelAll();
-                          debugPrint("canceled all");
                         }
                       },
                     )
@@ -324,7 +329,7 @@ class _NoticePageState extends State<NoticePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           mediumText(
-                              'Words Count',
+                              'Word Count',
                               notificationState
                                   ? Colors.white
                                   : Colors.white30),
@@ -354,7 +359,7 @@ class _NoticePageState extends State<NoticePage> {
                                   right: 15,
                                   child: WordsCountDropdownWidget(
                                     selectedWordsCount: selectedWordsCount,
-                                    onItemSelected: updateWordsCount,
+                                    onItemSelected: updateWordCount,
                                   ),
                                 ),
                               ],

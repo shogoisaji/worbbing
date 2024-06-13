@@ -6,6 +6,7 @@ import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/pages/splash_page.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:worbbing/presentation/theme/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        brightness: Brightness.dark,
+        colorSchemeSeed: MyTheme.lemon,
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),

@@ -7,7 +7,7 @@ import 'package:worbbing/models/translate_language.dart';
 part 'word_model.freezed.dart';
 part 'word_model.g.dart';
 
-const List<int> noticeDurationList = [1, 3, 7, 14, 30, 90, 00];
+const List<int> noticeDurationList = [1, 3, 7, 14, 30, 90, 99];
 
 bool _flagFromJson(int flag) => flag != 0;
 

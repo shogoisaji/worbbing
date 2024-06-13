@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/detail_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class WordListTile extends StatefulWidget {
   final WordModel wordModel;
@@ -39,13 +39,18 @@ class _WordListTileState extends State<WordListTile>
     widget.onDragEnd();
   }
 
+  Widget _translatedWord() {
+    return AutoSizeText(widget.wordModel.translatedWord,
+        maxLines: 1,
+        style: const TextStyle(
+            color: Colors.black, fontSize: 26, fontWeight: FontWeight.w600));
+  }
+
   @override
   void initState() {
     super.initState();
     _color = MyTheme.lemon;
-    _widget = Text(widget.wordModel.translatedWord,
-        style: const TextStyle(
-            color: Colors.black, fontSize: 28, fontWeight: FontWeight.w600));
+    _widget = _translatedWord();
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
   }
@@ -131,11 +136,7 @@ class _WordListTileState extends State<WordListTile>
                 } else {
                   setState(() {
                     _color = MyTheme.lemon;
-                    _widget = Text(widget.wordModel.translatedWord,
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w600));
+                    _widget = _translatedWord();
                   });
                 }
 
@@ -159,11 +160,7 @@ class _WordListTileState extends State<WordListTile>
                 }
                 setState(() {
                   _color = MyTheme.lemon;
-                  _widget = Text(widget.wordModel.translatedWord,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600));
+                  _widget = _translatedWord();
                 });
               },
               onHorizontalDragCancel: () {
@@ -185,13 +182,11 @@ class _WordListTileState extends State<WordListTile>
 class _SlideCard extends StatelessWidget {
   final WordModel wordModel;
   const _SlideCard({
-    super.key,
     required this.wordModel,
   });
 
   @override
   Widget build(BuildContext context) {
-    NoticeModel noticeDurationList = NoticeModel();
     final DateTime currentDateTime = DateTime.now();
     final int forgettingDuration =
         currentDateTime.difference(wordModel.updateDate).inDays;
@@ -246,7 +241,7 @@ class _SlideCard extends StatelessWidget {
                               48,
                               wordModel.noticeDuration,
                               (forgettingDuration < wordModel.noticeDuration) ||
-                                      (wordModel.noticeDuration == 00)
+                                      (wordModel.noticeDuration == 99)
                                   ? MyTheme.lemon
                                   : MyTheme.orange)),
                     ],

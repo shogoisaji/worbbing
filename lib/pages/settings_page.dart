@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
@@ -16,7 +17,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final model = NoticeModel();
+  // final model = NoticeModel();
 
   late Future<int> totalWords;
   late Future<Map<int, int>> countNotice;
@@ -116,7 +117,6 @@ class _SettingsPageState extends State<SettingsPage> {
               }
 
               final data = snapshot.data!;
-              debugPrint(data.toString());
 
               return Container(
                 margin: const EdgeInsets.only(top: 50),
@@ -124,21 +124,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 height: 100,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: model.noticeDuration.length,
+                  itemCount: noticeDurationList.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(7.0),
                       child: Column(
                         children: [
                           noticeBlock(
-                              36, model.noticeDuration[index], MyTheme.lemon),
+                              36, noticeDurationList[index], MyTheme.lemon),
                           const SizedBox(
                             height: 8,
                           ),
                           mediumText(
-                              data[index] != null
-                                  ? data[index].toString()
-                                  : '0',
+                              data[noticeDurationList[index]] == null
+                                  ? "0"
+                                  : data[noticeDurationList[index]].toString(),
                               Colors.white)
                         ],
                       ),

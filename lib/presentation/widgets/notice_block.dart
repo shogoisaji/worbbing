@@ -28,12 +28,17 @@ Widget noticeBlock(double size, int number, Color color) {
         height: size,
         color: color,
         child: Center(
-            child: titleText(
-                number != 0
-                    ? number.toString()
-                    : number.toString().padLeft(2, '0'),
-                Colors.black,
-                fontSize)),
+            child: number == 99
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 6.0),
+                    child: Text('∞',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: fontSize * 1.2,
+                        )),
+                  )
+                : titleText(number.toString(), Colors.black, fontSize)),
       ).animate().shake(
             duration: 1000.milliseconds,
             delay: (randomNumber * 30).milliseconds,

@@ -36,6 +36,7 @@ dependencies:
   dio:
   rive_animated_icon:
   app_settings:
+  auto_size_text:
 
 dev_dependencies:
   flutter_test:
@@ -49,7 +50,6 @@ dev_dependencies:
   envied_generator:
   lottie:
   flutter_svg:
-  auto_size_text:
 
   flutter_lints: ^2.0.0
 

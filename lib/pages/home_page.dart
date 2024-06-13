@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/settings_page.dart';
 import 'package:worbbing/pages/notice_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -53,10 +52,8 @@ class _HomePageState extends State<HomePage>
         case 0:
           dataFuture = SqfliteRepository.instance.queryAllRowsNoticeDuration();
         case 1:
-          dataFuture = SqfliteRepository.instance.queryAllRowsAlphabet();
-        case 2:
           dataFuture = SqfliteRepository.instance.queryAllRowsRegistration();
-        case 3:
+        case 2:
           dataFuture = SqfliteRepository.instance.queryAllRowsFlag();
       }
     });
@@ -132,21 +129,15 @@ class _HomePageState extends State<HomePage>
                         });
                         handleReload();
                       }),
-                      tagSelect('Alphabet', tagState, 1, () {
+                      tagSelect('Register', tagState, 1, () {
                         setState(() {
                           tagState = 1;
                         });
                         handleReload();
                       }),
-                      tagSelect('Register', tagState, 2, () {
+                      tagSelect('Flag', tagState, 2, () {
                         setState(() {
                           tagState = 2;
-                        });
-                        handleReload();
-                      }),
-                      tagSelect('Flagged', tagState, 3, () {
-                        setState(() {
-                          tagState = 3;
                         });
                         handleReload();
                       }),
@@ -175,7 +166,6 @@ class _HomePageState extends State<HomePage>
                   final wordList = snapshot.data!;
 
                   final DateTime currentDateTime = DateTime.now();
-                  NoticeModel noticeDurationList = NoticeModel();
                   int noticeDurationTime;
                   int forgettingDuration;
                   DateTime updateDateTime;
@@ -183,13 +173,12 @@ class _HomePageState extends State<HomePage>
                   // change list expired top of list
                   if (tagState == 0) {
                     for (var i = 0; i < wordList.length; i++) {
-                      noticeDurationTime = noticeDurationList
-                          .noticeDuration[wordList[i].noticeDuration];
+                      noticeDurationTime = wordList[i].noticeDuration;
                       updateDateTime = wordList[i].updateDate;
                       forgettingDuration =
                           currentDateTime.difference(updateDateTime).inDays;
                       if (forgettingDuration >= noticeDurationTime &&
-                          noticeDurationTime != 00) {
+                          noticeDurationTime != 99) {
                         // insert top of array
                         var insertData = wordList.removeAt(i);
                         wordList.insert(0, insertData);
@@ -311,8 +300,9 @@ class _HomePageState extends State<HomePage>
                   child: Transform.rotate(
                     angle: -1.2,
                     child: const Icon(
-                      Icons.add,
-                      size: 32,
+                      Icons.add_rounded,
+                      color: Colors.black,
+                      size: 42,
                     ),
                   ))),
         ),
