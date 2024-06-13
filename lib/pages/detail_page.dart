@@ -90,7 +90,8 @@ class _DetailPageState extends State<DetailPage> {
                         bodyText('Original', MyTheme.lemon.withOpacity(0.9)),
                         TextField(
                           keyboardType: TextInputType.visiblePassword,
-                          style: const TextStyle(fontSize: 20),
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.black),
                           controller: _originalController,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -104,7 +105,8 @@ class _DetailPageState extends State<DetailPage> {
                         bodyText(
                             'Translated', Colors.orangeAccent.withOpacity(0.9)),
                         TextField(
-                          style: const TextStyle(fontSize: 20),
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.black),
                           controller: _translatedController,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -117,7 +119,8 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                         bodyText('Example', MyTheme.lemon.withOpacity(0.9)),
                         TextField(
-                          style: const TextStyle(fontSize: 20),
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.black),
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
                           controller: _exampleController,
@@ -133,7 +136,8 @@ class _DetailPageState extends State<DetailPage> {
                         bodyText('Translated Example',
                             Colors.orangeAccent.withOpacity(0.9)),
                         TextField(
-                          style: const TextStyle(fontSize: 20),
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.black),
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
                           controller: _exampleTranslatedController,

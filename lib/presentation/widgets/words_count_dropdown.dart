@@ -22,6 +22,7 @@ class _WordsCountDropdownWidgetState extends State<WordsCountDropdownWidget> {
   Widget build(BuildContext context) {
     dropdownValue = widget.selectedWordsCount;
     return DropdownButton<int>(
+      dropdownColor: Colors.white,
       alignment: Alignment.center,
       underline: Container(
         height: 2,

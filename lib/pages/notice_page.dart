@@ -119,7 +119,6 @@ class _NoticePageState extends State<NoticePage> {
     setState(() {
       selectedWordsCount = newValue;
       saveData('selectedWordCount', newValue);
-      print('selectedWordCount: $selectedWordsCount');
     });
     if (notificationState) {
       if (notificationState && time1State) {

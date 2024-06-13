@@ -41,6 +41,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         colorSchemeSeed: MyTheme.lemon,
+        textTheme: const TextTheme(
+          titleMedium: TextStyle(
+            color: Colors.black,
+          ),
+        ),
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),

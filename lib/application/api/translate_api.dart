@@ -13,6 +13,10 @@ class TranslateApi {
       },
       options: Options(headers: {'X-API-Key': Env.xApiKey}),
     );
-    return response.data;
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception('Failed to translate');
+    }
   }
 }

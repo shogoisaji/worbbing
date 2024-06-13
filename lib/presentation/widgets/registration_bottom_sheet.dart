@@ -12,7 +12,6 @@ import 'package:worbbing/presentation/widgets/language_dropdown.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:lottie/lottie.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class RegistrationBottomSheet extends StatefulWidget {
@@ -59,22 +58,6 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     translateLanguage = widget.initialTranslateLang;
   }
 
-  // Future<List<TranslateLanguage>> loadPreferences() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final loadedOriginalString = prefs.getString("original_lang") ?? "english";
-  //   final loadedTranslateString =
-  //       prefs.getString("translate_lang") ?? "japanese";
-  //   final original = TranslateLanguage.values
-  //       .firstWhere((e) => e.lowerString == loadedOriginalString);
-  //   final translate = TranslateLanguage.values
-  //       .firstWhere((e) => e.lowerString == loadedTranslateString);
-  //   setState(() {
-  //     originalLanguage = original;
-  //     translateLanguage = translate;
-  //   });
-  //   return [original, translate];
-  // }
-
   Future<void> translateWord() async {
     if (_originalWordController.text == "") return;
     setState(() {
@@ -106,24 +89,18 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 loopAnimation: true,
                 onTap: () {},
                 onHover: (value) {}),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            Row(
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/svg/a.svg',
-                      width: 30,
-                      height: 30,
-                      colorFilter: ColorFilter.mode(
-                          Colors.grey.shade800, BlendMode.srcIn),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Container(
+                Center(
+                    child: Icon(Icons.arrow_downward_rounded,
+                        size: 40, color: MyTheme.grey)),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
@@ -132,30 +109,16 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                             horizontal: 18, vertical: 6),
                         child: AutoSizeText(
                           translatedModel.original,
-                          style: const TextStyle(fontSize: 30),
+                          style: const TextStyle(
+                              fontSize: 30, color: Colors.black),
                           minFontSize: 16,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/svg/a_j.svg',
-                      width: 30,
-                      height: 30,
-                      colorFilter: ColorFilter.mode(
-                          Colors.grey.shade800, BlendMode.srcIn),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Container(
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
@@ -164,16 +127,17 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                             horizontal: 14, vertical: 6),
                         child: AutoSizeText(
                           translatedModel.translated[0],
-                          style: const TextStyle(fontSize: 30),
+                          style: const TextStyle(
+                              fontSize: 30, color: Colors.black),
                           minFontSize: 16,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
               ],
             ),
             'No',
@@ -194,7 +158,20 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
         _exampleTranslatedController.text = translatedModel.exampleTranslated;
       }
     } catch (e) {
-      debugPrint('error:$e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          backgroundColor: Colors.red.shade400,
+          content: const Center(
+            child: Text('Failed to translate!',
+                style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold)),
+          ),
+        ),
+      );
     } finally {
       setState(() {
         isLoading = false;
