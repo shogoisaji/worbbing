@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/pages/config_page.dart';
+import 'package:worbbing/pages/notice_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class WordsNotification {
@@ -33,6 +33,27 @@ class WordsNotification {
               AndroidFlutterLocalNotificationsPlugin>();
       await androidImplementation?.requestNotificationsPermission();
     }
+  }
+
+  Future<bool> checkNotificationPermissions() async {
+    if (Platform.isIOS) {
+      final IOSFlutterLocalNotificationsPlugin? iosImplementation =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
+      final settings = await iosImplementation?.checkPermissions();
+      if (settings != null) {
+        return settings.isAlertEnabled;
+      }
+    } else if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      final bool? areEnabled =
+          await androidImplementation?.areNotificationsEnabled();
+      print('Notifications enabled: $areEnabled');
+      return areEnabled ?? false;
+    }
+    return false;
   }
 
   /// sample notification

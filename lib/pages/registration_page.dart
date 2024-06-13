@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/translated_response.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
@@ -142,6 +143,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     final newWord = WordModel.createNewWord(
       originalWord: _originalController.text,
       translatedWord: _translatedController.text,
+      originalLang: TranslateLanguage.english,
+      translatedLang: TranslateLanguage.japanese,
       flag: flag != 0,
     );
 

@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/models/notice_model.dart';
-import 'package:worbbing/pages/account_page.dart';
-import 'package:worbbing/pages/config_page.dart';
+import 'package:worbbing/pages/settings_page.dart';
+import 'package:worbbing/pages/notice_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
@@ -75,13 +76,13 @@ class _HomePageState extends State<HomePage>
           leading: IconButton(
               padding: const EdgeInsets.only(top: 5, left: 10),
               onPressed: () {
-                //
+                HapticFeedback.lightImpact();
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const ConfigPage()),
+                  MaterialPageRoute(builder: (context) => const NoticePage()),
                 );
               },
               icon: const Icon(
-                Icons.settings,
+                Icons.notifications_rounded,
                 color: Colors.white,
                 size: 30,
               )),
@@ -89,13 +90,14 @@ class _HomePageState extends State<HomePage>
             IconButton(
                 padding: const EdgeInsets.only(top: 5, right: 10),
                 onPressed: () {
+                  HapticFeedback.lightImpact();
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                        builder: (context) => const AccountPage()),
+                        builder: (context) => const SettingsPage()),
                   );
                 },
                 icon: const Icon(
-                  Icons.account_circle,
+                  Icons.settings_rounded,
                   color: Colors.white,
                   size: 30,
                 )),
@@ -303,6 +305,7 @@ class _HomePageState extends State<HomePage>
                     //   MaterialPageRoute(
                     //       builder: (context) => const RegistrationPage()),
                     // );
+                    HapticFeedback.lightImpact();
                     handleTapFAB(context);
                   },
                   child: Transform.rotate(

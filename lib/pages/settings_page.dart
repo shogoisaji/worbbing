@@ -8,14 +8,14 @@ import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _SettingsPageState extends State<SettingsPage> {
   final model = NoticeModel();
 
   late Future<int> totalWords;
@@ -60,7 +60,7 @@ class _AccountPageState extends State<AccountPage> {
               Align(
                 alignment: Alignment.center,
                 child: Image.asset(
-                  'assets/images/account.png',
+                  'assets/images/settings.png',
                   width: 200,
                 ),
               ),

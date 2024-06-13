@@ -35,7 +35,7 @@ Widget noticeBlock(double size, int number, Color color) {
                 Colors.black,
                 fontSize)),
       ).animate().shake(
-            duration: 1500.milliseconds,
+            duration: 1000.milliseconds,
             delay: (randomNumber * 30).milliseconds,
             hz: color == MyTheme.orange ? 5 : 0,
           ),

@@ -16,6 +16,10 @@ _$TranslatedResponseImpl _$$TranslatedResponseImplFromJson(
       example: json['example'] as String,
       exampleTranslated: json['example_translated'] as String,
       type: $enumDecode(_$TranslatedResponseTypeEnumMap, json['type']),
+      originalLang:
+          $enumDecode(_$TranslateLanguageEnumMap, json['original_lang']),
+      translateLang:
+          $enumDecode(_$TranslateLanguageEnumMap, json['translate_lang']),
     );
 
 Map<String, dynamic> _$$TranslatedResponseImplToJson(
@@ -26,9 +30,23 @@ Map<String, dynamic> _$$TranslatedResponseImplToJson(
       'example': instance.example,
       'example_translated': instance.exampleTranslated,
       'type': _$TranslatedResponseTypeEnumMap[instance.type]!,
+      'original_lang': _$TranslateLanguageEnumMap[instance.originalLang]!,
+      'translate_lang': _$TranslateLanguageEnumMap[instance.translateLang]!,
     };
 
 const _$TranslatedResponseTypeEnumMap = {
   TranslatedResponseType.translated: 'translated',
   TranslatedResponseType.suggestion: 'suggestion',
+};
+
+const _$TranslateLanguageEnumMap = {
+  TranslateLanguage.english: 'english',
+  TranslateLanguage.japanese: 'japanese',
+  TranslateLanguage.chinese: 'chinese',
+  TranslateLanguage.korean: 'korean',
+  TranslateLanguage.spanish: 'spanish',
+  TranslateLanguage.french: 'french',
+  TranslateLanguage.german: 'german',
+  TranslateLanguage.italian: 'italian',
+  TranslateLanguage.portuguese: 'portuguese',
 };

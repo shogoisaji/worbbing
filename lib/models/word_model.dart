@@ -2,11 +2,16 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:worbbing/models/translate_language.dart';
 
 part 'word_model.freezed.dart';
 part 'word_model.g.dart';
 
 const List<int> noticeDurationList = [1, 3, 7, 14, 30, 90, 00];
+
+bool _flagFromJson(int flag) => flag != 0;
+
+int _flagToJson(bool flag) => flag ? 1 : 0;
 
 @freezed
 class WordModel with _$WordModel {
@@ -18,9 +23,13 @@ class WordModel with _$WordModel {
     @JsonKey(name: 'update_count') required int updateCount,
     @JsonKey(name: 'update_date') required DateTime updateDate,
     @JsonKey(name: 'registration_date') required DateTime registrationDate,
-    @Default(false) bool flag,
+    @JsonKey(toJson: _flagToJson, fromJson: _flagFromJson)
+    @Default(false)
+    bool flag,
     String? example,
     @JsonKey(name: 'example_translated') String? exampleTranslated,
+    @JsonKey(name: 'original_lang') required TranslateLanguage originalLang,
+    @JsonKey(name: 'translated_lang') required TranslateLanguage translatedLang,
   }) = _WordModel;
 
   factory WordModel.fromJson(Map<String, dynamic> json) => WordModel(
@@ -34,14 +43,39 @@ class WordModel with _$WordModel {
         flag: json['flag'] as int != 0, // 0:false 1:true
         example: json['example'] as String?,
         exampleTranslated: json['example_translated'] as String?,
+        originalLang: TranslateLanguage.values
+            .firstWhere((e) => e.lowerString == json['original_lang']),
+        translatedLang: TranslateLanguage.values
+            .firstWhere((e) => e.lowerString == json['translated_lang']),
       );
 
-  factory WordModel.createNewWord(
-      {required String originalWord,
-      required String translatedWord,
-      bool flag = false,
-      String? example,
-      String? exampleTranslated}) {
+  // @override
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'id': id,
+  //     'notice_duration': noticeDuration,
+  //     'update_count': updateCount,
+  //     'flag': flag ? 1 : 0, // bool を int に変換
+  //     'original_word': originalWord,
+  //     'translated_word': translatedWord,
+  //     'update_date': updateDate,
+  //     'registration_date': registrationDate,
+  //     'example': example,
+  //     'example_translated': exampleTranslated,
+  //     'original_lang': originalLang.lowerString,
+  //     'translated_lang': translatedLang.lowerString,
+  //   };
+  // }
+
+  factory WordModel.createNewWord({
+    required String originalWord,
+    required String translatedWord,
+    bool flag = false,
+    String? example,
+    String? exampleTranslated,
+    required TranslateLanguage originalLang,
+    required TranslateLanguage translatedLang,
+  }) {
     return WordModel(
       id: const Uuid().v4(),
       originalWord: originalWord,
@@ -53,23 +87,9 @@ class WordModel with _$WordModel {
       flag: flag,
       example: example,
       exampleTranslated: exampleTranslated,
+      originalLang: originalLang,
+      translatedLang: translatedLang,
     );
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'original_word': originalWord,
-      'translated_word': translatedWord,
-      'notice_duration': noticeDuration,
-      'update_count': updateCount,
-      'update_date': updateDate.toIso8601String(),
-      'registration_date': registrationDate.toIso8601String(),
-      'flag': flag ? 1 : 0,
-      'example': example,
-      'example_translated': exampleTranslated,
-    };
   }
 }
 
