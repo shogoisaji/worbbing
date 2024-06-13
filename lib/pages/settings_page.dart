@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
-import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -17,8 +16,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  // final model = NoticeModel();
-
   late Future<int> totalWords;
   late Future<Map<int, int>> countNotice;
 
