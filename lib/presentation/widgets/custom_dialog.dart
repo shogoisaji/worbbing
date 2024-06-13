@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
-class TwoWayDialog {
+class CustomDialog {
   static Future<void> show(
       BuildContext context,
       String title,
@@ -14,21 +14,18 @@ class TwoWayDialog {
       Function onRightButtonPressed) async {
     showDialog(
         context: context,
-        builder: (context) => Align(
-              alignment: const Alignment(0.0, 1.0),
-              child: TwoWayDialogWidget(
-                  title: title,
-                  icon: icon,
-                  content: content,
-                  leftButtonText: leftButtonText,
-                  rightButtonText: rightButtonText,
-                  onLeftButtonPressed: onLeftButtonPressed,
-                  onRightButtonPressed: onRightButtonPressed),
-            ));
+        builder: (context) => CustomDialogWidget(
+            title: title,
+            icon: icon,
+            content: content,
+            leftButtonText: leftButtonText,
+            rightButtonText: rightButtonText,
+            onLeftButtonPressed: onLeftButtonPressed,
+            onRightButtonPressed: onRightButtonPressed));
   }
 }
 
-class TwoWayDialogWidget extends StatelessWidget {
+class CustomDialogWidget extends StatelessWidget {
   final String title;
   final Widget? icon;
   final Widget? content;
@@ -37,7 +34,7 @@ class TwoWayDialogWidget extends StatelessWidget {
   final Function onLeftButtonPressed;
   final Function onRightButtonPressed;
 
-  const TwoWayDialogWidget({
+  const CustomDialogWidget({
     super.key,
     required this.title,
     this.icon,

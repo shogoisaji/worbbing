@@ -222,7 +222,8 @@ class _SlideCard extends StatelessWidget {
                   Row(
                     children: [
                       if (wordModel.flag)
-                        const Icon(Icons.flag, color: Colors.white, size: 32),
+                        const Icon(Icons.flag_rounded,
+                            color: Colors.white, size: 32),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: noticeBlock(

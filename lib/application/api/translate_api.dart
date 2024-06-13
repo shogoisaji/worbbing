@@ -10,7 +10,6 @@ class TranslateApi {
       },
       options: Options(headers: {'X-API-Key': Env.xApiKey}),
     );
-    print(response);
     return response.data;
   }
 }
