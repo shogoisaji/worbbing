@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
+import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/settings_page.dart';
 import 'package:worbbing/pages/notice_page.dart';
@@ -46,6 +48,11 @@ class _HomePageState extends State<HomePage>
     return [original, translate];
   }
 
+  Future<int> loadTicket() async {
+    final ticket = await TicketManager.loadTicket();
+    return ticket;
+  }
+
   void handleTapFAB(BuildContext context) async {
     final langs = await loadPreferences();
     if (!mounted) return;
@@ -84,9 +91,10 @@ class _HomePageState extends State<HomePage>
         appBar: AppBar(
           backgroundColor: MyTheme.grey,
           elevation: 0,
+          centerTitle: true,
           title: Image.asset(
             'assets/images/worbbing_logo.png',
-            width: 200,
+            width: 150,
           ),
           leadingWidth: 40,
           leading: IconButton(
@@ -103,6 +111,11 @@ class _HomePageState extends State<HomePage>
                 size: 30,
               )),
           actions: [
+            FutureBuilder<int>(
+                future: loadTicket(),
+                builder: (context, snapshot) {
+                  return TicketWidget(count: snapshot.data ?? 0, size: 50);
+                }),
             IconButton(
                 padding: const EdgeInsets.only(top: 5, right: 10),
                 onPressed: () {

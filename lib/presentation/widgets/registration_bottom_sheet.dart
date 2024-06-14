@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:worbbing/application/api/translate_api.dart';
+import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/translated_response.dart';
 import 'package:worbbing/models/word_model.dart';
@@ -9,6 +10,7 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown.dart';
+import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:lottie/lottie.dart';
@@ -40,6 +42,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   TranslateLanguage originalLanguage = TranslateLanguage.english;
   TranslateLanguage translateLanguage = TranslateLanguage.japanese;
 
+  int ticket = 0;
+
   bool isLoading = false;
 
   @override
@@ -60,6 +64,22 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
 
   Future<void> translateWord() async {
     if (_originalWordController.text == "") return;
+    if (ticket <= 0) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          backgroundColor: MyTheme.orange,
+          content: Center(
+              child: Text('No Ticket',
+                  style: TextStyle(
+                      color: MyTheme.grey,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold))),
+        ),
+      );
+      return;
+    }
     setState(() {
       isLoading = true;
     });
@@ -75,7 +95,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       final res = await TranslateApi.postRequest(_originalWordController.text,
           originalLanguage.lowerString, translateLanguage.lowerString);
       final translatedModel = TranslatedResponse.fromJson(res);
-
+      final ticket = await TicketManager.useTicket();
+      print('ticket: $ticket');
       if (translatedModel.type == TranslatedResponseType.suggestion) {
         if (!mounted) return;
         await TwoWayDialog.show(
@@ -189,6 +210,14 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   //   });
   //   return translatedResponseList;
   // }
+
+  Future<int> loadTicket() async {
+    final loadedTicket = await TicketManager.loadTicket();
+    setState(() {
+      ticket = loadedTicket;
+    });
+    return loadedTicket;
+  }
 
   Future<void> saveWord() async {
     /// validation
@@ -385,15 +414,28 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                         translateLanguage = value;
                                       },
                                     ),
-                                    InkWell(
-                                      onTap: () {
-                                        HapticFeedback.lightImpact();
-                                        translateWord();
-                                      },
-                                      child: Image.asset(
-                                          'assets/images/translate.png',
-                                          width: 100,
-                                          height: 100),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        FutureBuilder<int>(
+                                            future: loadTicket(),
+                                            builder: (context, snapshot) {
+                                              return TicketWidget(
+                                                  count: snapshot.data ?? 0,
+                                                  size: 50);
+                                            }),
+                                        InkWell(
+                                          onTap: () {
+                                            HapticFeedback.lightImpact();
+                                            translateWord();
+                                          },
+                                          child: Image.asset(
+                                              'assets/images/translate.png',
+                                              width: 100,
+                                              height: 100),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
