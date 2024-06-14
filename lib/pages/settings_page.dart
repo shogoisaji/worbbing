@@ -8,7 +8,6 @@ import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
-import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
@@ -88,9 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
+                Navigator.of(context).pop();
               }),
           backgroundColor: Colors.transparent,
         ),
@@ -153,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
 
                         if (snapshot.hasError) {
-                          return const Text('エラーが発生しました');
+                          return const Text('error');
                         }
 
                         final data = snapshot.data!;
@@ -341,7 +338,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 CircularProgressIndicator()));
                                   }
                                   if (snapshot.hasError) {
-                                    return const Text('エラーが発生しました');
+                                    return const Text('error');
                                   }
                                   final data = snapshot.data!;
                                   return Padding(

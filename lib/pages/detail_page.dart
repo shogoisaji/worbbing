@@ -180,9 +180,10 @@ class _DetailPageState extends State<DetailPage> {
                         setState(() {});
                         if (context1.mounted) {
                           Navigator.pop(context1);
-                          Navigator.of(context1).pushReplacement(
+                          Navigator.of(context1).pushAndRemoveUntil(
                             MaterialPageRoute(
-                                builder: (context1) => const HomePage()),
+                                builder: (context2) => const HomePage()),
+                            (route) => false,
                           );
                         }
                       },
@@ -262,9 +263,10 @@ class _DetailPageState extends State<DetailPage> {
                     await SqfliteRepository.instance.deleteRow(widget.id);
                     if (context2.mounted) {
                       Navigator.pop(context2);
-                      Navigator.of(context2).pushReplacement(
+                      Navigator.of(context2).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context2) => const HomePage()),
+                        (route) => false,
                       );
                     }
                   },
@@ -295,9 +297,7 @@ class _DetailPageState extends State<DetailPage> {
             ),
             onTap: () {
               HapticFeedback.lightImpact();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const HomePage()),
-              );
+              Navigator.of(context).pop();
             }),
         backgroundColor: Colors.transparent,
       ),

@@ -21,7 +21,7 @@ Widget originalTextField(controller) {
             decoration: const InputDecoration(border: InputBorder.none),
             textAlign: TextAlign.center,
             controller: controller,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 36,
               color: Colors.black,
             )),
@@ -47,7 +47,7 @@ Widget translatedTextField(controller) {
           child: TextField(
             //
             keyboardType: TextInputType.text,
-            decoration: InputDecoration(border: InputBorder.none),
+            decoration: const InputDecoration(border: InputBorder.none),
             textAlign: TextAlign.center,
             controller: controller,
             style: GoogleFonts.zenKakuGothicNew(
@@ -69,7 +69,7 @@ Widget memoTextField(controller) {
             child: Container(width: 300, height: 150, color: MyTheme.orange)),
       ),
       Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           width: 300,
           height: 150,
           color: MyTheme.lightGrey,
@@ -77,9 +77,9 @@ Widget memoTextField(controller) {
               //
               keyboardType: TextInputType.multiline,
               maxLines: 10,
-              decoration: InputDecoration(border: InputBorder.none),
+              decoration: const InputDecoration(border: InputBorder.none),
               controller: controller,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 color: Colors.black,
               ))),

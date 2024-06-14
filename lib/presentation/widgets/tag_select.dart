@@ -18,7 +18,6 @@ Widget tagSelect(String tag, int tagState, int index, Function() onTap) {
             ),
           )
         } else
-          // bodyText(tag.split('')[0], Colors.white70),
           Column(
             children: [
               bodyText(tag, Colors.white70),

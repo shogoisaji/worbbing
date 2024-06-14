@@ -49,12 +49,8 @@ Widget customFloatingActionButton(BuildContext context,
                       onPressed: () {
                         animationController.forward();
 
-                        Future.delayed(const Duration(milliseconds: 1500), () {
-                          // Navigator.of(context).pushReplacement(
-                          //   MaterialPageRoute(
-                          //       builder: (context) => RegistrationPage()),
-                          // );
-                        });
+                        Future.delayed(
+                            const Duration(milliseconds: 1500), () {});
                       },
                       child: Transform.rotate(
                         angle: -1.2,

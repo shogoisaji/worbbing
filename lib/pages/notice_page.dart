@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:worbbing/application/usecase/words_notification.dart';
-import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
@@ -71,13 +70,6 @@ class _NoticePageState extends State<NoticePage> {
     }
     await WordsNotification().sampleNotification();
   }
-
-  // ElevatedButton(
-  //             onPressed: () {
-  //               AppSettings.openAppSettings();
-  //             },
-  //             child: Text('Open settings', style: lightTextTheme.bodyMedium),
-  //           ),
 
 // shared preferences save data
   void saveData<T>(String key, T value) async {
@@ -211,9 +203,7 @@ class _NoticePageState extends State<NoticePage> {
               ),
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
+                Navigator.of(context).pop();
               }),
           backgroundColor: Colors.transparent,
         ),
@@ -224,38 +214,6 @@ class _NoticePageState extends State<NoticePage> {
               const SizedBox(
                 height: 20,
               ),
-              // // title
-              // SizedBox(
-              //   width: double.infinity,
-              //   height: 80,
-              //   child: Stack(
-              //     children: [
-              //       Align(
-              //         alignment: const Alignment(-0.89, -0.1),
-              //         child: InkWell(
-              //             child: Image.asset(
-              //               'assets/images/custom_arrow.png',
-              //               width: 35,
-              //               height: 35,
-              //             ),
-              //             onTap: () {
-              //               HapticFeedback.lightImpact();
-              //               Navigator.of(context).pushReplacement(
-              //                 MaterialPageRoute(
-              //                     builder: (context) => const HomePage()),
-              //               );
-              //             }),
-              //       ),
-              //       Align(
-              //         alignment: Alignment.center,
-              //         child: Image.asset(
-              //           'assets/images/notice.png',
-              //           width: 200,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
 // notification
               Center(
                 child: Container(

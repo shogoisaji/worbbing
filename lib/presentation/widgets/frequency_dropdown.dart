@@ -4,7 +4,7 @@ import 'package:worbbing/models/config_model.dart';
 class FrequencyDropdownWidget extends StatefulWidget {
   final Function(String) onItemSelected;
 
-  const FrequencyDropdownWidget({required this.onItemSelected});
+  const FrequencyDropdownWidget({super.key, required this.onItemSelected});
 
   @override
   _FrequencyDropdownWidgetState createState() =>

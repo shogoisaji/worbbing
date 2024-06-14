@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:worbbing/models/word_model.dart';
 
 class SqfliteRepository {
-  static const _databaseName = "test6_Database.db";
+  static const _databaseName = "Words_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
@@ -78,39 +78,6 @@ class SqfliteRepository {
     });
     return null;
   }
-  // Future<String> addData(List<dynamic> addData) async {
-  //   // final int _noticeDuration = 2;
-  //   final int noticeDuration = addData[0];
-  //   final int updateCount = addData[1];
-  //   final int flag = addData[2];
-  //   final String originalWord = addData[3];
-  //   final String translatedWord = addData[4];
-  //   // final String _updateDate = "2023-08-20T06:00:00.000Z";
-  //   final String updateDate = addData[5];
-  //   final String registrationDate = addData[6];
-  //   final String memo = addData[7];
-
-  //   final row = {
-  //     SqfliteRepository.noticeDuration: noticeDuration,
-  //     SqfliteRepository.updateCount: updateCount,
-  //     SqfliteRepository.flag: flag,
-  //     SqfliteRepository.originalWord: originalWord,
-  //     SqfliteRepository.translatedWord: translatedWord,
-  //     SqfliteRepository.updateDate: updateDate,
-  //     SqfliteRepository.registrationDate: registrationDate,
-  //     SqfliteRepository.memo: memo,
-  //   };
-
-  //   Database db = await instance.database;
-
-  //   final id = await db.insert(table, row);
-
-  //   debugPrint('挿入された行のid: $id');
-  //   debugPrint(
-  //       '挿入されたデータ: \n$noticeDuration \n$updateCount \n$flag \n$originalWord \n$translatedWord \n$updateDate \n$registrationDate \n$memo');
-
-  //   return 'success';
-  // }
 
 // get database
   Future<List<WordModel>> queryAllRows({bool isDesc = true}) async {
