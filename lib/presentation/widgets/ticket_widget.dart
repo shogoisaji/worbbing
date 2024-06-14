@@ -22,7 +22,7 @@ class TicketWidget extends StatelessWidget {
             ),
             Positioned(
               bottom: 3,
-              right: 13,
+              right: 10,
               child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
