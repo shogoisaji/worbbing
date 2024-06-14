@@ -101,6 +101,7 @@ extension WordModelExtension on WordModel {
     }
     return copyWith(
       noticeDuration: noticeDurationList[currentDurationIndex + 1],
+      updateDate: DateTime.now(),
     );
   }
 
@@ -111,6 +112,7 @@ extension WordModelExtension on WordModel {
     }
     return copyWith(
       noticeDuration: noticeDurationList[currentDurationIndex - 1],
+      updateDate: DateTime.now(),
     );
   }
 }

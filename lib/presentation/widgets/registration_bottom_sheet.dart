@@ -248,38 +248,6 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
           'OK', () {
         //
       });
-      // showDialog(
-      //     context: context,
-      //     builder: (BuildContext context2) =>
-      //         // deleteDialog(context, widget.id),
-      //         AlertDialog(
-      //           shape: const RoundedRectangleBorder(
-      //               borderRadius: BorderRadius.zero),
-      //           backgroundColor: MyTheme.grey,
-      //           title: Text(
-      //             '"${_originalWordController.text}" is\nalready registered.',
-      //             style: const TextStyle(
-      //                 overflow: TextOverflow.clip,
-      //                 color: Colors.white,
-      //                 fontSize: 24),
-      //           ),
-      //           actions: [
-      //             ElevatedButton(
-      //               style: ElevatedButton.styleFrom(
-      //                 padding: const EdgeInsets.only(
-      //                     left: 12, right: 12, bottom: 4, top: 4),
-      //                 shape: RoundedRectangleBorder(
-      //                   borderRadius: BorderRadius.circular(3),
-      //                 ),
-      //                 backgroundColor: MyTheme.lemon,
-      //               ),
-      //               onPressed: () async {
-      //                 //
-      //               },
-      //               child: subText('OK', Colors.black),
-      //             ),
-      //           ],
-      //         ));
     } else {
       if (mounted) {
         Navigator.of(context).pop();
