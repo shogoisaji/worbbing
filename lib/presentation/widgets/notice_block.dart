@@ -23,22 +23,19 @@ Widget noticeBlock(double size, int number, Color color) {
         ),
       ),
       Container(
-        alignment: Alignment.center,
         width: size,
         height: size,
         color: color,
-        child: Center(
-            child: number == 99
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 6.0),
-                    child: Text('∞',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: fontSize * 1.2,
-                        )),
-                  )
-                : titleText(number.toString(), Colors.black, fontSize)),
+        child: number == 99
+            ? Center(
+                child: Text('∞',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: fontSize,
+                    )),
+              )
+            : Center(
+                child: titleText(number.toString(), Colors.black, fontSize)),
       ).animate().shake(
             duration: 1000.milliseconds,
             delay: (randomNumber * 30).milliseconds,

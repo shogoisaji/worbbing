@@ -228,7 +228,7 @@ class _DetailPageState extends State<DetailPage> {
                   const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               backgroundColor: MyTheme.grey,
               title: const Text(
-                'このデータを削除しますか?',
+                'Do you want to\ndelete this data?',
                 style: TextStyle(
                     overflow: TextOverflow.clip,
                     color: Colors.white,
@@ -237,6 +237,7 @@ class _DetailPageState extends State<DetailPage> {
               actions: [
                 TextButton(
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     Navigator.pop(context2);
                   },
                   child: subText('Cancel', MyTheme.red),
@@ -252,6 +253,7 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   onPressed: () async {
                     // Delete
+                    HapticFeedback.lightImpact();
                     await SqfliteRepository.instance.deleteRow(widget.id);
                     if (context2.mounted) {
                       Navigator.pop(context2);
@@ -341,8 +343,12 @@ class _DetailPageState extends State<DetailPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: Column(
                         children: [
-                          bodyText('Prev : ${formatUpdateDate.split(' ')[0]}',
-                              Colors.grey.shade600),
+                          Text('Last Update\n${formatUpdateDate.split(' ')[0]}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  height: 1.0,
+                                  color: Colors.grey.shade600,
+                                  fontSize: 16)),
                           Container(
                             margin: const EdgeInsets.only(top: 2),
                             padding: const EdgeInsets.symmetric(
@@ -396,7 +402,7 @@ class _DetailPageState extends State<DetailPage> {
                               // color: Colors.red,
                               decoration: BoxDecoration(
                                 border: Border.all(color: MyTheme.blue),
-                                borderRadius: BorderRadius.circular(3),
+                                borderRadius: BorderRadius.circular(2),
                               ),
                               margin: const EdgeInsets.only(
                                   top: 30.0,
@@ -445,43 +451,28 @@ class _DetailPageState extends State<DetailPage> {
                       _detailWordContent(ContentType.exampleTranslated,
                           wordModel.exampleTranslated ?? ''),
                       Container(
-                          margin: const EdgeInsets.only(top: 24),
-                          alignment: Alignment.center,
-                          width: 230,
-                          height: 30,
-                          decoration: const BoxDecoration(
+                          margin: const EdgeInsets.only(top: 20),
+                          decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
-                                      color: Colors.white, width: 1.0))),
+                                      color: Colors.grey.shade600,
+                                      width: 1.0))),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               // change registration data
-                              bodyText('Registration Date', Colors.white),
-                              bodyText(formatRegistrationDate.split(' ')[0],
-                                  Colors.white),
-                            ],
-                          )),
-                      Container(
-                          margin: const EdgeInsets.only(top: 20),
-                          alignment: Alignment.center,
-                          width: 230,
-                          height: 30,
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: Colors.white, width: 1.0))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // change update count
-                              bodyText('Update Count', Colors.white),
-                              Container(
-                                  alignment: Alignment.center,
-                                  width: 50,
-                                  child: bodyText(
-                                      wordModel.updateCount.toString(),
-                                      Colors.white)),
+                              Text('Registration Date',
+                                  style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 16)),
+                              const SizedBox(
+                                width: 12,
+                              ),
+                              Text(formatRegistrationDate.split(' ')[0],
+                                  style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 16)),
                             ],
                           )),
                       const SizedBox(

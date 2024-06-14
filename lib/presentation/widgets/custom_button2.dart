@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 Widget customButton2(Color color, Widget widget, Function() function) {
   return GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         function();
       },
-      child: Container(
+      child: SizedBox(
         width: 120,
         height: 40,
         child: Stack(
@@ -22,34 +24,32 @@ Widget customButton2(Color color, Widget widget, Function() function) {
                 ),
               ),
             ),
-            Container(
-              child: Row(
-                children: [
-                  Container(
-                    width: 7,
-                    height: 60,
-                    color: color,
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  Container(
-                    width: 7,
-                    height: 60,
-                    color: color,
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    width: 90,
-                    height: 60,
-                    color: color,
-                    child: widget,
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 7,
+                  height: 60,
+                  color: color,
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                Container(
+                  width: 7,
+                  height: 60,
+                  color: color,
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  width: 90,
+                  height: 60,
+                  color: color,
+                  child: widget,
+                ),
+              ],
             ),
           ],
         ),

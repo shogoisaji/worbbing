@@ -69,6 +69,47 @@ class _HomePageState extends State<HomePage>
     handleReload();
   }
 
+  void handleTapTicket() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            // deleteDialog(context, widget.id),
+            AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(3)),
+              backgroundColor: MyTheme.grey,
+              title: const Text(
+                'Translation Tickets\n"10" per day',
+                style: TextStyle(
+                    overflow: TextOverflow.clip,
+                    color: Colors.white,
+                    fontSize: 24),
+              ),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(
+                        left: 12, right: 12, bottom: 4, top: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    backgroundColor: MyTheme.lemon,
+                  ),
+                  onPressed: () async {
+                    HapticFeedback.lightImpact();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: MyTheme.grey, fontSize: 20),
+                  ),
+                ),
+              ],
+            ));
+  }
+
   Future<void> handleReload() async {
     //durationが短すぎるとエラーになる
     await Future.delayed(const Duration(milliseconds: 300));
@@ -114,8 +155,16 @@ class _HomePageState extends State<HomePage>
             FutureBuilder<int>(
                 future: loadTicket(),
                 builder: (context, snapshot) {
-                  return TicketWidget(count: snapshot.data ?? 0, size: 50);
+                  return GestureDetector(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        handleTapTicket();
+                      },
+                      child: TicketWidget(count: snapshot.data ?? 0, size: 50));
                 }),
+            const SizedBox(
+              width: 4,
+            ),
             IconButton(
                 padding: const EdgeInsets.only(top: 5, right: 10),
                 onPressed: () {
@@ -136,10 +185,6 @@ class _HomePageState extends State<HomePage>
         /// floating Action Button
         floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 5, right: 10.0),
-            // child: IconButton(
-            //   onPressed: () => handleTapFAB(context),
-            //   icon: const Icon(Icons.add),
-            // ),
             child: _customFloatingActionButton()),
         body: Column(
           children: [
@@ -161,7 +206,7 @@ class _HomePageState extends State<HomePage>
                         });
                         handleReload();
                       }),
-                      tagSelect('Register', tagState, 1, () {
+                      tagSelect('Registration', tagState, 1, () {
                         setState(() {
                           tagState = 1;
                         });
@@ -190,13 +235,10 @@ class _HomePageState extends State<HomePage>
                     return const Center(
                         child: SizedBox(child: CircularProgressIndicator()));
                   }
-
                   if (snapshot.hasError) {
-                    return const Text('エラーが発生しました');
+                    return const Text('error');
                   }
-
                   final wordList = snapshot.data!;
-
                   final DateTime currentDateTime = DateTime.now();
                   int noticeDurationTime;
                   int forgettingDuration;
@@ -264,7 +306,7 @@ class _HomePageState extends State<HomePage>
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 100,
+                                  height: 200,
                                 ),
                               ],
                             )
@@ -280,23 +322,9 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _customFloatingActionButton() {
+    const buttonAngle = 1.2;
     return Stack(
       children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(65),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black,
-                offset: Offset(20.0, 15.0),
-                blurRadius: 15.0,
-                spreadRadius: 50.0,
-              ),
-            ],
-          ),
-        ),
         Transform.rotate(
           angle: 1.5,
           child: Container(
@@ -305,32 +333,41 @@ class _HomePageState extends State<HomePage>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.zero,
               color: MyTheme.grey,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 15.0,
+                  spreadRadius: 5.0,
+                ),
+              ],
             ),
           ),
         ),
         Transform.rotate(
-          angle: 1.2,
+          angle: buttonAngle,
           child: Container(
               width: 60,
               height: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.zero,
                 color: MyTheme.orange,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 15.0,
+                    spreadRadius: 5.0,
+                  ),
+                ],
               ),
               child: FloatingActionButton(
                   elevation: 0,
                   backgroundColor: MyTheme.orange,
-                  // FAB onPressed
                   onPressed: () {
-                    // Navigator.of(context).pushReplacement(
-                    //   MaterialPageRoute(
-                    //       builder: (context) => const RegistrationPage()),
-                    // );
                     HapticFeedback.lightImpact();
                     handleTapFAB(context);
                   },
                   child: Transform.rotate(
-                    angle: -1.2,
+                    angle: -buttonAngle,
                     child: const Icon(
                       Icons.add_rounded,
                       color: Colors.black,
