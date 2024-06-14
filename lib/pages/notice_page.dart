@@ -6,6 +6,7 @@ import 'package:worbbing/application/usecase/words_notification.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
+import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_settings/app_settings.dart';
@@ -137,39 +138,16 @@ class _NoticePageState extends State<NoticePage> {
   }
 
   Future<void> showNoticePermissionDialog() async {
-    showDialog(
-        context: context,
-        builder: (BuildContext context2) =>
-            // deleteDialog(context, widget.id),
-            AlertDialog(
-              shape:
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              backgroundColor: MyTheme.grey,
-              title: const Text(
-                '通知設定がOFFです。\n通知設定をONにしてください。',
-                style: TextStyle(
-                    overflow: TextOverflow.clip,
-                    color: Colors.white,
-                    fontSize: 20),
-              ),
-              actions: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(
-                        left: 12, right: 12, bottom: 6, top: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    backgroundColor: MyTheme.lemon,
-                  ),
-                  onPressed: () async {
-                    AppSettings.openAppSettings();
-                    Navigator.pop(context2);
-                  },
-                  child: subText('設定画面へ', Colors.black),
-                ),
-              ],
-            ));
+    MySimpleDialog.show(
+        context,
+        const Text(
+          'Notification permission is OFF.\nPlease turn ON notification permission.',
+          style: TextStyle(
+              overflow: TextOverflow.clip, color: Colors.white, fontSize: 20),
+        ),
+        'Go Settings', () {
+      AppSettings.openAppSettings();
+    });
   }
 
 // time select

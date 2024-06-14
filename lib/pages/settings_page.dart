@@ -94,133 +94,244 @@ class _SettingsPageState extends State<SettingsPage> {
               }),
           backgroundColor: Colors.transparent,
         ),
-        body: SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-                margin: const EdgeInsets.only(top: 25),
-                width: 250,
-                decoration: const BoxDecoration(
-                  border:
-                      Border(bottom: BorderSide(color: Colors.white, width: 1)),
-                ),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      mediumText('Total Words', Colors.white),
-// total words
-                      FutureBuilder(
-                          future: totalWords,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: SizedBox(
-                                      child: CircularProgressIndicator()));
-                            }
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(top: 25),
+                      width: 250,
+                      decoration: const BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(color: Colors.white, width: 1)),
+                      ),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            mediumText('Total Words', Colors.white),
+                            // total words
+                            FutureBuilder(
+                                future: totalWords,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                        child: SizedBox(
+                                            child:
+                                                CircularProgressIndicator()));
+                                  }
 
-                            if (snapshot.hasError) {
-                              return const Text('エラーが発生しました');
-                            }
+                                  if (snapshot.hasError) {
+                                    return const Text('エラーが発生しました');
+                                  }
 
-                            final data = snapshot.data!;
+                                  final data = snapshot.data!;
 
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: titleText(
-                                  data.toString(), MyTheme.orange, 36),
-                            );
-                          })
-                    ])),
-            const SizedBox(
-              height: 24,
-            ),
-            FutureBuilder(
-                future: countNotice,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child: SizedBox(child: CircularProgressIndicator()));
-                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 10.0),
+                                    child: titleText(
+                                        data.toString(), MyTheme.orange, 36),
+                                  );
+                                })
+                          ])),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  FutureBuilder(
+                      future: countNotice,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child:
+                                  SizedBox(child: CircularProgressIndicator()));
+                        }
 
-                  if (snapshot.hasError) {
-                    return const Text('エラーが発生しました');
-                  }
+                        if (snapshot.hasError) {
+                          return const Text('エラーが発生しました');
+                        }
 
-                  final data = snapshot.data!;
+                        final data = snapshot.data!;
 
-                  return SizedBox(
-                    width: 350, //(noticeBlock+14padding)*7
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: noticeDurationList.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(7.0),
-                          child: Column(
-                            children: [
-                              noticeBlock(
-                                  36, noticeDurationList[index], MyTheme.lemon),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              mediumText(
-                                  data[noticeDurationList[index]] == null
-                                      ? "0"
-                                      : data[noticeDurationList[index]]
-                                          .toString(),
-                                  Colors.white)
-                            ],
+                        return SizedBox(
+                          width: 350, //(noticeBlock+14padding)*7
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: noticeDurationList.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(7.0),
+                                child: Column(
+                                  children: [
+                                    noticeBlock(36, noticeDurationList[index],
+                                        MyTheme.lemon),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    mediumText(
+                                        data[noticeDurationList[index]] == null
+                                            ? "0"
+                                            : data[noticeDurationList[index]]
+                                                .toString(),
+                                        Colors.white)
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         );
-                      },
+                      }),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 500,
                     ),
-                  );
-                }),
-            const SizedBox(
-              height: 24,
-            ),
-            Container(
-              constraints: const BoxConstraints(
-                maxWidth: 500,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                children: [
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(Icons.circle,
-                                color: MyTheme.lemon, size: 12),
-                          ),
-                          const Expanded(
-                            child: Text('Default Language',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w500)),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: double.infinity,
-                        // height: 40,
-                        padding: const EdgeInsets.only(left: 20),
-                        decoration: BoxDecoration(
-                          // color: MyTheme.lemon,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      children: [
+                        Column(
                           children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(Icons.circle,
+                                      color: MyTheme.lemon, size: 12),
+                                ),
+                                const Expanded(
+                                  child: Text('Default Language',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w500)),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              width: double.infinity,
+                              // height: 40,
+                              padding: const EdgeInsets.only(left: 20),
+                              decoration: BoxDecoration(
+                                // color: MyTheme.lemon,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  FutureBuilder(
+                                      future: loadPreferences(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const Center(
+                                              child: SizedBox(
+                                                  child:
+                                                      CircularProgressIndicator()));
+                                        }
+                                        if (snapshot.hasError) {
+                                          return const Text('error');
+                                        }
+                                        final data = snapshot.data!;
+                                        return LanguageDropdownWidget(
+                                          onOriginalSelected: (value) {
+                                            updateOriginalLanguage(value);
+                                          },
+                                          onTranslateSelected: (value) {
+                                            updateTranslateLanguage(value);
+                                          },
+                                          originalLanguage: data[0],
+                                          translateLanguage: data[1],
+                                          isHorizontal: true,
+                                        );
+                                      })
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.circle,
+                                  color: MyTheme.lemon, size: 12),
+                            ),
+                            const Expanded(
+                              child: Text('Privacy Policy',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w500)),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                privacyURL();
+                              },
+                              icon: const Icon(Icons.open_in_new,
+                                  color: Colors.white),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.circle,
+                                  color: MyTheme.lemon, size: 12),
+                            ),
+                            const Expanded(
+                              child: Text('Forgetting Curve',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w500)),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const EbbinghausPage()),
+                                );
+                              },
+                              icon: const Icon(Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.circle,
+                                  color: MyTheme.lemon, size: 12),
+                            ),
+                            const Expanded(
+                              child: Text('App Version',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w500)),
+                            ),
                             FutureBuilder(
-                                future: loadPreferences(),
+                                future: loadVersion(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -230,130 +341,28 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 CircularProgressIndicator()));
                                   }
                                   if (snapshot.hasError) {
-                                    return const Text('error');
+                                    return const Text('エラーが発生しました');
                                   }
                                   final data = snapshot.data!;
-                                  return LanguageDropdownWidget(
-                                    onOriginalSelected: (value) {
-                                      updateOriginalLanguage(value);
-                                    },
-                                    onTranslateSelected: (value) {
-                                      updateTranslateLanguage(value);
-                                    },
-                                    originalLanguage: data[0],
-                                    translateLanguage: data[1],
-                                    isHorizontal: true,
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 12.0),
+                                    child: Text(data,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w500)),
                                   );
-                                })
+                                }),
                           ],
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          height: 100,
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(
-                    height: 18,
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child:
-                            Icon(Icons.circle, color: MyTheme.lemon, size: 12),
-                      ),
-                      const Expanded(
-                        child: Text('Privacy Policy',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500)),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          privacyURL();
-                        },
-                        icon:
-                            const Icon(Icons.open_in_new, color: Colors.white),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 18,
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child:
-                            Icon(Icons.circle, color: MyTheme.lemon, size: 12),
-                      ),
-                      const Expanded(
-                        child: Text('Forgetting Curve',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500)),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EbbinghausPage()),
-                          );
-                        },
-                        icon: const Icon(Icons.arrow_forward_ios_rounded,
-                            color: Colors.white),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 18,
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child:
-                            Icon(Icons.circle, color: MyTheme.lemon, size: 12),
-                      ),
-                      const Expanded(
-                        child: Text('App Version',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500)),
-                      ),
-                      FutureBuilder(
-                          future: loadVersion(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: SizedBox(
-                                      child: CircularProgressIndicator()));
-                            }
-                            if (snapshot.hasError) {
-                              return const Text('エラーが発生しました');
-                            }
-                            final data = snapshot.data!;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 12.0),
-                              child: Text(data,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w500)),
-                            );
-                          }),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 100,
-                  ),
-                ],
-              ),
-            ),
-          ]),
+                ]),
+          ),
         ));
   }
 }
