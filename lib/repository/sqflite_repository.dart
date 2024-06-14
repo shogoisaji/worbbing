@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 
 class SqfliteRepository {
@@ -54,6 +55,21 @@ class SqfliteRepository {
             $translatedLang TEXT
           )
           ''');
+
+    // シードデータの挿入
+    await _seedData(db);
+  }
+
+  Future<void> _seedData(Database db) async {
+    final sampleWord = WordModel.createNewWord(
+      originalWord: "sample",
+      translatedWord: "サンプル",
+      example: "This is a sample sentence.",
+      exampleTranslated: "これはサンプル文です。",
+      originalLang: TranslateLanguage.english,
+      translatedLang: TranslateLanguage.japanese,
+    );
+    await db.insert(table, sampleWord.toJson());
   }
 
   /// insert database row
