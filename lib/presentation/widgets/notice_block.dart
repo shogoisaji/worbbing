@@ -2,19 +2,29 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
-import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
+const double offsetX = 5.0;
+const double offsetY = 4.0;
+const double rotationAngle = 0.05;
+const int maxRandomValue = 10;
+const int animationDelayMultiplier = 30;
+const int animationDuration = 1000;
 
 Widget noticeBlock(double size, int number, Color color) {
   Random random = Random();
-  int randomNumber = random.nextInt(10);
   final fontSize = size * 0.60;
+  final textStyle = TextStyle(
+    color: Colors.black,
+    fontSize: fontSize,
+  );
+
   return Stack(
     children: [
       Transform.translate(
-        offset: const Offset(5, 4),
+        offset: const Offset(offsetX, offsetY),
         child: Transform.rotate(
-          angle: 0.05,
+          angle: rotationAngle,
           child: Container(
             width: size,
             height: size,
@@ -25,20 +35,16 @@ Widget noticeBlock(double size, int number, Color color) {
       Container(
         width: size,
         height: size,
+        alignment: Alignment.center,
         color: color,
-        child: number == 99
-            ? Center(
-                child: Text('∞',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: fontSize,
-                    )),
-              )
-            : Center(
-                child: titleText(number.toString(), Colors.black, fontSize)),
+        child: Text(
+          number == 99 ? '∞' : number.toString(),
+          style: textStyle,
+        ),
       ).animate().shake(
-            duration: 1000.milliseconds,
-            delay: (randomNumber * 30).milliseconds,
+            duration: animationDuration.milliseconds,
+            delay: (random.nextInt(maxRandomValue) * animationDelayMultiplier)
+                .milliseconds,
             hz: color == MyTheme.orange ? 5 : 0,
           ),
     ],

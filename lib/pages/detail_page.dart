@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/home_page.dart';
@@ -202,12 +203,16 @@ class _DetailPageState extends State<DetailPage> {
     await SqfliteRepository.instance
         .updateFlag(widget.id, !flag)
         .catchError((e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('データの更新に失敗しました'),
-          backgroundColor: Colors.red.shade300,
-        ),
-      );
+      MySimpleDialog.show(
+          context,
+          const Text('Failed to update data',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              )),
+          'OK', () {
+        //
+      });
     });
     setState(() {
       if (!flag) {
@@ -228,7 +233,7 @@ class _DetailPageState extends State<DetailPage> {
                   const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               backgroundColor: MyTheme.grey,
               title: const Text(
-                'Do you want to\ndelete this data?',
+                'Are you sure you want to delete this data?',
                 style: TextStyle(
                     overflow: TextOverflow.clip,
                     color: Colors.white,
@@ -296,204 +301,208 @@ class _DetailPageState extends State<DetailPage> {
             }),
         backgroundColor: Colors.transparent,
       ),
-      body: SingleChildScrollView(
-          child: FutureBuilder<WordModel>(
-        future: SqfliteRepository.instance.queryRows(widget.id),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: CircularProgressIndicator()));
-          }
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+            child: FutureBuilder<WordModel>(
+          future: SqfliteRepository.instance.queryRows(widget.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: CircularProgressIndicator()));
+            }
 
-          if (snapshot.hasError) {
-            return const Text('エラーが発生しました');
-          }
+            if (snapshot.hasError) {
+              return const Text('エラーが発生しました');
+            }
 
-          final wordModel = snapshot.data!;
-          final formatRegistrationDate =
-              formatForDisplay(wordModel.registrationDate.toIso8601String());
-          final formatUpdateDate =
-              formatForDisplay(wordModel.updateDate.toIso8601String());
-          final DateTime updateDateTime =
-              DateTime.parse(wordModel.updateDate.toIso8601String());
-          final DateTime currentDateTime = DateTime.now();
-          final int forgettingDuration =
-              (updateDateTime.difference(currentDateTime).inDays).abs();
+            final wordModel = snapshot.data!;
+            final formatRegistrationDate =
+                formatForDisplay(wordModel.registrationDate.toIso8601String());
+            final formatUpdateDate =
+                formatForDisplay(wordModel.updateDate.toIso8601String());
+            final DateTime updateDateTime =
+                DateTime.parse(wordModel.updateDate.toIso8601String());
+            final DateTime currentDateTime = DateTime.now();
+            final int forgettingDuration =
+                (updateDateTime.difference(currentDateTime).inDays).abs();
 
-          flag = wordModel.flag;
+            flag = wordModel.flag;
 
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    noticeBlock(72, wordModel.noticeDuration, MyTheme.lemon),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 12.0),
-                      child: Column(
-                        children: [
-                          Text('Last Update\n${formatUpdateDate.split(' ')[0]}',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  height: 1.0,
-                                  color: Colors.grey.shade600,
-                                  fontSize: 16)),
-                          Container(
-                            margin: const EdgeInsets.only(top: 2),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2),
-                                border: Border.all(color: Colors.grey)),
-                            child: Row(
-                              children: [
-                                const Text('Forgetting\nDuration',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.white)),
-                                // bodyText('Forgetting\n  Duration', Colors.white),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                // change forgetting duration
-                                Text(forgettingDuration.toString(),
-                                    style: TextStyle(
-                                        color: MyTheme.orange, fontSize: 34)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        HapticFeedback.lightImpact();
-                        await handleTapFlag();
-                      },
-                      child: flag
-                          ? Icon(Icons.flag_rounded,
-                              size: 54, color: MyTheme.lemon)
-                          : const Icon(Icons.outlined_flag_rounded,
-                              size: 54, color: Colors.white24),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 42.0),
-                  child: Column(
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              // width: 50,
-                              // color: Colors.red,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: MyTheme.blue),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              margin: const EdgeInsets.only(
-                                  top: 30.0,
-                                  bottom: 16.0,
-                                  left: 0.0,
-                                  right: 24.0),
+                      noticeBlock(72, wordModel.noticeDuration, MyTheme.lemon),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12.0),
+                        child: Column(
+                          children: [
+                            Text(
+                                'Last Update\n${formatUpdateDate.split(' ')[0]}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    height: 1.0,
+                                    color: Colors.grey.shade600,
+                                    fontSize: 16)),
+                            Container(
+                              margin: const EdgeInsets.only(top: 2),
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 12.0),
-
-                              child: AutoSizeText(
-                                  "${wordModel.originalLang.string} → ${wordModel.translatedLang.string}",
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: MyTheme.blue, fontSize: 20)),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 24.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                handleTapEdit(
-                                  wordModel.id,
-                                  wordModel.originalWord,
-                                  wordModel.translatedWord,
-                                  wordModel.example ?? '',
-                                  wordModel.exampleTranslated ?? '',
-                                );
-                              },
-                              child: const Icon(
-                                Icons.create,
-                                color: Colors.white,
-                                size: 32,
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  border: Border.all(color: Colors.grey)),
+                              child: Row(
+                                children: [
+                                  const Text('Forgetting\nDuration',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white)),
+                                  // bodyText('Forgetting\n  Duration', Colors.white),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  // change forgetting duration
+                                  Text(forgettingDuration.toString(),
+                                      style: TextStyle(
+                                          color: MyTheme.orange, fontSize: 34)),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      _detailWordContent(
-                          ContentType.original, wordModel.originalWord),
-                      _detailWordContent(
-                          ContentType.translated, wordModel.translatedWord),
-                      _detailWordContent(
-                          ContentType.example, wordModel.example ?? ''),
-                      _detailWordContent(ContentType.exampleTranslated,
-                          wordModel.exampleTranslated ?? ''),
-                      Container(
-                          margin: const EdgeInsets.only(top: 20),
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: Colors.grey.shade600,
-                                      width: 1.0))),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // change registration data
-                              Text('Registration Date',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 16)),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Text(formatRegistrationDate.split(' ')[0],
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 16)),
-                            ],
-                          )),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      customButton2(
-                          MyTheme.red, titleText('Delete', Colors.white, 20),
-                          () async {
-                        handleTapDelete();
-                      }),
-                      const SizedBox(
-                        height: 100,
+                      GestureDetector(
+                        onTap: () async {
+                          HapticFeedback.lightImpact();
+                          await handleTapFlag();
+                        },
+                        child: flag
+                            ? Icon(Icons.flag_rounded,
+                                size: 54, color: MyTheme.lemon)
+                            : const Icon(Icons.outlined_flag_rounded,
+                                size: 54, color: Colors.white24),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          );
-        },
-      )),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 42.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                // width: 50,
+                                // color: Colors.red,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: MyTheme.blue),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                                margin: const EdgeInsets.only(
+                                    top: 30.0,
+                                    bottom: 16.0,
+                                    left: 0.0,
+                                    right: 24.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 12.0),
+
+                                child: AutoSizeText(
+                                    "${wordModel.originalLang.string} → ${wordModel.translatedLang.string}",
+                                    maxLines: 1,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: MyTheme.blue, fontSize: 20)),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 24.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  handleTapEdit(
+                                    wordModel.id,
+                                    wordModel.originalWord,
+                                    wordModel.translatedWord,
+                                    wordModel.example ?? '',
+                                    wordModel.exampleTranslated ?? '',
+                                  );
+                                },
+                                child: const Icon(
+                                  Icons.create,
+                                  color: Colors.white,
+                                  size: 32,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        _detailWordContent(
+                            ContentType.original, wordModel.originalWord),
+                        _detailWordContent(
+                            ContentType.translated, wordModel.translatedWord),
+                        _detailWordContent(
+                            ContentType.example, wordModel.example ?? ''),
+                        _detailWordContent(ContentType.exampleTranslated,
+                            wordModel.exampleTranslated ?? ''),
+                        Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        color: Colors.grey.shade600,
+                                        width: 1.0))),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // change registration data
+                                Text('Registration Date',
+                                    style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 16)),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Text(formatRegistrationDate.split(' ')[0],
+                                    style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 16)),
+                              ],
+                            )),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        customButton2(
+                            MyTheme.red, titleText('Delete', Colors.white, 20),
+                            () async {
+                          handleTapDelete();
+                        }),
+                        const SizedBox(
+                          height: 100,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        )),
+      ),
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
@@ -57,6 +58,7 @@ class _HomePageState extends State<HomePage>
     final langs = await loadPreferences();
     if (!mounted) return;
     await showModalBottomSheet(
+        constraints: const BoxConstraints(maxWidth: 400),
         backgroundColor: Colors.transparent,
         enableDrag: false,
         isDismissible: false,
@@ -70,44 +72,15 @@ class _HomePageState extends State<HomePage>
   }
 
   void handleTapTicket() async {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) =>
-            // deleteDialog(context, widget.id),
-            AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(3)),
-              backgroundColor: MyTheme.grey,
-              title: const Text(
-                'Translation Tickets\n"10" per day',
-                style: TextStyle(
-                    overflow: TextOverflow.clip,
-                    color: Colors.white,
-                    fontSize: 24),
-              ),
-              actions: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(
-                        left: 12, right: 12, bottom: 4, top: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    backgroundColor: MyTheme.lemon,
-                  ),
-                  onPressed: () async {
-                    HapticFeedback.lightImpact();
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text(
-                    'OK',
-                    style: TextStyle(color: MyTheme.grey, fontSize: 20),
-                  ),
-                ),
-              ],
-            ));
+    MySimpleDialog.show(
+        context,
+        const Text(
+          'Translation Tickets\n"10" per day',
+          style: TextStyle(
+              overflow: TextOverflow.clip, color: Colors.white, fontSize: 24),
+        ),
+        'OK',
+        () {});
   }
 
   Future<void> handleReload() async {
@@ -142,7 +115,7 @@ class _HomePageState extends State<HomePage>
               padding: const EdgeInsets.only(top: 5, left: 10),
               onPressed: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pushReplacement(
+                Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const NoticePage()),
                 );
               },
@@ -169,7 +142,7 @@ class _HomePageState extends State<HomePage>
                 padding: const EdgeInsets.only(top: 5, right: 10),
                 onPressed: () {
                   HapticFeedback.lightImpact();
-                  Navigator.of(context).pushReplacement(
+                  Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (context) => const SettingsPage()),
                   );
