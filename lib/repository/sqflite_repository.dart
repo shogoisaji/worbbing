@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:uuid/uuid.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 
@@ -61,15 +62,36 @@ class SqfliteRepository {
   }
 
   Future<void> _seedData(Database db) async {
-    final sampleWord = WordModel.createNewWord(
+    final sampleWord1 = WordModel(
+      id: const Uuid().v4(),
+      noticeDuration: 7,
+      updateCount: 0,
+      flag: false,
       originalWord: "sample",
       translatedWord: "サンプル",
       example: "This is a sample sentence.",
       exampleTranslated: "これはサンプル文です。",
       originalLang: TranslateLanguage.english,
       translatedLang: TranslateLanguage.japanese,
+      updateDate: DateTime(2024, 1, 1),
+      registrationDate: DateTime(2024, 1, 1),
     );
-    await db.insert(table, sampleWord.toJson());
+    await db.insert(table, sampleWord1.toJson());
+    final sampleWord2 = WordModel(
+      id: const Uuid().v4(),
+      noticeDuration: 1,
+      updateCount: 0,
+      flag: true,
+      originalWord: "notice",
+      translatedWord: "通知",
+      example: "This app has a notification feature.",
+      exampleTranslated: "このアプリは通知機能を備えています",
+      originalLang: TranslateLanguage.english,
+      translatedLang: TranslateLanguage.japanese,
+      updateDate: DateTime.now(),
+      registrationDate: DateTime.now(),
+    );
+    await db.insert(table, sampleWord2.toJson());
   }
 
   /// insert database row
