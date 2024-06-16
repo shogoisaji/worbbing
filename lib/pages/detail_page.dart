@@ -9,7 +9,6 @@ import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
-import 'package:worbbing/presentation/widgets/custom_button2.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -310,11 +309,7 @@ class _DetailPageState extends State<DetailPage> {
           future: SqfliteRepository.instance.queryRows(widget.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: CircularProgressIndicator()));
+              return const SizedBox.shrink();
             }
 
             if (snapshot.hasError) {
@@ -420,7 +415,7 @@ class _DetailPageState extends State<DetailPage> {
                                     left: 0.0,
                                     right: 24.0),
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 12.0),
+                                    vertical: 4.0, horizontal: 12.0),
 
                                 child: AutoSizeText(
                                     "${wordModel.originalLang.string} → ${wordModel.translatedLang.string}",
@@ -530,10 +525,10 @@ class _DetailPageState extends State<DetailPage> {
       ContentType.exampleTranslated => 20.0,
     };
     final titleColor = switch (type) {
-      ContentType.original => MyTheme.lemon.withOpacity(0.6),
-      ContentType.translated => Colors.orangeAccent.withOpacity(0.6),
-      ContentType.example => MyTheme.lemon.withOpacity(0.6),
-      ContentType.exampleTranslated => Colors.orangeAccent.withOpacity(0.6),
+      ContentType.original => MyTheme.lemon.withOpacity(0.7),
+      ContentType.translated => Colors.orangeAccent.withOpacity(0.8),
+      ContentType.example => MyTheme.lemon.withOpacity(0.7),
+      ContentType.exampleTranslated => Colors.orangeAccent.withOpacity(0.8),
     };
 
     return Column(

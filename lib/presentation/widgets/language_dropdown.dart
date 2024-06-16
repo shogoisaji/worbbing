@@ -53,7 +53,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
       padding: const EdgeInsets.only(left: 6, right: 2, top: 6, bottom: 6),
       decoration: BoxDecoration(
         color: widget.isHorizontal ? Colors.transparent : Colors.grey.shade900,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: !widget.isHorizontal
           ? Row(
@@ -66,7 +66,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                       height: 30,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade700,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: OverflowBox(
                         maxHeight: double.infinity,
@@ -109,7 +109,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                       height: 30,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: OverflowBox(
                         maxHeight: double.infinity,
@@ -161,7 +161,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                   height: 30,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade700,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: OverflowBox(
                     maxHeight: double.infinity,
@@ -208,7 +208,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                   height: 30,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: OverflowBox(
                     maxHeight: double.infinity,

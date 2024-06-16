@@ -445,7 +445,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                               child: bodyText('Translated',
                                                   MyTheme.lightGrey)),
                                           customTextField(_translatedController,
-                                              MyTheme.lemon,
+                                              MyTheme.orange,
                                               isEnglish: false),
                                           const SizedBox(height: 16),
                                           Align(
@@ -453,8 +453,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                   const Alignment(-0.95, 0.0),
                                               child: bodyText('Example',
                                                   MyTheme.lightGrey)),
-                                          customTextField(_exampleController,
-                                              MyTheme.orange,
+                                          customTextField(
+                                              _exampleController, MyTheme.lemon,
                                               lines: 2, isEnglish: true),
                                           const SizedBox(height: 16),
                                           Align(
@@ -482,7 +482,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                           alignment: Alignment.bottomCenter,
                           child: Container(
                               width: double.infinity,
-                              height: 120,
+                              height:
+                                  90 + MediaQuery.of(context).padding.bottom,
                               decoration: BoxDecoration(
                                 color: Colors.blueGrey.shade800,
                                 boxShadow: [
@@ -493,7 +494,6 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                   ),
                                 ],
                               ),
-                              // alignment: Alignment.bottomCenter,
                               child: SafeArea(
                                 child: Center(
                                   child: Row(
