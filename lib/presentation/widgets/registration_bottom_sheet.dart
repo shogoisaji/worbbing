@@ -505,7 +505,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                           Text('CANCEL',
                                               style: TextStyle(
                                                   color: Colors.grey.shade800,
-                                                  fontSize: 28,
+                                                  fontSize: 24,
                                                   fontWeight: FontWeight.bold)),
                                           () {
                                         Navigator.of(context).pop();
@@ -515,7 +515,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                           Text('SAVE',
                                               style: TextStyle(
                                                   color: Colors.grey.shade800,
-                                                  fontSize: 28,
+                                                  fontSize: 24,
                                                   fontWeight: FontWeight.bold)),
                                           () async {
                                         await saveWord();

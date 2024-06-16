@@ -557,7 +557,7 @@ class _NoticePageState extends State<NoticePage> {
                       Text('Sample',
                           style: TextStyle(
                               color: Colors.grey.shade800,
-                              fontSize: 28,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold)),
                     ],
                   ), () async {

@@ -494,7 +494,7 @@ class _DetailPageState extends State<DetailPage> {
                             const Text('DELETE',
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 28,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.bold)), () async {
                           handleTapDelete();
                         }),
