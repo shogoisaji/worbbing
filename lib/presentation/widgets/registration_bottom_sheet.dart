@@ -484,28 +484,44 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                               width: double.infinity,
                               height: 120,
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade900,
+                                color: Colors.blueGrey.shade800,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.blueGrey.shade900
-                                        .withOpacity(0.7),
+                                    color: Colors.black.withOpacity(0.3),
                                     offset: const Offset(0, -2),
-                                    blurRadius: 8,
+                                    blurRadius: 7,
                                   ),
                                 ],
                               ),
                               // alignment: Alignment.bottomCenter,
                               child: SafeArea(
                                 child: Center(
-                                  child: customButton(
-                                      Text('SAVE',
-                                          style: TextStyle(
-                                              color: Colors.grey.shade800,
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.bold)),
-                                      () async {
-                                    await saveWord();
-                                  }),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      customButton(
+                                          Colors.grey.shade400,
+                                          Text('CANCEL',
+                                              style: TextStyle(
+                                                  color: Colors.grey.shade800,
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold)),
+                                          () {
+                                        Navigator.of(context).pop();
+                                      }),
+                                      customButton(
+                                          MyTheme.orange,
+                                          Text('SAVE',
+                                              style: TextStyle(
+                                                  color: Colors.grey.shade800,
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold)),
+                                          () async {
+                                        await saveWord();
+                                      }),
+                                    ],
+                                  ),
                                 ),
                               )),
                         )

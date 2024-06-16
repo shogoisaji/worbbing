@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
@@ -486,9 +488,14 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 40,
                         ),
-                        customButton2(
-                            MyTheme.red, titleText('Delete', Colors.white, 20),
-                            () async {
+                        customButton(
+                            width: 180,
+                            MyTheme.red,
+                            const Text('DELETE',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold)), () async {
                           handleTapDelete();
                         }),
                         const SizedBox(

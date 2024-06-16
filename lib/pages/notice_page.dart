@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:worbbing/application/usecase/words_notification.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
+import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
@@ -536,32 +537,53 @@ class _NoticePageState extends State<NoticePage> {
               const SizedBox(
                 height: 70,
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.only(bottom: 2, left: 16, right: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  backgroundColor: MyTheme.orange,
-                ),
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  handleTapSample();
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 5.0, right: 10),
-                      child: Icon(Icons.notifications_active_rounded,
-                          color: Colors.black, size: 24),
-                    ),
-                    subText('Notice Sample', Colors.black),
-                  ],
-                ),
-              ),
+              customButton(
+                  width: 190,
+                  MyTheme.orange,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 0.0, right: 5),
+                        child: Icon(Icons.notifications_active_rounded,
+                            color: Colors.grey.shade800, size: 28),
+                      ),
+                      Text('Sample',
+                          style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ), () async {
+                handleTapSample();
+              }),
+              // ElevatedButton(
+              //   style: ElevatedButton.styleFrom(
+              //     padding:
+              //         const EdgeInsets.only(bottom: 2, left: 16, right: 16),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(3),
+              //     ),
+              //     backgroundColor: MyTheme.orange,
+              //   ),
+              //   onPressed: () {
+              //     HapticFeedback.lightImpact();
+              //     handleTapSample();
+              //   },
+              // child: Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: [
+              //     const Padding(
+              //       padding: EdgeInsets.only(top: 5.0, right: 10),
+              //       child: Icon(Icons.notifications_active_rounded,
+              //           color: Colors.black, size: 24),
+              //     ),
+              //     subText('Notice Sample', Colors.black),
+              //   ],
+              // ),
+              // ),
               const SizedBox(
                 height: 100,
               ),
