@@ -118,9 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return const Center(
-                                        child: SizedBox(
-                                            child:
-                                                CircularProgressIndicator()));
+                                        child: SizedBox.shrink());
                                   }
 
                                   if (snapshot.hasError) {
@@ -228,9 +226,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
                                           return const Center(
-                                              child: SizedBox(
-                                                  child:
-                                                      CircularProgressIndicator()));
+                                              child: SizedBox.shrink());
                                         }
                                         if (snapshot.hasError) {
                                           return const Text('error');
@@ -332,10 +328,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return const Center(
-                                        child: SizedBox(
-                                            child:
-                                                CircularProgressIndicator()));
+                                    return const SizedBox.shrink();
                                   }
                                   if (snapshot.hasError) {
                                     return const Text('error');

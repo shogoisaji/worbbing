@@ -205,8 +205,7 @@ class _HomePageState extends State<HomePage>
                 future: dataFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child: SizedBox(child: CircularProgressIndicator()));
+                    return const Center(child: SizedBox.shrink());
                   }
                   if (snapshot.hasError) {
                     return const Text('error');
@@ -305,7 +304,7 @@ class _HomePageState extends State<HomePage>
             height: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.zero,
-              color: MyTheme.grey,
+              color: Colors.grey.shade600,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.5),

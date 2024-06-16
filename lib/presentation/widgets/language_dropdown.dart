@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/models/translate_language.dart';
 
 class LanguageDropdownWidget extends StatefulWidget {
@@ -52,7 +53,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
       padding: const EdgeInsets.only(left: 6, right: 2, top: 6, bottom: 6),
       decoration: BoxDecoration(
         color: widget.isHorizontal ? Colors.transparent : Colors.grey.shade900,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: !widget.isHorizontal
           ? Row(
@@ -65,12 +66,15 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                       height: 30,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade700,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: OverflowBox(
                         maxHeight: double.infinity,
                         maxWidth: double.infinity,
                         child: DropdownButton<TranslateLanguage>(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                          },
                           dropdownColor: Colors.grey.shade700,
                           alignment: Alignment.bottomLeft,
                           padding: const EdgeInsets.only(left: 10),
@@ -80,6 +84,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                           iconEnabledColor: Colors.transparent,
                           value: originalValue,
                           onChanged: (TranslateLanguage? newValue) {
+                            HapticFeedback.lightImpact();
                             setState(() {
                               originalValue = newValue!;
                               widget.onOriginalSelected(newValue);
@@ -104,12 +109,15 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                       height: 30,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: OverflowBox(
                         maxHeight: double.infinity,
                         maxWidth: double.infinity,
                         child: DropdownButton<TranslateLanguage>(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                          },
                           dropdownColor: Colors.grey.shade300,
                           alignment: Alignment.bottomLeft,
                           padding: const EdgeInsets.only(left: 10),
@@ -119,6 +127,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                           iconEnabledColor: Colors.transparent,
                           value: translateValue,
                           onChanged: (TranslateLanguage? newValue) {
+                            HapticFeedback.lightImpact();
                             setState(() {
                               translateValue = newValue!;
                               widget.onTranslateSelected(newValue);
@@ -152,12 +161,15 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                   height: 30,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade700,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: OverflowBox(
                     maxHeight: double.infinity,
                     maxWidth: double.infinity,
                     child: DropdownButton<TranslateLanguage>(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                      },
                       dropdownColor: Colors.grey.shade700,
                       alignment: Alignment.bottomLeft,
                       padding: const EdgeInsets.only(left: 10),
@@ -166,6 +178,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                       iconEnabledColor: Colors.transparent,
                       value: originalValue,
                       onChanged: (TranslateLanguage? newValue) {
+                        HapticFeedback.lightImpact();
                         setState(() {
                           originalValue = newValue!;
                           widget.onOriginalSelected(newValue);
@@ -195,12 +208,15 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                   height: 30,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: OverflowBox(
                     maxHeight: double.infinity,
                     maxWidth: double.infinity,
                     child: DropdownButton<TranslateLanguage>(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                      },
                       dropdownColor: Colors.grey.shade300,
                       alignment: Alignment.bottomLeft,
                       padding: const EdgeInsets.only(left: 10),
@@ -209,6 +225,7 @@ class _LanguageDropdownWidgetState extends State<LanguageDropdownWidget> {
                       iconEnabledColor: Colors.transparent,
                       value: translateValue,
                       onChanged: (TranslateLanguage? newValue) {
+                        HapticFeedback.lightImpact();
                         setState(() {
                           translateValue = newValue!;
                           widget.onTranslateSelected(newValue);
