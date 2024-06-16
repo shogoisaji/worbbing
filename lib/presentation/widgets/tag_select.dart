@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 
 Widget tagSelect(String tag, int tagState, int index, Function() onTap) {
   return InkWell(
-    onTap: onTap,
+    onTap: () {
+      HapticFeedback.lightImpact();
+      onTap();
+    },
     child: Column(
       children: [
         if (tagState == index) ...{

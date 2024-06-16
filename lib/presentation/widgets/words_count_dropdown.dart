@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/models/config_model.dart';
 
 class WordsCountDropdownWidget extends StatefulWidget {
@@ -22,6 +23,9 @@ class _WordsCountDropdownWidgetState extends State<WordsCountDropdownWidget> {
   Widget build(BuildContext context) {
     dropdownValue = widget.selectedWordsCount;
     return DropdownButton<int>(
+      onTap: () {
+        HapticFeedback.lightImpact();
+      },
       dropdownColor: Colors.white,
       alignment: Alignment.center,
       underline: Container(
@@ -32,6 +36,7 @@ class _WordsCountDropdownWidgetState extends State<WordsCountDropdownWidget> {
       iconEnabledColor: Colors.transparent,
       value: dropdownValue,
       onChanged: (int? newValue) {
+        HapticFeedback.lightImpact();
         setState(() {
           dropdownValue = newValue!;
           widget.onItemSelected(newValue);

@@ -181,6 +181,7 @@ class _NoticePageState extends State<NoticePage> {
           }
       }
     }
+    HapticFeedback.lightImpact();
   }
 
   @override
@@ -316,11 +317,6 @@ class _NoticePageState extends State<NoticePage> {
                                           Colors.black,
                                         ),
                                       ),
-                                      // Positioned(
-                                      //     top: 3,
-                                      //     left: 15,
-                                      //     child: titleText(
-                                      //         selectedWordsCount, Colors.black, 32)),
                                       Positioned(
                                         top: 5,
                                         right: 15,
@@ -383,7 +379,10 @@ class _NoticePageState extends State<NoticePage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () => _selectTime(context, 10),
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _selectTime(context, 10);
+                                  },
                                   child: Container(
                                     alignment: Alignment.center,
                                     width: 90,
@@ -447,7 +446,10 @@ class _NoticePageState extends State<NoticePage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () => _selectTime(context, 20),
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _selectTime(context, 20);
+                                  },
                                   child: Container(
                                     alignment: Alignment.center,
                                     width: 90,
@@ -511,7 +513,10 @@ class _NoticePageState extends State<NoticePage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () => _selectTime(context, 30),
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _selectTime(context, 30);
+                                  },
                                   child: Container(
                                     alignment: Alignment.center,
                                     width: 90,
