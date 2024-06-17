@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
@@ -27,6 +29,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  late final AppLifecycleListener _listener;
+  final List<String> _states = <String>[];
+  late AppLifecycleState? _state;
+
   int tagState = 0;
 
   Future<List<WordModel>> dataFuture =
@@ -35,6 +41,23 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    _state = SchedulerBinding.instance.lifecycleState;
+    _listener = AppLifecycleListener(
+      onStateChange: _handleStateChange,
+    );
+    if (_state != null) {
+      _states.add(_state!.name);
+    }
+  }
+
+  void _handleStateChange(AppLifecycleState state) {
+    if (_state == AppLifecycleState.inactive &&
+        state == AppLifecycleState.resumed) {
+      NoticeUsecase().shuffleNotification();
+    }
+    setState(() {
+      _state = state;
+    });
   }
 
   Future<List<TranslateLanguage>> loadPreferences() async {

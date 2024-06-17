@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/notice_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-class WordsNotification {
+class NoticeUsecase {
   /// permissions
   Future<void> requestPermissions() async {
     if (Platform.isIOS || Platform.isMacOS) {
@@ -50,10 +53,20 @@ class WordsNotification {
               AndroidFlutterLocalNotificationsPlugin>();
       final bool? areEnabled =
           await androidImplementation?.areNotificationsEnabled();
-      print('Notifications enabled: $areEnabled');
       return areEnabled ?? false;
     }
     return false;
+  }
+
+  // notification time
+  tz.TZDateTime _nextInstance(TimeOfDay selectedTime) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month,
+        now.day, selectedTime.hour, selectedTime.minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
   }
 
   /// sample notification
@@ -80,12 +93,10 @@ class WordsNotification {
     );
   }
 
-  /// schedule notification
-  Future<void> scheduleNotification(
-      int notificationId, int selectedWordCount, TimeOfDay selectedTime) async {
-    /// create notice word list
+  Future<void> setScheduleDetail(
+      int notificationId, int wordCount, TimeOfDay selectedTime) async {
     List<WordModel> words =
-        await SqfliteRepository.instance.getRandomWords(selectedWordCount);
+        await SqfliteRepository.instance.getRandomWords(wordCount);
 
     for (int row = 0; row < words.length; row++) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -116,14 +127,57 @@ class WordsNotification {
     }
   }
 
-// notification time
-  tz.TZDateTime _nextInstance(TimeOfDay selectedTime) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month,
-        now.day, selectedTime.hour, selectedTime.minute);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+  /// schedule notification
+  Future<void> setScheduleNotification(NoticeModel noticeModel) async {
+    /// shared preferencesに保存
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('noticeModel', jsonEncode(noticeModel.toJson()));
+
+    const setTimeCount = 3;
+
+    /// 一度全ての通知をキャンセル
+    await flutterLocalNotificationsPlugin.cancelAll();
+
+    /// 通知が無効なら処理を中断
+    if (!noticeModel.noticeEnable) return;
+
+    /// それぞれの通知を設定
+    for (int i = 0; i < setTimeCount; i++) {
+      switch (i) {
+        case 0:
+          if (!noticeModel.time1Enable) continue;
+          await setScheduleDetail((i + 1) * 10, noticeModel.selectedWordCount,
+              noticeModel.selectedTime1);
+        case 1:
+          if (!noticeModel.time2Enable) continue;
+          await setScheduleDetail((i + 1) * 10, noticeModel.selectedWordCount,
+              noticeModel.selectedTime2);
+        case 2:
+          if (!noticeModel.time3Enable) continue;
+          await setScheduleDetail((i + 1) * 10, noticeModel.selectedWordCount,
+              noticeModel.selectedTime3);
+      }
     }
-    return scheduledDate;
+  }
+
+  Future<NoticeModel> loadCurrentNoticeData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final noticeModelJson = prefs.getString('noticeModel');
+    if (noticeModelJson == null) {
+      return const NoticeModel();
+    }
+    final noticeModel = NoticeModel.fromJson(jsonDecode(noticeModelJson));
+    return noticeModel;
+  }
+
+  Future<void> saveNoticeData(NoticeModel noticeModel) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('noticeModel', jsonEncode(noticeModel.toJson()));
+  }
+
+  /// notice tap callback
+  Future<void> shuffleNotification() async {
+    final currentNoticeModel = await loadCurrentNoticeData();
+    await setScheduleNotification(currentNoticeModel);
   }
 }
