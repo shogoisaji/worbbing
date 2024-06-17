@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/pages/splash_page.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -24,10 +25,13 @@ Future<void> main() async {
     ..resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission()
-    ..initialize(const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
-    ));
+    ..initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      ),
+    );
+  NoticeUsecase().shuffleNotification();
   runApp(const MyApp());
 }
 

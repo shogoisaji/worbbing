@@ -2,7 +2,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:worbbing/application/usecase/words_notification.dart';
+import 'package:worbbing/application/usecase/notice_usecase.dart';
+import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -26,41 +27,17 @@ class NoticePage extends StatefulWidget {
 }
 
 class _NoticePageState extends State<NoticePage> {
-  bool notificationState = false;
-  bool time1State = false;
-  bool time2State = false;
-  bool time3State = false;
-  TimeOfDay selectedTime1 = const TimeOfDay(hour: 0, minute: 0);
-  TimeOfDay selectedTime2 = const TimeOfDay(hour: 0, minute: 0);
-  TimeOfDay selectedTime3 = const TimeOfDay(hour: 0, minute: 0);
-  int selectedWordsCount = 1;
-  late SharedPreferences prefs;
+  NoticeModel noticeModel = const NoticeModel();
 
   @override
   void initState() {
     super.initState();
-    initPrefs();
-    loadData();
-  }
-
-// <shared preferences data list>
-  // 'notificationState'
-  // 'selectedWordsCount'
-  // 'time1State'
-  // 'time2State'
-  // 'time3State'
-  // 'selectedTime1'
-  // 'selectedTime2'
-  // 'selectedTime3'
-
-// shared preferences init
-  void initPrefs() async {
-    prefs = await SharedPreferences.getInstance();
+    loadSchedule();
   }
 
   void handleTapSample() async {
-    await WordsNotification().requestPermissions();
-    final isEnable = await WordsNotification().checkNotificationPermissions();
+    await NoticeUsecase().requestPermissions();
+    final isEnable = await NoticeUsecase().checkNotificationPermissions();
     if (!isEnable) {
       await showNoticePermissionDialog();
       return;
@@ -69,65 +46,64 @@ class _NoticePageState extends State<NoticePage> {
       await showNoticePermissionDialog();
       return;
     }
-    await WordsNotification().sampleNotification();
+    await NoticeUsecase().sampleNotification();
   }
 
-// shared preferences save data
-  void saveData<T>(String key, T value) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (value is bool) {
-      prefs.setBool(key, value);
-    } else if (value is TimeOfDay) {
-      prefs.setInt('${key}hour', value.hour);
-      prefs.setInt('${key}minute', value.minute);
-    } else if (value is String) {
-      prefs.setString(key, value);
-    } else if (value is int) {
-      prefs.setInt(key, value);
+  Future<void> handleChangeSwitch(bool value) async {
+    if (value) {
+      final isEnable = await NoticeUsecase().checkNotificationPermissions();
+      if (!isEnable) {
+        await showNoticePermissionDialog();
+        return;
+      }
     }
-  }
-
-// shared preferences load data
-  void loadData() async {
-    final prefs = await SharedPreferences.getInstance();
+    final newNotice = noticeModel.copyWith(noticeEnable: value);
+    await NoticeUsecase().setScheduleNotification(newNotice);
     setState(() {
-      notificationState = prefs.getBool('notificationState') ?? false;
-      selectedWordsCount = prefs.getInt('selectedWordCount') ?? 1;
-      time1State = prefs.getBool('time1State') ?? false;
-      time2State = prefs.getBool('time2State') ?? false;
-      time3State = prefs.getBool('time3State') ?? false;
-      selectedTime1 = TimeOfDay(
-          hour: prefs.getInt('selectedTime1hour') ?? 0,
-          minute: prefs.getInt('selectedTime1minute') ?? 0);
-      selectedTime2 = TimeOfDay(
-          hour: prefs.getInt('selectedTime2hour') ?? 0,
-          minute: prefs.getInt('selectedTime2minute') ?? 0);
-      selectedTime3 = TimeOfDay(
-          hour: prefs.getInt('selectedTime3hour') ?? 0,
-          minute: prefs.getInt('selectedTime3minute') ?? 0);
+      noticeModel = newNotice;
+    });
+  }
+
+  Future<void> handleTapTimeRadioButton(int timeTypeNumber) async {
+    switch (timeTypeNumber) {
+      case 10:
+        final newNotice =
+            noticeModel.copyWith(time1Enable: !noticeModel.time1Enable);
+        await NoticeUsecase().setScheduleNotification(newNotice);
+        setState(() {
+          noticeModel = newNotice;
+        });
+      case 20:
+        final newNotice =
+            noticeModel.copyWith(time2Enable: !noticeModel.time2Enable);
+        await NoticeUsecase().setScheduleNotification(newNotice);
+        setState(() {
+          noticeModel = newNotice;
+        });
+      case 30:
+        final newNotice =
+            noticeModel.copyWith(time3Enable: !noticeModel.time3Enable);
+        await NoticeUsecase().setScheduleNotification(newNotice);
+        setState(() {
+          noticeModel = newNotice;
+        });
+    }
+  }
+
+  Future<void> loadSchedule() async {
+    final loadedNoticeModel = await NoticeUsecase().loadCurrentNoticeData();
+    setState(() {
+      noticeModel = loadedNoticeModel;
     });
   }
 
   /// update words count
   void updateWordCount(int newValue) async {
+    final newNotice = noticeModel.copyWith(selectedWordCount: newValue);
+    await NoticeUsecase().setScheduleNotification(newNotice);
     setState(() {
-      selectedWordsCount = newValue;
-      saveData('selectedWordCount', newValue);
+      noticeModel = newNotice;
     });
-    if (notificationState) {
-      if (notificationState && time1State) {
-        await WordsNotification()
-            .scheduleNotification(10, selectedWordsCount, selectedTime1);
-      }
-      if (notificationState && time2State) {
-        await WordsNotification()
-            .scheduleNotification(20, selectedWordsCount, selectedTime2);
-      }
-      if (notificationState && time3State) {
-        await WordsNotification()
-            .scheduleNotification(30, selectedWordsCount, selectedTime3);
-      }
-    }
   }
 
   Future<void> showNoticePermissionDialog() async {
@@ -153,32 +129,23 @@ class _NoticePageState extends State<NoticePage> {
     if (picked != null) {
       switch (timeTypeNumber) {
         case 10:
+          final newNotice = noticeModel.copyWith(selectedTime1: picked);
+          await NoticeUsecase().setScheduleNotification(newNotice);
           setState(() {
-            selectedTime1 = picked;
-            saveData('selectedTime1', selectedTime1);
+            noticeModel = newNotice;
           });
-          if (notificationState) {
-            await WordsNotification().scheduleNotification(
-                timeTypeNumber, selectedWordsCount, selectedTime1);
-          }
         case 20:
+          final newNotice = noticeModel.copyWith(selectedTime2: picked);
+          await NoticeUsecase().setScheduleNotification(newNotice);
           setState(() {
-            selectedTime2 = picked;
-            saveData('selectedTime2', selectedTime2);
+            noticeModel = newNotice;
           });
-          if (notificationState) {
-            await WordsNotification().scheduleNotification(
-                timeTypeNumber, selectedWordsCount, selectedTime2);
-          }
         case 30:
+          final newNotice = noticeModel.copyWith(selectedTime3: picked);
+          await NoticeUsecase().setScheduleNotification(newNotice);
           setState(() {
-            selectedTime3 = picked;
-            saveData('selectedTime3', selectedTime3);
+            noticeModel = newNotice;
           });
-          if (notificationState) {
-            await WordsNotification().scheduleNotification(
-                timeTypeNumber, selectedWordsCount, selectedTime3);
-          }
       }
     }
     HapticFeedback.lightImpact();
@@ -235,43 +202,11 @@ class _NoticePageState extends State<NoticePage> {
                             activeTrackColor: MyTheme.lemon,
                             inactiveThumbColor: Colors.grey,
                             inactiveTrackColor: Colors.white,
-                            value: notificationState,
+                            value: noticeModel.noticeEnable,
                             activeColor: MyTheme.grey,
                             onChanged: (bool value) async {
                               HapticFeedback.lightImpact();
-                              if (value) {
-                                final isEnable = await WordsNotification()
-                                    .checkNotificationPermissions();
-                                if (!isEnable) {
-                                  await showNoticePermissionDialog();
-                                  return;
-                                }
-                              }
-                              setState(() {
-                                notificationState = value;
-                                saveData(
-                                    'notificationState', notificationState);
-                              });
-                              if (notificationState) {
-                                if (time1State) {
-                                  await WordsNotification()
-                                      .scheduleNotification(10,
-                                          selectedWordsCount, selectedTime1);
-                                }
-                                if (time2State) {
-                                  await WordsNotification()
-                                      .scheduleNotification(20,
-                                          selectedWordsCount, selectedTime1);
-                                }
-                                if (time3State) {
-                                  await WordsNotification()
-                                      .scheduleNotification(30,
-                                          selectedWordsCount, selectedTime1);
-                                }
-                              } else {
-                                await flutterLocalNotificationsPlugin
-                                    .cancelAll();
-                              }
+                              await handleChangeSwitch(value);
                             },
                           )
                         ],
@@ -286,7 +221,7 @@ class _NoticePageState extends State<NoticePage> {
                         decoration: BoxDecoration(
                           border: Border(
                               left: BorderSide(
-                                  color: notificationState
+                                  color: noticeModel.noticeEnable
                                       ? Colors.white
                                       : Colors.white30)),
                         ),
@@ -298,13 +233,13 @@ class _NoticePageState extends State<NoticePage> {
                               children: [
                                 mediumText(
                                     'Word Count',
-                                    notificationState
+                                    noticeModel.noticeEnable
                                         ? Colors.white
                                         : Colors.white30),
                                 Container(
                                   width: 70,
                                   height: 50,
-                                  color: notificationState
+                                  color: noticeModel.noticeEnable
                                       ? Colors.white
                                       : Colors.white30,
                                   child: Stack(
@@ -322,7 +257,7 @@ class _NoticePageState extends State<NoticePage> {
                                         right: 15,
                                         child: WordsCountDropdownWidget(
                                           selectedWordsCount:
-                                              selectedWordsCount,
+                                              noticeModel.selectedWordCount,
                                           onItemSelected: updateWordCount,
                                         ),
                                       ),
@@ -341,26 +276,12 @@ class _NoticePageState extends State<NoticePage> {
                                 InkWell(
                                   onTap: () async {
                                     HapticFeedback.lightImpact();
-                                    setState(() {
-                                      time1State = !time1State;
-                                      saveData('time1State', time1State);
-                                    });
-                                    if (notificationState && time1State) {
-                                      await WordsNotification()
-                                          .scheduleNotification(
-                                              10,
-                                              selectedWordsCount,
-                                              selectedTime1);
-                                    }
-                                    if (!time1State) {
-                                      await flutterLocalNotificationsPlugin
-                                          .cancel(1);
-                                      debugPrint('canceled time1');
-                                    }
+                                    handleTapTimeRadioButton(10);
                                   },
                                   child: Row(
                                     children: [
-                                      if (notificationState && time1State)
+                                      if (noticeModel.noticeEnable &&
+                                          noticeModel.time1Enable)
                                         const Icon(Icons.radio_button_checked,
                                             color: Colors.white, size: 20)
                                       else
@@ -371,7 +292,8 @@ class _NoticePageState extends State<NoticePage> {
                                             bottom: 6.0, left: 10),
                                         child: mediumText(
                                             'Time1',
-                                            notificationState && time1State
+                                            noticeModel.noticeEnable &&
+                                                    noticeModel.time1Enable
                                                 ? Colors.white
                                                 : Colors.white30),
                                       ),
@@ -387,11 +309,12 @@ class _NoticePageState extends State<NoticePage> {
                                     alignment: Alignment.center,
                                     width: 90,
                                     height: 50,
-                                    color: notificationState && time1State
+                                    color: noticeModel.noticeEnable &&
+                                            noticeModel.time1Enable
                                         ? Colors.white
                                         : Colors.white30,
                                     child: titleText(
-                                        '${selectedTime1.hour.toString().padLeft(2, "0")}:${selectedTime1.minute.toString().padLeft(2, "0")}',
+                                        '${noticeModel.selectedTime1.hour.toString().padLeft(2, "0")}:${noticeModel.selectedTime1.minute.toString().padLeft(2, "0")}',
                                         Colors.black,
                                         null),
                                   ),
@@ -408,26 +331,12 @@ class _NoticePageState extends State<NoticePage> {
                                 InkWell(
                                   onTap: () async {
                                     HapticFeedback.lightImpact();
-                                    setState(() {
-                                      time2State = !time2State;
-                                      saveData('time2State', time2State);
-                                    });
-                                    if (notificationState && time2State) {
-                                      await WordsNotification()
-                                          .scheduleNotification(
-                                              20,
-                                              selectedWordsCount,
-                                              selectedTime2);
-                                    }
-                                    if (!time2State) {
-                                      await flutterLocalNotificationsPlugin
-                                          .cancel(2);
-                                      debugPrint('canceled time2');
-                                    }
+                                    handleTapTimeRadioButton(20);
                                   },
                                   child: Row(
                                     children: [
-                                      if (notificationState && time2State)
+                                      if (noticeModel.noticeEnable &&
+                                          noticeModel.time2Enable)
                                         const Icon(Icons.radio_button_checked,
                                             color: Colors.white, size: 20)
                                       else
@@ -438,7 +347,8 @@ class _NoticePageState extends State<NoticePage> {
                                             bottom: 6.0, left: 10),
                                         child: mediumText(
                                             'Time2',
-                                            notificationState && time2State
+                                            noticeModel.noticeEnable &&
+                                                    noticeModel.time2Enable
                                                 ? Colors.white
                                                 : Colors.white30),
                                       ),
@@ -454,11 +364,12 @@ class _NoticePageState extends State<NoticePage> {
                                     alignment: Alignment.center,
                                     width: 90,
                                     height: 50,
-                                    color: notificationState && time2State
+                                    color: noticeModel.noticeEnable &&
+                                            noticeModel.time2Enable
                                         ? Colors.white
                                         : Colors.white30,
                                     child: titleText(
-                                        '${selectedTime2.hour.toString().padLeft(2, "0")}:${selectedTime2.minute.toString().padLeft(2, "0")}',
+                                        '${noticeModel.selectedTime2.hour.toString().padLeft(2, "0")}:${noticeModel.selectedTime2.minute.toString().padLeft(2, "0")}',
                                         Colors.black,
                                         null),
                                   ),
@@ -475,26 +386,12 @@ class _NoticePageState extends State<NoticePage> {
                                 InkWell(
                                   onTap: () async {
                                     HapticFeedback.lightImpact();
-                                    setState(() {
-                                      time3State = !time3State;
-                                      saveData('time3State', time3State);
-                                    });
-                                    if (notificationState && time3State) {
-                                      await WordsNotification()
-                                          .scheduleNotification(
-                                              30,
-                                              selectedWordsCount,
-                                              selectedTime3);
-                                    }
-                                    if (!time3State) {
-                                      await flutterLocalNotificationsPlugin
-                                          .cancel(3);
-                                      debugPrint('canceled time3');
-                                    }
+                                    handleTapTimeRadioButton(30);
                                   },
                                   child: Row(
                                     children: [
-                                      if (notificationState && time3State)
+                                      if (noticeModel.noticeEnable &&
+                                          noticeModel.time3Enable)
                                         const Icon(Icons.radio_button_checked,
                                             color: Colors.white, size: 20)
                                       else
@@ -505,7 +402,8 @@ class _NoticePageState extends State<NoticePage> {
                                             bottom: 6.0, left: 10),
                                         child: mediumText(
                                             'Time3',
-                                            notificationState && time3State
+                                            noticeModel.noticeEnable &&
+                                                    noticeModel.time3Enable
                                                 ? Colors.white
                                                 : Colors.white30),
                                       ),
@@ -521,11 +419,12 @@ class _NoticePageState extends State<NoticePage> {
                                     alignment: Alignment.center,
                                     width: 90,
                                     height: 50,
-                                    color: notificationState && time3State
+                                    color: noticeModel.noticeEnable &&
+                                            noticeModel.time3Enable
                                         ? Colors.white
                                         : Colors.white30,
                                     child: titleText(
-                                        '${selectedTime3.hour.toString().padLeft(2, "0")}:${selectedTime3.minute.toString().padLeft(2, "0")}',
+                                        '${noticeModel.selectedTime3.hour.toString().padLeft(2, "0")}:${noticeModel.selectedTime3.minute.toString().padLeft(2, "0")}',
                                         Colors.black,
                                         null),
                                   ),
