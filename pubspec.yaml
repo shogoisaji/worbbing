@@ -36,6 +36,7 @@ dependencies:
   lottie:
   flutter_svg:
   package_info_plus:
+  flutter_native_splash:
 
 dev_dependencies:
   flutter_test:
@@ -63,3 +64,15 @@ flutter_icons:
   image_path: "assets/images/worbbing_icon_ios.png"
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/worbbing_icon_ios.png"
+
+flutter_native_splash:
+  color: "#000000"
+  # image: "assets/images/splash.png"
+  color_dark: "#000000"
+  # image_dark: "assets/images/splash.png"
+  fullscreen: true
+  android_12:
+    icon_background_color: "#000000"
+    image: "assets/images/splash.png"
+    icon_background_color_dark: "#000000"
+    image_dark: "assets/images/splash.png"
