@@ -298,7 +298,9 @@ class _DetailPageState extends State<DetailPage> {
             ),
             onTap: () {
               HapticFeedback.lightImpact();
-              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
             }),
         backgroundColor: Colors.transparent,
       ),

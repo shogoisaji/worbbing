@@ -220,7 +220,7 @@ class _SlideCard extends StatelessWidget {
                       child: GestureDetector(
                           onTap: () async {
                             HapticFeedback.lightImpact();
-                            await Navigator.of(context).push(
+                            await Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) =>
                                       DetailPage(id: wordModel.id)),
