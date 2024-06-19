@@ -9,7 +9,6 @@ import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_settings/app_settings.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
