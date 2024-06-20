@@ -426,14 +426,19 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                       }),
                                                   InkWell(
                                                     onTap: () {
+                                                      if (ticket == 0) return;
                                                       HapticFeedback
                                                           .lightImpact();
                                                       translateWord();
                                                     },
-                                                    child: Image.asset(
-                                                        'assets/images/translate.png',
-                                                        width: 100,
-                                                        height: 100),
+                                                    child: Opacity(
+                                                      opacity:
+                                                          ticket == 0 ? 0.5 : 1,
+                                                      child: Image.asset(
+                                                          'assets/images/translate.png',
+                                                          width: 100,
+                                                          height: 100),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -559,6 +564,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
             color: Colors.white,
             child: TextField(
                 focusNode: focusNode,
+                cursorColor: Colors.grey.shade600,
                 maxLength: isInput ? 20 : null,
                 maxLines: lines,
                 keyboardType: isEnglish
