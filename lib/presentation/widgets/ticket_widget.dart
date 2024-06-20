@@ -18,7 +18,9 @@ class TicketWidget extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: SvgPicture.asset('assets/svg/ticket.svg'),
+              child: count == 0
+                  ? SvgPicture.asset('assets/svg/e_ticket.svg')
+                  : SvgPicture.asset('assets/svg/ticket.svg'),
             ),
             Positioned(
               bottom: 3,
