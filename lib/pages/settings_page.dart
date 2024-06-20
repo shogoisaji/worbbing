@@ -286,6 +286,39 @@ class _SettingsPageState extends State<SettingsPage> {
                                   color: MyTheme.lemon, size: 12),
                             ),
                             const Expanded(
+                              child: Text('License',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w500)),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LicensePage(
+                                      applicationName: 'Worbbing',
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.circle,
+                                  color: MyTheme.lemon, size: 12),
+                            ),
+                            const Expanded(
                               child: Text('Forgetting Curve',
                                   style: TextStyle(
                                       color: Colors.white,
