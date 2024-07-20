@@ -338,51 +338,42 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Expanded(
-                                                child: SizedBox(
-                                                  height: 60,
-                                                  // color: Colors.green,
-                                                  child: Stack(
-                                                    fit: StackFit.expand,
-                                                    children: [
-                                                      Positioned(
-                                                        top: 0,
-                                                        right: -10,
-                                                        child: IconButton(
-                                                          onPressed: () {
-                                                            HapticFeedback
-                                                                .lightImpact();
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          icon: Icon(
-                                                              Icons
-                                                                  .cancel_rounded,
-                                                              size: 46,
-                                                              color: MyTheme
-                                                                  .orange),
-                                                        ),
-                                                      ),
-                                                      const Center(
-                                                        child: Text(
-                                                          'Registration',
-                                                          style: TextStyle(
-                                                              fontSize: 32,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                              FutureBuilder<int>(
+                                                  future: loadTicket(),
+                                                  builder: (context, snapshot) {
+                                                    return TicketWidget(
+                                                        count:
+                                                            snapshot.data ?? 0,
+                                                        size: 50,
+                                                        isEnableUseAnimation:
+                                                            true);
+                                                  }),
+                                              const Center(
+                                                child: Text(
+                                                  'Registration',
+                                                  style: TextStyle(
+                                                      fontSize: 32,
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  HapticFeedback.lightImpact();
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Icon(
+                                                    Icons.cancel_rounded,
+                                                    size: 46,
+                                                    color: MyTheme.orange),
                                               ),
                                             ],
                                           ),
+                                          const SizedBox(height: 10),
                                           Align(
                                               alignment:
                                                   const Alignment(-0.95, 0.0),
@@ -417,16 +408,6 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.end,
                                                 children: [
-                                                  FutureBuilder<int>(
-                                                      future: loadTicket(),
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        return TicketWidget(
-                                                            count:
-                                                                snapshot.data ??
-                                                                    0,
-                                                            size: 50);
-                                                      }),
                                                   InkWell(
                                                     onTap: () {
                                                       if (ticket == 0) return;
@@ -437,10 +418,9 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                     child: Opacity(
                                                       opacity:
                                                           ticket == 0 ? 0.5 : 1,
-                                                      child: Image.asset(
-                                                          'assets/images/translate.png',
-                                                          width: 100,
-                                                          height: 100),
+                                                      child: TranslateButton(
+                                                          animationController:
+                                                              _animationController),
                                                     ),
                                                   ),
                                                 ],
@@ -588,5 +568,87 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
         ],
       );
     });
+  }
+}
+
+class TranslateButton extends StatefulWidget {
+  final AnimationController animationController;
+
+  const TranslateButton({Key? key, required this.animationController})
+      : super(key: key);
+
+  @override
+  State<TranslateButton> createState() => _TranslateButtonState();
+}
+
+class _TranslateButtonState extends State<TranslateButton> {
+  OverlayEntry? _overlayEntry;
+  final GlobalKey _widgetKey = GlobalKey();
+
+  void _showOverlay(BuildContext context) {
+    final currentContext = _widgetKey.currentContext;
+    if (currentContext == null) return;
+
+    final RenderBox renderBox = currentContext.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+              top: position.dy,
+              left: position.dx,
+              child: AnimatedBuilder(
+                  animation: widget.animationController,
+                  builder: (context, child) {
+                    final Animation<double> animation = CurvedAnimation(
+                        parent: widget.animationController,
+                        curve: Curves.easeOut);
+                    return Opacity(
+                      opacity: (1 - 1.0 * animation.value).clamp(0.0, 1.0),
+                      child: Transform.scale(
+                        scale: 1 + 3 * animation.value,
+                        child: Transform.translate(
+                          offset: Offset(-10 * animation.value, 0.0),
+                          child: Lottie.asset('assets/lottie/translate.json',
+                              controller: widget.animationController,
+                              width: 100,
+                              height: 100),
+                        ),
+                      ),
+                    );
+                  }),
+            ));
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.animationController.addStatusListener((status) {
+      if (status == AnimationStatus.forward) {
+        _showOverlay(context);
+      } else if (status == AnimationStatus.completed) {
+        _removeOverlay();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+        key: _widgetKey,
+        'assets/images/translate.png',
+        width: 100,
+        height: 100);
   }
 }
