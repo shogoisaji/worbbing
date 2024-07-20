@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTextStyles {
   // 日本語フォントを指定
-  static final titleStyle = GoogleFonts.zenKakuGothicNew(
+  static const titleStyle = TextStyle(
     fontSize: 32,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w400,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 
-  static final bigStyle = GoogleFonts.zenKakuGothicNew(
+  static const bigStyle = TextStyle(
     fontSize: 48,
     fontWeight: FontWeight.w600,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 
-  static final subTitleStyle = GoogleFonts.zenKakuGothicNew(
+  static const subTitleStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 
-  static final mediumStyle = GoogleFonts.zenKakuGothicNew(
+  static const mediumStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w400,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 
-  static final bodyStyle = GoogleFonts.zenKakuGothicNew(
+  static const bodyStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 
-  static final bodyStyleB = GoogleFonts.zenKakuGothicNew(
+  static const bodyStyleB = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 
-  static final bodyStyle2 = GoogleFonts.zenKakuGothicNew(
+  static const bodyStyle2 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w400,
     color: Colors.white,
+    fontFamily: 'SawarabiGothic',
   );
 }
 

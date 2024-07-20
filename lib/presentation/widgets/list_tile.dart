@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/detail_page.dart';
@@ -42,8 +43,8 @@ class _WordListTileState extends State<WordListTile>
   Widget _translatedWord() {
     return AutoSizeText(widget.wordModel.translatedWord,
         maxLines: 1,
-        style: const TextStyle(
-            color: Colors.black, fontSize: 26, fontWeight: FontWeight.w600));
+        style: GoogleFonts.nunito(
+            color: Colors.black, fontSize: 26, fontWeight: FontWeight.w400));
   }
 
   @override
