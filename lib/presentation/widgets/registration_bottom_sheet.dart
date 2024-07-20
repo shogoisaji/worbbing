@@ -99,7 +99,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       final res = await TranslateApi.postRequest(_originalWordController.text,
           originalLanguage.lowerString, translateLanguage.lowerString);
       final translatedModel = TranslatedResponse.fromJson(res);
-      await TicketManager.useTicket();
+      // await TicketManager.useTicket();
       if (translatedModel.type == TranslatedResponseType.suggestion) {
         if (!mounted) return;
         await TwoWayDialog.show(
@@ -164,10 +164,12 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 ),
               ],
             ),
-            'No',
-            'Yes', () {
+            leftButtonText: 'No',
+            rightButtonText: 'Yes', onLeftButtonPressed: () {
           //
-        }, () {
+        }, onRightButtonPressed: () async {
+          await TicketManager.useTicket();
+
           _originalWordController.text = translatedModel.original;
           _translatedController.text =
               "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
@@ -175,6 +177,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
           _exampleTranslatedController.text = translatedModel.exampleTranslated;
         });
       } else {
+        await TicketManager.useTicket();
         _originalWordController.text = translatedModel.original;
         _translatedController.text =
             "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
