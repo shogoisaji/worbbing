@@ -306,7 +306,8 @@ class _NoticePageState extends State<NoticePage> {
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
-                                    width: 90,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6),
                                     height: 50,
                                     color: noticeModel.noticeEnable &&
                                             noticeModel.time1Enable
@@ -361,7 +362,8 @@ class _NoticePageState extends State<NoticePage> {
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
-                                    width: 90,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6),
                                     height: 50,
                                     color: noticeModel.noticeEnable &&
                                             noticeModel.time2Enable
@@ -416,7 +418,8 @@ class _NoticePageState extends State<NoticePage> {
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
-                                    width: 90,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6),
                                     height: 50,
                                     color: noticeModel.noticeEnable &&
                                             noticeModel.time3Enable

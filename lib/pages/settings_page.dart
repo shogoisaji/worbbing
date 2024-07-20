@@ -254,6 +254,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             privacyURL();
                           },
                           child: Row(
@@ -279,6 +280,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -312,6 +314,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
