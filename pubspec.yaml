@@ -58,6 +58,11 @@ flutter:
     - assets/lottie/
     - assets/svg/
 
+  fonts:
+    - family: SawarabiGothic
+      fonts:
+        - asset: assets/fonts/Sawarabi_Gothic/SawarabiGothic-Regular.ttf
+
 flutter_icons:
   ios: true
   android: true

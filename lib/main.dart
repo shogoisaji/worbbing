@@ -57,11 +57,9 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.dark,
         colorSchemeSeed: MyTheme.lemon,
-        textTheme: const TextTheme(
-          titleMedium: TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        textTheme: TextTheme(
+            bodyMedium: TextStyle(color: MyTheme.lemon),
+            headlineSmall: TextStyle(color: MyTheme.lemon)),
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),

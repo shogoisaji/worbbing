@@ -4,14 +4,11 @@ import 'package:worbbing/presentation/theme/theme.dart';
 
 class TwoWayDialog {
   static Future<void> show(
-      BuildContext context,
-      String title,
-      Widget? icon,
-      Widget? content,
-      String leftButtonText,
-      String rightButtonText,
-      Function onLeftButtonPressed,
-      Function onRightButtonPressed) async {
+      BuildContext context, String title, Widget? icon, Widget? content,
+      {required String leftButtonText,
+      required String rightButtonText,
+      required Function onLeftButtonPressed,
+      required Function onRightButtonPressed}) async {
     showDialog(
         context: context,
         builder: (context) => Align(
