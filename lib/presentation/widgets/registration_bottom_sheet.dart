@@ -563,6 +563,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 style: TextStyle(
                   fontSize: isInput ? 30 : 24,
                   color: Colors.black,
+                  fontFamily: 'SawarabiGothic',
                 )),
           )
         ],

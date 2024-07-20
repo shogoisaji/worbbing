@@ -6,49 +6,42 @@ class AppTextStyles {
     fontSize: 32,
     fontWeight: FontWeight.w400,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 
   static const bigStyle = TextStyle(
     fontSize: 48,
     fontWeight: FontWeight.w600,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 
   static const subTitleStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 
   static const mediumStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w400,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 
   static const bodyStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 
   static const bodyStyleB = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 
   static const bodyStyle2 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w400,
     color: Colors.white,
-    fontFamily: 'SawarabiGothic',
   );
 }
 

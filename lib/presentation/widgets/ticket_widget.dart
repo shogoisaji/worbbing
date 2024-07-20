@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
@@ -66,7 +67,7 @@ class _TicketWidgetState extends State<TicketWidget> {
                           shape: BoxShape.circle,
                         ),
                         child: Text(widget.count.toString(),
-                            style: const TextStyle(
+                            style: GoogleFonts.notoSans(
                                 color: Colors.white, fontSize: 14))),
                   ),
                 ],
