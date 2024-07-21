@@ -158,7 +158,7 @@ class _NoticePageState extends State<NoticePage> {
             alignment: Alignment.center,
             child: Image.asset(
               'assets/images/notice.png',
-              width: 120,
+              width: 150,
             ),
           ),
           leading: InkWell(

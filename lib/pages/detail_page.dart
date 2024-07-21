@@ -285,7 +285,7 @@ class _DetailPageState extends State<DetailPage> {
           alignment: Alignment.center,
           child: Image.asset(
             'assets/images/detail.png',
-            width: 120,
+            width: 150,
           ),
         ),
         leading: InkWell(
