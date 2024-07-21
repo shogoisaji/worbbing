@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -14,10 +15,10 @@ const int animationDuration = 1000;
 Widget noticeBlock(double size, int number, Color color) {
   Random random = Random();
   final fontSize = size * 0.60;
-  final textStyle = TextStyle(
-    color: Colors.black,
-    fontSize: fontSize,
-  );
+  final textStyle = GoogleFonts.notoSans(
+      color: Colors.black, fontSize: fontSize, fontWeight: FontWeight.w500);
+  final infinityTextStyle = GoogleFonts.roboto(
+      color: Colors.black, fontSize: fontSize, fontWeight: FontWeight.w400);
 
   return Stack(
     children: [
@@ -37,10 +38,15 @@ Widget noticeBlock(double size, int number, Color color) {
         height: size,
         alignment: Alignment.center,
         color: color,
-        child: Text(
-          number == 99 ? '∞' : number.toString(),
-          style: textStyle,
-        ),
+        child: number == 99
+            ? Text(
+                '∞',
+                style: infinityTextStyle,
+              )
+            : Text(
+                number.toString(),
+                style: textStyle,
+              ),
       ).animate().shake(
             duration: animationDuration.milliseconds,
             delay: (random.nextInt(maxRandomValue) * animationDelayMultiplier)

@@ -563,6 +563,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 style: TextStyle(
                   fontSize: isInput ? 30 : 24,
                   color: Colors.black,
+                  fontFamily: 'SawarabiGothic',
                 )),
           )
         ],
@@ -601,13 +602,13 @@ class _TranslateButtonState extends State<TranslateButton> {
                   builder: (context, child) {
                     final Animation<double> animation = CurvedAnimation(
                         parent: widget.animationController,
-                        curve: Curves.easeOut);
+                        curve: Curves.easeIn);
                     return Opacity(
                       opacity: (1 - 1.0 * animation.value).clamp(0.0, 1.0),
                       child: Transform.scale(
-                        scale: 1 + 3 * animation.value,
+                        scale: 1 + 2.0 * animation.value,
                         child: Transform.translate(
-                          offset: Offset(-10 * animation.value, 0.0),
+                          offset: Offset(-8 * animation.value, 0.0),
                           child: Lottie.asset('assets/lottie/translate.json',
                               controller: widget.animationController,
                               width: 100,

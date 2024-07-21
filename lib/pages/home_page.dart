@@ -38,18 +38,6 @@ class _HomePageState extends State<HomePage>
   Future<List<WordModel>> dataFuture =
       SqfliteRepository.instance.queryAllRowsNoticeDuration();
 
-  @override
-  void initState() {
-    super.initState();
-    _state = SchedulerBinding.instance.lifecycleState;
-    _listener = AppLifecycleListener(
-      onStateChange: _handleStateChange,
-    );
-    if (_state != null) {
-      _states.add(_state!.name);
-    }
-  }
-
   void _handleStateChange(AppLifecycleState state) {
     if (_state == AppLifecycleState.inactive &&
         state == AppLifecycleState.resumed) {
@@ -120,6 +108,24 @@ class _HomePageState extends State<HomePage>
           dataFuture = SqfliteRepository.instance.queryAllRowsFlag();
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _state = SchedulerBinding.instance.lifecycleState;
+    _listener = AppLifecycleListener(
+      onStateChange: _handleStateChange,
+    );
+    if (_state != null) {
+      _states.add(_state!.name);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _listener.dispose();
   }
 
   @override
