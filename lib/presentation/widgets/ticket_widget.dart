@@ -60,7 +60,7 @@ class _TicketWidgetState extends State<TicketWidget> {
                     bottom: 3,
                     right: 10,
                     child: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: EdgeInsets.all(widget.size / 12),
                         decoration: BoxDecoration(
                           color: MyTheme.grey,
                           border: Border.all(color: Colors.white, width: 1),
@@ -68,7 +68,8 @@ class _TicketWidgetState extends State<TicketWidget> {
                         ),
                         child: Text(widget.count.toString(),
                             style: GoogleFonts.notoSans(
-                                color: Colors.white, fontSize: 14))),
+                                color: Colors.white,
+                                fontSize: widget.size / 3.5))),
                   ),
                 ],
               ));
