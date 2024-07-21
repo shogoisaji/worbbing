@@ -57,8 +57,13 @@ class TwoWayDialogWidget extends StatelessWidget {
             maxWidth: 400,
           ),
           decoration: BoxDecoration(
-            color: Colors.grey.shade400,
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
+            color: MyTheme.dialogGrey,
+            gradient: LinearGradient(
+              colors: [MyTheme.grey, MyTheme.dialogGrey],
+              begin: const Alignment(-0.5, -1.5),
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(4)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
@@ -66,9 +71,8 @@ class TwoWayDialogWidget extends StatelessWidget {
                 blurRadius: 5,
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 1,
-                spreadRadius: 1,
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 2,
               ),
             ],
           ),
@@ -80,21 +84,27 @@ class TwoWayDialogWidget extends StatelessWidget {
                   ? Column(
                       children: [
                         icon!,
-                        const SizedBox(height: 6),
                       ],
                     )
                   : const SizedBox.shrink(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Text(title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
-                      color: Colors.black,
+                      color: MyTheme.lemon,
                       fontWeight: FontWeight.w700,
+                      shadows: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.7),
+                          offset: const Offset(0.5, 1),
+                          spreadRadius: 2,
+                        ),
+                      ],
                     )),
               ),
               content != null ? content! : const SizedBox.shrink(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -107,13 +117,8 @@ class TwoWayDialogWidget extends StatelessWidget {
                     child: Container(
                       height: 50,
                       decoration: BoxDecoration(
-                        color: MyTheme.grey,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(18),
-                          bottomLeft: Radius.circular(18),
-                          topRight: Radius.circular(3),
-                          bottomRight: Radius.circular(3),
-                        ),
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(2),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.3),
@@ -124,9 +129,9 @@ class TwoWayDialogWidget extends StatelessWidget {
                       ),
                       child: Center(
                           child: Text(leftButtonText,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
+                              style: TextStyle(
+                                color: Colors.grey.shade800,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ))),
                     ),
@@ -142,13 +147,8 @@ class TwoWayDialogWidget extends StatelessWidget {
                       child: Container(
                           height: 50,
                           decoration: BoxDecoration(
-                            color: MyTheme.orange,
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(18),
-                              bottomRight: Radius.circular(18),
-                              topLeft: Radius.circular(3),
-                              bottomLeft: Radius.circular(3),
-                            ),
+                            color: MyTheme.lemon,
+                            borderRadius: BorderRadius.circular(2),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.3),
@@ -160,7 +160,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                           child: Center(
                               child: Text(rightButtonText,
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 24,
                                     color: MyTheme.grey,
                                     fontWeight: FontWeight.bold,
                                   )))),

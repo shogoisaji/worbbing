@@ -99,69 +99,75 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       final res = await TranslateApi.postRequest(_originalWordController.text,
           originalLanguage.lowerString, translateLanguage.lowerString);
       final translatedModel = TranslatedResponse.fromJson(res);
-      // await TicketManager.useTicket();
+
+      /// dialog test用
+      // final translatedModel = TranslatedResponse(
+      // original: _originalWordController.text,
+      // type: TranslatedResponseType.suggestion,
+      // originalLang: originalLanguage,
+      // translateLang: translateLanguage,
+      // translated: ['translated', 'translated', 'translated'],
+      // example: 'example',
+      // exampleTranslated: 'exampleTranslated');
       if (translatedModel.type == TranslatedResponseType.suggestion) {
         if (!mounted) return;
         await TwoWayDialog.show(
             context,
-            'Maybe...',
+            'Maybe...this word?',
             RiveAnimatedIcon(
                 riveIcon: RiveIcon.graduate,
                 width: 70,
                 height: 70,
-                color: Colors.black,
+                color: Colors.white,
                 loopAnimation: true,
                 onTap: () {},
                 onHover: (value) {}),
-            Row(
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                    child: Icon(Icons.arrow_downward_rounded,
-                        size: 40, color: MyTheme.grey)),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 6),
-                        child: AutoSizeText(
-                          translatedModel.original,
-                          style: const TextStyle(
-                              fontSize: 30, color: Colors.black),
-                          minFontSize: 16,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 6),
-                        child: AutoSizeText(
-                          translatedModel.translated[0],
-                          style: const TextStyle(
-                              fontSize: 30, color: Colors.black),
-                          minFontSize: 16,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 1, left: 4),
+                  child: bodyText('Original', Colors.white),
+                ),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                  child: AutoSizeText(
+                    translatedModel.original,
+                    style: const TextStyle(fontSize: 30, color: Colors.black),
+                    minFontSize: 16,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 1, left: 4),
+                  child: bodyText('Translated', Colors.white),
+                ),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  child: AutoSizeText(
+                    translatedModel.translated[0],
+                    style: const TextStyle(fontSize: 30, color: Colors.black),
+                    minFontSize: 16,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 8),
               ],
             ),
             leftButtonText: 'No',
@@ -276,189 +282,186 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
 
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) => GestureDetector(
-        onTap: () {
-          if (isLoading) return;
-          Navigator.of(context).pop();
-        },
-        child: Container(
-          width: w,
-          height: double.infinity,
-          color: Colors.transparent,
-          child: Stack(
-            // fit: StackFit.expand,
-            children: [
-              isLoading
-                  ? Center(
-                      child: SizedBox(
-                        width: 200,
-                        height: 200,
-                        child: Lottie.asset('assets/lottie/w_loading.json'),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  height: h * 0.9 * (1 - _animation.value),
-                  child: GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                    },
-
-                    /// TestField focus 時にfocusに合わせて上下の位置を調整してくれる（キーボードで隠れない）のでScaffoldを使っている
-                    child: Stack(
-                      children: [
-                        Center(
+      builder: (context, child) => IgnorePointer(
+        ignoring: isLoading,
+        child: GestureDetector(
+          onTap: () {
+            if (isLoading) return;
+            Navigator.of(context).pop();
+          },
+          child: Container(
+            width: w,
+            height: double.infinity,
+            color: Colors.transparent,
+            child: Stack(
+              // fit: StackFit.expand,
+              children: [
+                isLoading
+                    ? Center(
+                        child: SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: Lottie.asset('assets/lottie/w_loading.json'),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                        },
+                        child: SizedBox(
+                          /// sheetが下がるアニメーション
+                          height: h * 0.9 * (1 - _animation.value),
                           child: Scaffold(
-                            body: IgnorePointer(
-                              ignoring: isLoading,
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  width: w,
-                                  padding: const EdgeInsets.only(
-                                    top: 12,
-                                    bottom: 0,
+                            body: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                width: w,
+                                padding: const EdgeInsets.only(
+                                  top: 12,
+                                  bottom: 0,
+                                ),
+                                constraints:
+                                    const BoxConstraints(maxWidth: 400),
+                                decoration: BoxDecoration(
+                                  color: MyTheme.grey,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
                                   ),
-                                  constraints:
-                                      const BoxConstraints(maxWidth: 400),
-                                  decoration: BoxDecoration(
-                                    color: MyTheme.grey,
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(20),
-                                      topRight: Radius.circular(20),
-                                    ),
-                                  ),
-                                  child: SingleChildScrollView(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 32),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              FutureBuilder<int>(
-                                                  future: loadTicket(),
-                                                  builder: (context, snapshot) {
-                                                    return TicketWidget(
-                                                        count:
-                                                            snapshot.data ?? 0,
-                                                        size: 50,
-                                                        isEnableUseAnimation:
-                                                            true);
-                                                  }),
-                                              const Center(
-                                                child: Text(
-                                                  'Registration',
-                                                  style: TextStyle(
-                                                      fontSize: 32,
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
+                                ),
+                                child: SingleChildScrollView(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 32),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            FutureBuilder<int>(
+                                                future: loadTicket(),
+                                                builder: (context, snapshot) {
+                                                  return TicketWidget(
+                                                      count: snapshot.data ?? 0,
+                                                      size: 65,
+                                                      isEnableUseAnimation:
+                                                          true);
+                                                }),
+                                            const Center(
+                                              child: Text(
+                                                'Registration',
+                                                style: TextStyle(
+                                                    fontSize: 32,
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
-                                              InkWell(
-                                                onTap: () {
-                                                  HapticFeedback.lightImpact();
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Icon(
-                                                    Icons.cancel_rounded,
-                                                    size: 46,
-                                                    color: MyTheme.orange),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Align(
-                                              alignment:
-                                                  const Alignment(-0.95, 0.0),
-                                              child: bodyText('Original',
-                                                  MyTheme.lightGrey)),
-                                          customTextField(
-                                              _originalWordController,
-                                              MyTheme.lemon,
-                                              focusNode: _focusNode,
-                                              isInput: true,
-                                              isEnglish: true),
-                                          const SizedBox(height: 20),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              LanguageDropdownWidget(
-                                                originalLanguage:
-                                                    originalLanguage,
-                                                translateLanguage:
-                                                    translateLanguage,
-                                                onOriginalSelected:
-                                                    (TranslateLanguage value) {
-                                                  originalLanguage = value;
-                                                },
-                                                onTranslateSelected:
-                                                    (TranslateLanguage value) {
-                                                  translateLanguage = value;
-                                                },
-                                              ),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () {
-                                                      if (ticket == 0) return;
-                                                      HapticFeedback
-                                                          .lightImpact();
-                                                      translateWord();
-                                                    },
-                                                    child: Opacity(
-                                                      opacity:
-                                                          ticket == 0 ? 0.5 : 1,
-                                                      child: TranslateButton(
-                                                          animationController:
-                                                              _animationController),
-                                                    ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                HapticFeedback.lightImpact();
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Icon(Icons.cancel_rounded,
+                                                  size: 46,
+                                                  color: MyTheme.orange),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Align(
+                                            alignment:
+                                                const Alignment(-0.95, 0.0),
+                                            child: bodyText(
+                                                'Original', MyTheme.lightGrey)),
+                                        customTextField(_originalWordController,
+                                            MyTheme.lemon,
+                                            focusNode: _focusNode,
+                                            isInput: true,
+                                            isEnglish: true),
+                                        const SizedBox(height: 20),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            LanguageDropdownWidget(
+                                              originalLanguage:
+                                                  originalLanguage,
+                                              translateLanguage:
+                                                  translateLanguage,
+                                              onOriginalSelected:
+                                                  (TranslateLanguage value) {
+                                                originalLanguage = value;
+                                              },
+                                              onTranslateSelected:
+                                                  (TranslateLanguage value) {
+                                                translateLanguage = value;
+                                              },
+                                            ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    if (ticket == 0) {
+                                                      return;
+                                                    }
+                                                    HapticFeedback
+                                                        .lightImpact();
+                                                    translateWord();
+                                                  },
+                                                  child: Opacity(
+                                                    opacity:
+                                                        ticket == 0 ? 0.5 : 1,
+                                                    child: TranslateButton(
+                                                        animationController:
+                                                            _animationController),
                                                   ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          Align(
-                                              alignment:
-                                                  const Alignment(-0.95, 0.0),
-                                              child: bodyText('Translated',
-                                                  MyTheme.lightGrey)),
-                                          customTextField(_translatedController,
-                                              MyTheme.orange,
-                                              isEnglish: false),
-                                          const SizedBox(height: 16),
-                                          Align(
-                                              alignment:
-                                                  const Alignment(-0.95, 0.0),
-                                              child: bodyText('Example',
-                                                  MyTheme.lightGrey)),
-                                          customTextField(
-                                              _exampleController, MyTheme.lemon,
-                                              lines: 2, isEnglish: true),
-                                          const SizedBox(height: 16),
-                                          Align(
-                                              alignment:
-                                                  const Alignment(-0.95, 0.0),
-                                              child: bodyText(
-                                                  'Translated Example',
-                                                  MyTheme.lightGrey)),
-                                          customTextField(
-                                              _exampleTranslatedController,
-                                              MyTheme.orange,
-                                              lines: 2,
-                                              isEnglish: false),
-                                          const SizedBox(height: 200),
-                                        ],
-                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Align(
+                                            alignment:
+                                                const Alignment(-0.95, 0.0),
+                                            child: bodyText('Translated',
+                                                MyTheme.lightGrey)),
+                                        customTextField(_translatedController,
+                                            MyTheme.orange,
+                                            isEnglish: false),
+                                        const SizedBox(height: 16),
+                                        Align(
+                                            alignment:
+                                                const Alignment(-0.95, 0.0),
+                                            child: bodyText(
+                                                'Example', MyTheme.lightGrey)),
+                                        customTextField(
+                                            _exampleController, MyTheme.lemon,
+                                            lines: 2, isEnglish: true),
+                                        const SizedBox(height: 16),
+                                        Align(
+                                            alignment:
+                                                const Alignment(-0.95, 0.0),
+                                            child: bodyText(
+                                                'Translated Example',
+                                                MyTheme.lightGrey)),
+                                        customTextField(
+                                            _exampleTranslatedController,
+                                            MyTheme.orange,
+                                            lines: 2,
+                                            isEnglish: false),
+                                        const SizedBox(height: 200),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -466,59 +469,58 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                             ),
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                              width: double.infinity,
-                              height:
-                                  90 + MediaQuery.of(context).padding.bottom,
-                              decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade800,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    offset: const Offset(0, -2),
-                                    blurRadius: 7,
-                                  ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          width: double.infinity,
+                          height: 90 + MediaQuery.of(context).padding.bottom,
+                          decoration: BoxDecoration(
+                            color: Colors.blueGrey.shade800,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: const Offset(0, -2),
+                                blurRadius: 7,
+                              ),
+                            ],
+                          ),
+                          child: SafeArea(
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  customButton(
+                                      Colors.grey.shade400,
+                                      Text('CANCEL',
+                                          style: TextStyle(
+                                              color: Colors.grey.shade800,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold)),
+                                      () {
+                                    Navigator.of(context).pop();
+                                  }),
+                                  customButton(
+                                      MyTheme.orange,
+                                      Text('SAVE',
+                                          style: TextStyle(
+                                              color: Colors.grey.shade800,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold)),
+                                      () async {
+                                    await saveWord();
+                                  }),
                                 ],
                               ),
-                              child: SafeArea(
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      customButton(
-                                          Colors.grey.shade400,
-                                          Text('CANCEL',
-                                              style: TextStyle(
-                                                  color: Colors.grey.shade800,
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold)),
-                                          () {
-                                        Navigator.of(context).pop();
-                                      }),
-                                      customButton(
-                                          MyTheme.orange,
-                                          Text('SAVE',
-                                              style: TextStyle(
-                                                  color: Colors.grey.shade800,
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold)),
-                                          () async {
-                                        await saveWord();
-                                      }),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                        )
-                      ],
-                    ),
-                  ),
+                            ),
+                          )),
+                    )
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -633,6 +635,8 @@ class _TranslateButtonState extends State<TranslateButton> {
       if (status == AnimationStatus.forward) {
         _showOverlay(context);
       } else if (status == AnimationStatus.completed) {
+        _removeOverlay();
+      } else {
         _removeOverlay();
       }
     });
