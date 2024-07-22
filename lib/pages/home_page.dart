@@ -8,6 +8,7 @@ import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
@@ -154,16 +155,13 @@ class _HomePageState extends State<HomePage>
                 size: 30,
               )),
           actions: [
-            FutureBuilder<int>(
-                future: loadTicket(),
-                builder: (context, snapshot) {
-                  return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        handleTapTicket();
-                      },
-                      child: TicketWidget(count: snapshot.data ?? 0, size: 50));
-                }),
+            AdReward(
+              child: FutureBuilder<int>(
+                  future: loadTicket(),
+                  builder: (context, snapshot) {
+                    return TicketWidget(count: snapshot.data ?? 0, size: 50);
+                  }),
+            ),
             const SizedBox(
               width: 4,
             ),

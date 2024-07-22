@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/pages/splash_page.dart';
@@ -15,6 +16,8 @@ Future<void> main() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Asia/Tokyo"));
   FlutterAppBadger.removeBadge();
+
+  MobileAds.instance.initialize();
 
   /// 画面の向きを固定
   SystemChrome.setPreferredOrientations([

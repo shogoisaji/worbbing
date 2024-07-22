@@ -299,9 +299,11 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 isLoading
                     ? Center(
                         child: SizedBox(
-                          width: 200,
-                          height: 200,
-                          child: Lottie.asset('assets/lottie/w_loading.json'),
+                          width: 170,
+                          height: 170,
+                          child: Lottie.asset(
+                            'assets/lottie/w_loading.json',
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -90,6 +91,7 @@ class TwoWayDialogWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Text(title,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       color: MyTheme.lemon,
@@ -116,6 +118,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                     },
                     child: Container(
                       height: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade400,
                         borderRadius: BorderRadius.circular(2),
@@ -128,7 +131,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                         ],
                       ),
                       child: Center(
-                          child: Text(leftButtonText,
+                          child: AutoSizeText(leftButtonText,
                               style: TextStyle(
                                 color: Colors.grey.shade800,
                                 fontSize: 24,
@@ -146,6 +149,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                       },
                       child: Container(
                           height: 50,
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             color: MyTheme.lemon,
                             borderRadius: BorderRadius.circular(2),
@@ -158,7 +162,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                             ],
                           ),
                           child: Center(
-                              child: Text(rightButtonText,
+                              child: AutoSizeText(rightButtonText,
                                   style: TextStyle(
                                     fontSize: 24,
                                     color: MyTheme.grey,
