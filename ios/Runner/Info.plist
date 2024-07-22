@@ -49,5 +49,10 @@
 		<false/>
 		<key>UIStatusBarHidden</key>
 		<true/>
+		<key>GADApplicationIdentifier</key>
+		<!-- use release -->
+		<!-- <string>ca-app-pub-9902729215705615~2353894386</string> -->
+		<!-- use test -->
+		<string>ca-app-pub-3940256099942544~3347511713</string>
 	</dict>
 </plist>

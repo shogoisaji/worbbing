@@ -36,4 +36,11 @@ class TicketManager {
     await prefs.setInt("ticket", currentTicket - 1);
     return currentTicket - 1;
   }
+
+  static Future<void> earnTicket(int earnTicket) async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentTicket = prefs.getInt("ticket") ?? 0;
+    final earnedTicket = (currentTicket + earnTicket).clamp(0, 99);
+    await prefs.setInt("ticket", earnedTicket);
+  }
 }
