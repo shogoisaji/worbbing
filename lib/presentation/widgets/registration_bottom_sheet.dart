@@ -132,18 +132,21 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 ),
                 Container(
                   width: double.infinity,
+                  height: 50,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(2),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                  child: AutoSizeText(
-                    translatedModel.original,
-                    style: const TextStyle(fontSize: 30, color: Colors.black),
-                    minFontSize: 16,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: AutoSizeText(
+                      translatedModel.original,
+                      style: const TextStyle(fontSize: 30, color: Colors.black),
+                      minFontSize: 16,
+                      maxLines: 1,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -153,18 +156,21 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                 ),
                 Container(
                   width: double.infinity,
+                  height: 50,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(2),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  child: AutoSizeText(
-                    translatedModel.translated[0],
-                    style: const TextStyle(fontSize: 30, color: Colors.black),
-                    minFontSize: 16,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: AutoSizeText(
+                      translatedModel.translated[0],
+                      style: const TextStyle(fontSize: 30, color: Colors.black),
+                      minFontSize: 16,
+                      maxLines: 1,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),

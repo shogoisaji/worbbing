@@ -10,7 +10,7 @@ import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 
 class AdReward extends StatefulWidget {
-  final child;
+  final Widget child;
   const AdReward({
     super.key,
     required this.child,
@@ -55,18 +55,7 @@ class _AdRewardState extends State<AdReward> {
 
   void _handleTap() {
     HapticFeedback.lightImpact();
-    if (_rewardedAd == null) {
-      MySimpleDialog.show(
-          context,
-          const Text(
-            '広告の取得に失敗しました。',
-            style: TextStyle(
-                overflow: TextOverflow.clip, color: Colors.white, fontSize: 24),
-          ),
-          'OK',
-          () {});
-      return;
-    }
+
     TwoWayDialog.show(
         context,
         '広告を見て\nチケットをゲット',
@@ -87,6 +76,20 @@ class _AdRewardState extends State<AdReward> {
         leftButtonText: 'キャンセル',
         rightButtonText: '広告を見る',
         onLeftButtonPressed: () {}, onRightButtonPressed: () async {
+      if (_rewardedAd == null) {
+        MySimpleDialog.show(
+            context,
+            const Text(
+              '広告の取得に失敗しました。',
+              style: TextStyle(
+                  overflow: TextOverflow.clip,
+                  color: Colors.white,
+                  fontSize: 24),
+            ),
+            'OK',
+            () {});
+        return;
+      }
       _rewardedAd?.show(
         onUserEarnedReward: (_, reward) {
           TicketManager.earnTicket(earnTicketCount);
