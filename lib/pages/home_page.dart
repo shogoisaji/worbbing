@@ -70,7 +70,6 @@ class _HomePageState extends State<HomePage>
     final langs = await loadPreferences();
     if (!mounted) return;
     await showModalBottomSheet(
-        constraints: const BoxConstraints(maxWidth: 400),
         backgroundColor: Colors.transparent,
         enableDrag: false,
         isDismissible: false,

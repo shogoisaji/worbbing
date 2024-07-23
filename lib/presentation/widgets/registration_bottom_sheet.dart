@@ -296,11 +296,10 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
             Navigator.of(context).pop();
           },
           child: Container(
-            width: w,
+            width: w.clamp(300, 500),
             height: double.infinity,
             color: Colors.transparent,
             child: Stack(
-              // fit: StackFit.expand,
               children: [
                 isLoading
                     ? Center(
@@ -334,8 +333,6 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                   top: 12,
                                   bottom: 0,
                                 ),
-                                constraints:
-                                    const BoxConstraints(maxWidth: 400),
                                 decoration: BoxDecoration(
                                   color: MyTheme.grey,
                                   borderRadius: const BorderRadius.only(
@@ -363,9 +360,10 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                       isEnableUseAnimation:
                                                           true);
                                                 }),
-                                            const Center(
-                                              child: Text(
+                                            const Expanded(
+                                              child: AutoSizeText(
                                                 'Registration',
+                                                maxLines: 1,
                                                 style: TextStyle(
                                                     fontSize: 32,
                                                     color: Colors.white,
