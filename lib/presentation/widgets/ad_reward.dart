@@ -95,35 +95,8 @@ class _AdRewardState extends State<AdReward> {
           TicketManager.earnTicket(earnTicketCount);
         },
       );
+      _rewardedAd?.setImmersiveMode(true);
     });
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return AlertDialog(
-    //       title: const Text('広告を見てチケットをゲット'),
-    //       content: const Text(
-    //           '動画広告を最後まで視聴することで、チケットが$ticketCount枚ゲットできます。\n\n音声が流れる可能せがあります。'),
-    //       actions: [
-    //         TextButton(
-    //           child: const Text('キャンセル'),
-    //           onPressed: () {
-    //             Navigator.pop(context);
-    //           },
-    //         ),
-    //         TextButton(
-    //           child: const Text('広告を見る'),
-    //           onPressed: () {
-    //             Navigator.pop(context);
-    //             _rewardedAd?.show(
-    //               onUserEarnedReward: (_, reward) {
-    //                 print('User earned reward');
-    //               },
-    //             );
-    //           },
-    //         ),
-    //       ],
-    //     );
-    //   },
   }
 
   @override
