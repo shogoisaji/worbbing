@@ -281,12 +281,10 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Align(
-          alignment: Alignment.center,
-          child: Image.asset(
-            'assets/images/detail.png',
-            width: 150,
-          ),
+        centerTitle: true,
+        title: Image.asset(
+          'assets/images/detail.png',
+          width: 150,
         ),
         leading: InkWell(
             child: Align(
