@@ -38,6 +38,7 @@ dependencies:
   package_info_plus:
   flutter_native_splash:
   google_mobile_ads:
+  app_tracking_transparency:
 
 dev_dependencies:
   flutter_test:

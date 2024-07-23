@@ -1,3 +1,4 @@
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
@@ -47,10 +48,21 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  Future<void> initPlugin() async {
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status == TrackingStatus.notDetermined) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     FlutterNativeSplash.remove();
+
+    /// ATT
+    WidgetsBinding.instance.addPostFrameCallback((_) => initPlugin());
   }
 
   @override
