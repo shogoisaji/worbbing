@@ -73,8 +73,8 @@ class SqfliteRepository {
       exampleTranslated: "これはサンプル文です。",
       originalLang: TranslateLanguage.english,
       translatedLang: TranslateLanguage.japanese,
-      updateDate: DateTime(2024, 1, 1),
-      registrationDate: DateTime(2024, 1, 1),
+      updateDate: DateTime.now().subtract(const Duration(days: 10)),
+      registrationDate: DateTime.now().subtract(const Duration(days: 10)),
     );
     await db.insert(table, sampleWord1.toJson());
     final sampleWord2 = WordModel(
