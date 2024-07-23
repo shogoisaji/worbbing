@@ -5,8 +5,10 @@ import 'package:worbbing/application/helper/ad_helper.dart';
 import 'package:worbbing/application/helper/ad_test_helper.dart';
 
 class AdBanner extends StatefulWidget {
+  final double width;
   const AdBanner({
     super.key,
+    required this.width,
   });
 
   @override
@@ -14,6 +16,7 @@ class AdBanner extends StatefulWidget {
 }
 
 class _AdBannerState extends State<AdBanner> {
+  final double height = 50;
   BannerAd? _bannerAd;
 
   @override
@@ -23,7 +26,7 @@ class _AdBannerState extends State<AdBanner> {
       adUnitId:
           kDebugMode ? AdTestHelper.bannerAdUnitId : AdHelper.bannerAdUnitId,
       request: const AdRequest(),
-      size: AdSize.banner,
+      size: AdSize(width: widget.width.toInt(), height: height.toInt()),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {
@@ -52,6 +55,10 @@ class _AdBannerState extends State<AdBanner> {
             height: _bannerAd!.size.height.toDouble(),
             child: AdWidget(ad: _bannerAd!),
           )
-        : const SizedBox.shrink();
+        : Container(
+            width: widget.width,
+            height: height,
+            color: Colors.grey.withOpacity(0.15),
+          );
   }
 }

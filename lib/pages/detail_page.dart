@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
@@ -394,6 +395,8 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 32),
+                  AdBanner(width: MediaQuery.of(context).size.width),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 42.0),
                     child: Column(

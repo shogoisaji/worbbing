@@ -222,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
               ),
-              const AdBanner()
+              AdBanner(width: MediaQuery.of(context).size.width)
             ],
           ),
         ));
