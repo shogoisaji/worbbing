@@ -23,7 +23,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late Future<int> totalWords;
   late Future<Map<int, int>> countNotice;
-  final Widget _contentSpacer = const SizedBox(height: 18);
+  final Widget _contentSpacer = const SizedBox(height: 22);
 
   Future<List<TranslateLanguage>> loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -101,10 +101,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const SizedBox(
-                            height: 10,
+                            height: 26,
                           ),
                           Container(
-                              margin: const EdgeInsets.only(top: 25),
                               width: 250,
                               decoration: const BoxDecoration(
                                 border: Border(
