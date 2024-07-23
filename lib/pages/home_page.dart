@@ -139,9 +139,9 @@ class _HomePageState extends State<HomePage>
             'assets/images/worbbing_logo.png',
             width: 150,
           ),
-          leadingWidth: 40,
+          // leadingWidth: 40,
           leading: IconButton(
-              padding: const EdgeInsets.only(top: 5, left: 10),
+              padding: const EdgeInsets.only(top: 5, left: 4, right: 4),
               onPressed: () {
                 HapticFeedback.lightImpact();
                 Navigator.of(context).push(
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage>
               width: 4,
             ),
             IconButton(
-                padding: const EdgeInsets.only(top: 5, right: 10),
+                padding: const EdgeInsets.only(top: 5, right: 8),
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   Navigator.of(context).push(
