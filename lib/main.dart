@@ -14,10 +14,18 @@ import 'package:worbbing/presentation/theme/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  /// 通知内容のシャッフル
+  NoticeUsecase().shuffleNotification();
+
+  /// 通知用のタイムゾーンの初期化
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Asia/Tokyo"));
+
+  /// 通知のバッジの削除
   FlutterAppBadger.removeBadge();
 
+  /// 広告の初期化
   MobileAds.instance.initialize();
 
   /// 画面の向きを固定
@@ -25,19 +33,33 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  /// 通知の初期化
-  FlutterLocalNotificationsPlugin()
-    ..resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission()
-    ..initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-        iOS: DarwinInitializationSettings(),
-      ),
-    );
-  NoticeUsecase().shuffleNotification();
+  /// 通知&ATT許可
+  initializeNotificationsAndATT();
+
   runApp(const MyApp());
+}
+
+Future<void> initializeNotificationsAndATT() async {
+  /// 通知許可
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
+  await flutterLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(),
+    ),
+  );
+
+  /// ATTの許可
+  final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+  if (status == TrackingStatus.notDetermined) {
+    /// milliseconds: 200 -> could not display ATT permission.
+    await Future.delayed(const Duration(milliseconds: 500));
+    await AppTrackingTransparency.requestTrackingAuthorization();
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -48,21 +70,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<void> initPlugin() async {
-    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
-    if (status == TrackingStatus.notDetermined) {
-      await Future.delayed(const Duration(milliseconds: 200));
-      await AppTrackingTransparency.requestTrackingAuthorization();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     FlutterNativeSplash.remove();
-
-    /// ATT
-    WidgetsBinding.instance.addPostFrameCallback((_) => initPlugin());
   }
 
   @override
