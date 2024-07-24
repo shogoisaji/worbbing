@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -56,20 +57,20 @@ class _TicketWidgetState extends State<TicketWidget> {
                         ? SvgPicture.asset('assets/svg/e_ticket.svg')
                         : SvgPicture.asset('assets/svg/ticket.svg'),
                   ),
-                  Positioned(
-                    bottom: 3,
-                    right: 10,
+                  Align(
+                    alignment: const Alignment(0.4, 0.6),
                     child: Container(
-                        padding: EdgeInsets.all(widget.size / 12),
+                        width: widget.size / 2,
+                        height: widget.size / 2,
+                        alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: MyTheme.grey,
                           border: Border.all(color: Colors.white, width: 1),
                           shape: BoxShape.circle,
                         ),
-                        child: Text(widget.count.toString(),
-                            style: GoogleFonts.notoSans(
-                                color: Colors.white,
-                                fontSize: widget.size / 3.5))),
+                        child: AutoSizeText(widget.count.toString(),
+                            style: GoogleFonts.inter(
+                                color: Colors.white, fontSize: widget.size))),
                   ),
                 ],
               ));
