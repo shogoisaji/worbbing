@@ -97,7 +97,9 @@ extension WordModelExtension on WordModel {
   WordModel upNoticeDuration() {
     final currentDurationIndex = noticeDurationList.indexOf(noticeDuration);
     if (currentDurationIndex == noticeDurationList.length - 1) {
-      return this;
+      return copyWith(
+        updateDate: DateTime.now(),
+      );
     }
     return copyWith(
       noticeDuration: noticeDurationList[currentDurationIndex + 1],
@@ -108,7 +110,9 @@ extension WordModelExtension on WordModel {
   WordModel downNoticeDuration() {
     final currentDurationIndex = noticeDurationList.indexOf(noticeDuration);
     if (currentDurationIndex == 0) {
-      return this;
+      return copyWith(
+        updateDate: DateTime.now(),
+      );
     }
     return copyWith(
       noticeDuration: noticeDurationList[currentDurationIndex - 1],
