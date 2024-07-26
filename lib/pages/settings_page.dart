@@ -46,6 +46,15 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<void> inquiryURL() async {
+    final Uri url = Uri.parse('https://worbbing.vercel.app/inquiry');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      return;
+    }
+  }
+
   Future<String> loadVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
@@ -206,6 +215,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 _contentSpacer,
                                 _buildPrivacyPolicy(),
                                 _contentSpacer,
+                                _buildInquiry(),
+                                _contentSpacer,
                                 _buildLicense(),
                                 _contentSpacer,
                                 _buildForgettingCurve(),
@@ -298,6 +309,31 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const Expanded(
             child: Text('Privacy Policy',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500)),
+          ),
+          const Icon(Icons.open_in_new, color: Colors.white)
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInquiry() {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        inquiryURL();
+      },
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
+          ),
+          const Expanded(
+            child: Text('Contact',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
