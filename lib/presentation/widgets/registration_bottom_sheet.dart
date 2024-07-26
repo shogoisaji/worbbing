@@ -100,15 +100,15 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
           originalLanguage.lowerString, translateLanguage.lowerString);
       final translatedModel = TranslatedResponse.fromJson(res);
 
-      /// dialog test用
+      // / dialog test用
       // final translatedModel = TranslatedResponse(
-      // original: _originalWordController.text,
-      // type: TranslatedResponseType.suggestion,
-      // originalLang: originalLanguage,
-      // translateLang: translateLanguage,
-      // translated: ['translated', 'translated', 'translated'],
-      // example: 'example',
-      // exampleTranslated: 'exampleTranslated');
+      //     original: _originalWordController.text,
+      //     type: TranslatedResponseType.suggestion,
+      //     originalLang: originalLanguage,
+      //     translateLang: translateLanguage,
+      //     translated: ['translated', 'translated', 'translated'],
+      //     example: 'example',
+      //     exampleTranslated: 'exampleTranslated');
       if (translatedModel.type == TranslatedResponseType.suggestion) {
         if (!mounted) return;
         await TwoWayDialog.show(
@@ -128,7 +128,33 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 1, left: 4),
-                  child: bodyText('Original', Colors.white),
+                  child: bodyText('Input Original', Colors.grey.shade400),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    // color: Colors.grey.shade600,
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: Colors.grey.shade400),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: AutoSizeText(
+                      _originalWordController.text,
+                      style:
+                          TextStyle(fontSize: 30, color: Colors.grey.shade400),
+                      minFontSize: 16,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 1, left: 4),
+                  child: bodyText('Suggest Original', Colors.white),
                 ),
                 Container(
                   width: double.infinity,
