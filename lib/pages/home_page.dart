@@ -30,11 +30,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation _animation;
   late final AppLifecycleListener _listener;
   final List<String> _states = <String>[];
   late AppLifecycleState? _state;
 
-  int tagState = 0;
+  final ValueNotifier<bool> _isLoading = ValueNotifier<bool>(false);
+  int _tagState = 0;
 
   Future<List<WordModel>> dataFuture =
       SqfliteRepository.instance.queryAllRowsNoticeDuration();
@@ -94,25 +97,27 @@ class _HomePageState extends State<HomePage>
         () {});
   }
 
-  Future<void> handleReload() async {
-    //durationが短すぎるとエラーになる
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    setState(() {
-      switch (tagState) {
-        case 0:
-          dataFuture = SqfliteRepository.instance.queryAllRowsNoticeDuration();
-        case 1:
-          dataFuture = SqfliteRepository.instance.queryAllRowsRegistration();
-        case 2:
-          dataFuture = SqfliteRepository.instance.queryAllRowsFlag();
-      }
-    });
+  Future<List<WordModel>> handleReload() async {
+    _isLoading.value = true;
+    final model = switch (_tagState) {
+      0 => await SqfliteRepository.instance.queryAllRowsNoticeDuration(),
+      1 => await SqfliteRepository.instance.queryAllRowsRegistration(),
+      2 => await SqfliteRepository.instance.queryAllRowsFlag(),
+      _ => await SqfliteRepository.instance.queryAllRowsNoticeDuration(),
+    };
+    _isLoading.value = false;
+    return model;
   }
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation =
+        CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
     _state = SchedulerBinding.instance.lifecycleState;
     _listener = AppLifecycleListener(
       onStateChange: _handleStateChange,
@@ -120,12 +125,19 @@ class _HomePageState extends State<HomePage>
     if (_state != null) {
       _states.add(_state!.name);
     }
+    _isLoading.addListener(() {
+      if (!_isLoading.value) {
+        _animationController.value = 0.0;
+        _animationController.forward();
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     _listener.dispose();
+    _animationController.dispose();
   }
 
   @override
@@ -199,23 +211,23 @@ class _HomePageState extends State<HomePage>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      tagSelect('Notice', tagState, 0, () {
+                      tagSelect('Notice', _tagState, 0, () {
                         setState(() {
-                          tagState = 0;
+                          _tagState = 0;
                         });
-                        handleReload();
+                        // handleReload();
                       }),
-                      tagSelect('Registration', tagState, 1, () {
+                      tagSelect('Registration', _tagState, 1, () {
                         setState(() {
-                          tagState = 1;
+                          _tagState = 1;
                         });
-                        handleReload();
+                        // handleReload();
                       }),
-                      tagSelect('Flag', tagState, 2, () {
+                      tagSelect('Flag', _tagState, 2, () {
                         setState(() {
-                          tagState = 2;
+                          _tagState = 2;
                         });
-                        handleReload();
+                        // handleReload();
                       }),
                     ],
                   ),
@@ -228,7 +240,7 @@ class _HomePageState extends State<HomePage>
 // list
             Expanded(
               child: FutureBuilder<List<WordModel>>(
-                future: dataFuture,
+                future: handleReload(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: SizedBox.shrink());
@@ -243,7 +255,7 @@ class _HomePageState extends State<HomePage>
                   DateTime updateDateTime;
 
                   // change list expired top of list
-                  if (tagState == 0) {
+                  if (_tagState == 0) {
                     for (var i = 0; i < wordList.length; i++) {
                       noticeDurationTime = wordList[i].noticeDuration;
                       updateDateTime = wordList[i].updateDate;
@@ -257,61 +269,68 @@ class _HomePageState extends State<HomePage>
                       }
                     }
                   }
-                  return ListView.separated(
-                    separatorBuilder: (context, index) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            MyTheme.lemon,
-                            MyTheme.grey,
-                            MyTheme.grey,
-                            MyTheme.orange,
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      height: 1,
-                    ),
-                    padding: EdgeInsets.zero,
-                    itemCount: wordList.length,
-                    itemBuilder: (context, index) {
-                      final item = wordList[index];
-                      return Column(
-                        children: [
-                          WordListTile(
-                            onDragEnd: handleReload,
-                            wordModel: item,
-                          ),
-                          // under space
-                          if (index == wordList.length - 1)
-                            Column(
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        MyTheme.lemon,
-                                        MyTheme.grey,
-                                        MyTheme.grey,
-                                        MyTheme.orange,
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    ),
+                  return AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: (_animation.value),
+                          child: ListView.separated(
+                            separatorBuilder: (context, index) => Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    MyTheme.lemon,
+                                    MyTheme.grey,
+                                    MyTheme.grey,
+                                    MyTheme.orange,
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                              ),
+                              height: 1,
+                            ),
+                            padding: EdgeInsets.zero,
+                            itemCount: wordList.length,
+                            itemBuilder: (context, index) {
+                              final item = wordList[index];
+                              return Column(
+                                children: [
+                                  WordListTile(
+                                    onWordUpdate: () => setState(() {}),
+                                    wordModel: item,
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 200,
-                                ),
-                              ],
-                            )
-                        ],
-                      );
-                    },
-                  );
+                                  // under space
+                                  if (index == wordList.length - 1)
+                                    Column(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          height: 1,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                MyTheme.lemon,
+                                                MyTheme.grey,
+                                                MyTheme.grey,
+                                                MyTheme.orange,
+                                              ],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 200,
+                                        ),
+                                      ],
+                                    )
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      });
                 },
               ),
             )
