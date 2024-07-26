@@ -10,14 +10,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 class WordListTile extends StatefulWidget {
   final WordModel wordModel;
-  final Function onDragEnd;
+  final Function onWordUpdate;
 
   static const HEIGHT = 90.0;
 
   const WordListTile({
     super.key,
     required this.wordModel,
-    required this.onDragEnd,
+    required this.onWordUpdate,
   });
 
   @override
@@ -35,8 +35,8 @@ class _WordListTileState extends State<WordListTile>
 
   Color? _color;
 
-  onDragEnd() {
-    widget.onDragEnd();
+  onWordUpdate() {
+    widget.onWordUpdate();
   }
 
   Widget _translatedWord() {
@@ -51,6 +51,12 @@ class _WordListTileState extends State<WordListTile>
     _widget = _translatedWord();
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -148,13 +154,13 @@ class _WordListTileState extends State<WordListTile>
                 if (_color == MyTheme.blue) {
                   await SqfliteRepository.instance
                       .downDuration(widget.wordModel.id);
-                  widget.onDragEnd();
+                  widget.onWordUpdate();
 
                   /// I understand the word
                 } else if (_color == MyTheme.orange) {
                   await SqfliteRepository.instance
                       .upDuration(widget.wordModel.id);
-                  widget.onDragEnd();
+                  widget.onWordUpdate();
                 }
                 setState(() {
                   _color = MyTheme.lemon;
