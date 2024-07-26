@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage>
               initialOriginalLang: langs[0],
               initialTranslateLang: langs[1],
             ));
-    handleReload();
+    setState(() {});
   }
 
   void handleTapTicket() async {
