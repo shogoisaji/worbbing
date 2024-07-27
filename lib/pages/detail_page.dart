@@ -562,14 +562,12 @@ class _DetailPageState extends State<DetailPage> {
       elevation: 8,
       buttonRadius: 12,
       stageOffset: 5,
-      pushedElevationLevel: 0.8,
       inclinationRate: 0.9,
       buttonColor: MyTheme.red,
       stageColor: Colors.blueGrey.shade800,
       stagePointColor: Colors.blueGrey.shade700,
       edgeLineColor: Colors.red.shade300,
       edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
-      duration: const Duration(milliseconds: 200),
       child: Align(
         alignment: const Alignment(0.8, 0.9),
         child: Transform(

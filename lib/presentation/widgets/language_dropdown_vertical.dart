@@ -59,11 +59,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
       child: Container(
           padding: const EdgeInsets.only(left: 7, right: 5, top: 7, bottom: 7),
           decoration: BoxDecoration(
-            gradient: const RadialGradient(
-              colors: [Color(0xFF434D60), Color(0xFF2F3942)],
-              center: Alignment(-0.5, -0.5),
-              radius: 1.0,
-            ),
+            color: const Color(0xFF434D60),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
@@ -75,9 +71,8 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                     width: 120,
                     height: 30,
                     decoration: BoxDecoration(
-                      // color: Colors.grey.shade700,
                       borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: MyTheme.lemon, width: 1.0),
+                      border: Border.all(color: MyTheme.lemon, width: 1.5),
                     ),
                     child: OverflowBox(
                       maxHeight: double.infinity,
@@ -119,9 +114,8 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                     width: 120,
                     height: 30,
                     decoration: BoxDecoration(
-                      // color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: MyTheme.orange, width: 1.0),
+                      border: Border.all(color: MyTheme.orange, width: 1.5),
                     ),
                     child: OverflowBox(
                       maxHeight: double.infinity,

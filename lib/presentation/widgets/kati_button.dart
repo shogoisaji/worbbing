@@ -33,7 +33,7 @@ class KatiButton extends StatefulWidget {
     this.pushedElevationLevel = 0.7,
     this.edgeBorder,
     this.buttonRadius = 10,
-    this.duration = const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 200),
     this.stageOffset = 10.0,
     this.isStageShadow = true,
     this.stagePointColor,
@@ -87,17 +87,6 @@ class _KatiButtonState extends State<KatiButton>
         widget.height - widget.elevation,
         widget.buttonRadius + widget.stageOffset,
         widget.inclinationRate);
-  }
-
-  @override
-  void didUpdateWidget(covariant KatiButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.inclinationRate != oldWidget.inclinationRate) {
-      setState(() {
-        _createPaths();
-        _updateElevation();
-      });
-    }
   }
 
   @override
@@ -339,7 +328,7 @@ class ButtonShapePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 }
 
