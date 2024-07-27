@@ -1,40 +1,36 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TicketManager {
-  static const dailyTicket = 10;
+  static const initialTicket = 10;
+  static final ValueNotifier<int> ticketNotifier = ValueNotifier<int>(0);
 
-  static Future<int> loadTicket() async {
+  static Future<void> loadTicket() async {
     final prefs = await SharedPreferences.getInstance();
     final getTicketDate = prefs.getString("ticketGetDate") ?? "";
     if (getTicketDate.isEmpty) {
       // 初回実行時の処理
       final today = DateTime.now();
-      await prefs.setInt("ticket", dailyTicket);
+      await prefs.setInt("ticket", initialTicket);
       await prefs.setString("ticketGetDate", today.toIso8601String());
-      return dailyTicket;
+      ticketNotifier.value = initialTicket;
+      return;
     }
 
-    final getDate = DateTime.parse(getTicketDate);
-    final today = DateTime.now();
-    final diff = today.difference(getDate).inDays;
-
-    if (diff != 0) {
-      await prefs.setInt("ticket", dailyTicket);
-      await prefs.setString("ticketGetDate", today.toIso8601String());
-      return dailyTicket;
-    } else {
-      return prefs.getInt("ticket") ?? 0;
-    }
+    final ticket = prefs.getInt("ticket") ?? 0;
+    ticketNotifier.value = ticket;
   }
 
-  static Future<int> useTicket() async {
+  static Future<void> useTicket() async {
     final prefs = await SharedPreferences.getInstance();
     final currentTicket = prefs.getInt("ticket") ?? 0;
     if (currentTicket <= 0) {
-      return 0;
+      return;
     }
     await prefs.setInt("ticket", currentTicket - 1);
-    return currentTicket - 1;
+    ticketNotifier.value = currentTicket - 1;
   }
 
   static Future<void> earnTicket(int earnTicket) async {
@@ -42,5 +38,6 @@ class TicketManager {
     final currentTicket = prefs.getInt("ticket") ?? 0;
     final earnedTicket = (currentTicket + earnTicket).clamp(0, 99);
     await prefs.setInt("ticket", earnedTicket);
+    ticketNotifier.value = earnedTicket;
   }
 }

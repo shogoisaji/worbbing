@@ -562,7 +562,6 @@ class _DetailPageState extends State<DetailPage> {
       elevation: 8,
       buttonRadius: 12,
       stageOffset: 5,
-      pushedElevationLevel: 0.8,
       inclinationRate: 0.9,
       buttonColor: MyTheme.red,
       stageColor: Colors.blueGrey.shade800,

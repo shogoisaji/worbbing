@@ -90,17 +90,6 @@ class _KatiButtonState extends State<KatiButton>
   }
 
   @override
-  void didUpdateWidget(covariant KatiButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.inclinationRate != oldWidget.inclinationRate) {
-      setState(() {
-        _createPaths();
-        _updateElevation();
-      });
-    }
-  }
-
-  @override
   void initState() {
     super.initState();
     _currentElevation = widget.elevation;
@@ -320,7 +309,7 @@ class PathClipper extends CustomClipper<Path> {
   Path getClip(Size size) => path;
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
 class ButtonShapePainter extends CustomPainter {
@@ -339,7 +328,7 @@ class ButtonShapePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 }
 
@@ -362,7 +351,7 @@ class ShadowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 }
 

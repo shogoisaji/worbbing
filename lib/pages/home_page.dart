@@ -64,9 +64,8 @@ class _HomePageState extends State<HomePage>
     return [original, translate];
   }
 
-  Future<int> loadTicket() async {
-    final ticket = await TicketManager.loadTicket();
-    return ticket;
+  Future<void> loadTicket() async {
+    await TicketManager.loadTicket();
   }
 
   void handleTapFAB(BuildContext context) async {
@@ -112,6 +111,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    TicketManager.loadTicket();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -167,11 +167,16 @@ class _HomePageState extends State<HomePage>
               )),
           actions: [
             AdReward(
-              child: FutureBuilder<int>(
-                  future: loadTicket(),
-                  builder: (context, snapshot) {
-                    return TicketWidget(count: snapshot.data ?? 0, size: 50);
-                  }),
+              child: ValueListenableBuilder<int>(
+                valueListenable: TicketManager.ticketNotifier,
+                builder: (context, value, child) {
+                  return TicketWidget(
+                    count: value,
+                    size: 50,
+                    isEnableUseAnimation: true,
+                  );
+                },
+              ),
             ),
             const SizedBox(
               width: 4,
@@ -217,7 +222,7 @@ class _HomePageState extends State<HomePage>
                         });
                         // handleReload();
                       }),
-                      tagSelect('Registration', _tagState, 1, () {
+                      tagSelect('LatestAdd', _tagState, 1, () {
                         setState(() {
                           _tagState = 1;
                         });

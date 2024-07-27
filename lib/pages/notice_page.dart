@@ -504,7 +504,6 @@ class _NoticePageState extends State<NoticePage> {
       elevation: 8,
       buttonRadius: 12,
       stageOffset: 5,
-      pushedElevationLevel: 0.8,
       inclinationRate: 0.9,
       buttonColor: MyTheme.orange,
       stageColor: Colors.blueGrey.shade800,
