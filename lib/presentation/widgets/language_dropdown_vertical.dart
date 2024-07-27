@@ -75,7 +75,6 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                     width: 120,
                     height: 30,
                     decoration: BoxDecoration(
-                      // color: Colors.grey.shade700,
                       borderRadius: BorderRadius.circular(2),
                       border: Border.all(color: MyTheme.lemon, width: 1.0),
                     ),
@@ -119,7 +118,6 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                     width: 120,
                     height: 30,
                     decoration: BoxDecoration(
-                      // color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(2),
                       border: Border.all(color: MyTheme.orange, width: 1.0),
                     ),

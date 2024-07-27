@@ -569,7 +569,6 @@ class _DetailPageState extends State<DetailPage> {
       stagePointColor: Colors.blueGrey.shade700,
       edgeLineColor: Colors.red.shade300,
       edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
-      duration: const Duration(milliseconds: 200),
       child: Align(
         alignment: const Alignment(0.8, 0.9),
         child: Transform(

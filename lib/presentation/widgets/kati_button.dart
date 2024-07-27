@@ -33,7 +33,7 @@ class KatiButton extends StatefulWidget {
     this.pushedElevationLevel = 0.7,
     this.edgeBorder,
     this.buttonRadius = 10,
-    this.duration = const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 200),
     this.stageOffset = 10.0,
     this.isStageShadow = true,
     this.stagePointColor,
@@ -320,7 +320,7 @@ class PathClipper extends CustomClipper<Path> {
   Path getClip(Size size) => path;
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
 class ButtonShapePainter extends CustomPainter {
@@ -362,7 +362,7 @@ class ShadowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }
 
