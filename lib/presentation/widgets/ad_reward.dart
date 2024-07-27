@@ -90,12 +90,14 @@ class _AdRewardState extends State<AdReward> {
             () {});
         return;
       }
+
+      await _rewardedAd?.setImmersiveMode(true);
+
       _rewardedAd?.show(
         onUserEarnedReward: (_, reward) {
           TicketManager.earnTicket(earnTicketCount);
         },
       );
-      _rewardedAd?.setImmersiveMode(true);
     });
   }
 
