@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
-import 'package:worbbing/presentation/widgets/custom_button.dart';
+import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
@@ -486,16 +485,7 @@ class _DetailPageState extends State<DetailPage> {
                         const SizedBox(
                           height: 40,
                         ),
-                        customButton(
-                            width: 180,
-                            MyTheme.red,
-                            const Text('DELETE',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold)), () async {
-                          handleTapDelete();
-                        }),
+                        _buildDeleteButton(),
                         const SizedBox(
                           height: 100,
                         ),
@@ -558,6 +548,50 @@ class _DetailPageState extends State<DetailPage> {
           height: 32,
         )
       ],
+    );
+  }
+
+  Widget _buildDeleteButton() {
+    return KatiButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        handleTapDelete();
+      },
+      width: 180,
+      height: 65,
+      elevation: 8,
+      buttonRadius: 12,
+      stageOffset: 5,
+      pushedElevationLevel: 0.8,
+      inclinationRate: 0.9,
+      buttonColor: MyTheme.red,
+      stageColor: Colors.blueGrey.shade800,
+      stagePointColor: Colors.blueGrey.shade700,
+      edgeLineColor: Colors.red.shade300,
+      edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
+      duration: const Duration(milliseconds: 200),
+      child: Align(
+        alignment: const Alignment(0.8, 0.9),
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.rotationX(0.5),
+          child: Text(
+            'Delete',
+            style: TextStyle(
+              fontSize: 27,
+              color: Colors.grey.shade100,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                BoxShadow(
+                  color: Colors.grey.shade500,
+                  blurRadius: 1.0,
+                  offset: const Offset(0, -0.8),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

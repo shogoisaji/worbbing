@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
-import 'package:worbbing/presentation/widgets/language_dropdown.dart';
+import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart';
 import 'package:worbbing/repository/sqflite_repository.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -276,7 +276,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       return const Text('error');
                     }
                     final data = snapshot.data!;
-                    return LanguageDropdownWidget(
+                    return LanguageDropdownHorizontal(
                       onOriginalSelected: (value) {
                         updateOriginalLanguage(value);
                       },
@@ -285,7 +285,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       originalLanguage: data[0],
                       translateLanguage: data[1],
-                      isHorizontal: true,
                     );
                   })
             ],
