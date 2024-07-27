@@ -6,8 +6,8 @@ import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/models/notice_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
-import 'package:worbbing/presentation/widgets/custom_button.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
+import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/words_count_dropdown.dart';
 import 'package:app_settings/app_settings.dart';
@@ -480,30 +480,7 @@ class _NoticePageState extends State<NoticePage> {
                         const SizedBox(
                           height: 50,
                         ),
-                        customButton(
-                            width: 190,
-                            MyTheme.orange,
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 0.0, right: 5),
-                                  child: Icon(
-                                      Icons.notifications_active_rounded,
-                                      color: Colors.grey.shade800,
-                                      size: 28),
-                                ),
-                                Text('Sample',
-                                    style: TextStyle(
-                                        color: Colors.grey.shade800,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold)),
-                              ],
-                            ), () async {
-                          handleTapSample();
-                        }),
+                        _buildSampleButton(),
                         const SizedBox(
                           height: 100,
                         ),
@@ -514,5 +491,63 @@ class _NoticePageState extends State<NoticePage> {
             ],
           ),
         ));
+  }
+
+  Widget _buildSampleButton() {
+    return KatiButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        handleTapSample();
+      },
+      width: 220,
+      height: 65,
+      elevation: 8,
+      buttonRadius: 12,
+      stageOffset: 5,
+      pushedElevationLevel: 0.8,
+      inclinationRate: 0.9,
+      buttonColor: MyTheme.orange,
+      stageColor: Colors.blueGrey.shade800,
+      stagePointColor: Colors.blueGrey.shade700,
+      edgeLineColor: Colors.orange.shade300,
+      edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
+      duration: const Duration(milliseconds: 200),
+      child: Align(
+        alignment: const Alignment(0.7, 0.9),
+        child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.rotationX(0.5),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: const Alignment(-0.93, -0.8),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0, right: 5),
+                    child: Icon(Icons.notifications_active_rounded,
+                        color: MyTheme.greyForOrange, size: 32),
+                  ),
+                ),
+                Align(
+                  alignment: const Alignment(0.8, 1.0),
+                  child: Text(
+                    'Sample',
+                    style: TextStyle(
+                      fontSize: 27,
+                      color: MyTheme.greyForOrange,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        BoxShadow(
+                          color: Colors.grey.shade800,
+                          blurRadius: 1.0,
+                          offset: const Offset(0, -0.8),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )),
+      ),
+    );
   }
 }

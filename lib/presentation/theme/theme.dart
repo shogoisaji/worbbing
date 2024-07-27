@@ -7,6 +7,7 @@ class MyTheme {
   static Color darkGrey = const Color(0xFF1D2027);
   static Color lightGrey = const Color(0xFFECECEC);
   static Color dialogGrey = const Color(0xFF343842);
+  static Color greyForOrange = const Color(0xFF515257);
 
   static Color orange = const Color(0xFFFF974C);
   static Color blue = const Color(0xFF526BF2);
