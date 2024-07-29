@@ -353,7 +353,7 @@ class _HomePageState extends State<HomePage>
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.zero,
+              borderRadius: BorderRadius.circular(2),
               color: Colors.grey.shade600,
               boxShadow: [
                 BoxShadow(
@@ -371,7 +371,7 @@ class _HomePageState extends State<HomePage>
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.zero,
+                borderRadius: BorderRadius.circular(2),
                 color: MyTheme.orange,
                 boxShadow: [
                   BoxShadow(
