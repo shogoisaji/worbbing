@@ -29,7 +29,10 @@ Widget noticeBlock(double size, int number, Color color) {
           child: Container(
             width: size,
             height: size,
-            color: Colors.white,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(size * 0.025),
+            ),
           ),
         ),
       ),
@@ -37,7 +40,10 @@ Widget noticeBlock(double size, int number, Color color) {
         width: size,
         height: size,
         alignment: Alignment.center,
-        color: color,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(size * 0.025),
+        ),
         child: number == 99
             ? Text(
                 '∞',

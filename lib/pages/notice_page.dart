@@ -245,9 +245,13 @@ class _NoticePageState extends State<NoticePage> {
                                           Container(
                                             width: 70,
                                             height: 50,
-                                            color: noticeModel.noticeEnable
-                                                ? Colors.white
-                                                : Colors.white30,
+                                            decoration: BoxDecoration(
+                                              color: noticeModel.noticeEnable
+                                                  ? Colors.white
+                                                  : Colors.white30,
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                            ),
                                             child: Stack(
                                               children: [
                                                 Positioned(
@@ -328,10 +332,15 @@ class _NoticePageState extends State<NoticePage> {
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 6),
                                               height: 50,
-                                              color: noticeModel.noticeEnable &&
-                                                      noticeModel.time1Enable
-                                                  ? Colors.white
-                                                  : Colors.white30,
+                                              decoration: BoxDecoration(
+                                                color: noticeModel
+                                                            .noticeEnable &&
+                                                        noticeModel.time1Enable
+                                                    ? Colors.white
+                                                    : Colors.white30,
+                                                borderRadius:
+                                                    BorderRadius.circular(2),
+                                              ),
                                               child: titleText(
                                                   '${noticeModel.selectedTime1.hour.toString().padLeft(2, "0")}:${noticeModel.selectedTime1.minute.toString().padLeft(2, "0")}',
                                                   Colors.black,
@@ -393,10 +402,15 @@ class _NoticePageState extends State<NoticePage> {
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 6),
                                               height: 50,
-                                              color: noticeModel.noticeEnable &&
-                                                      noticeModel.time2Enable
-                                                  ? Colors.white
-                                                  : Colors.white30,
+                                              decoration: BoxDecoration(
+                                                color: noticeModel
+                                                            .noticeEnable &&
+                                                        noticeModel.time2Enable
+                                                    ? Colors.white
+                                                    : Colors.white30,
+                                                borderRadius:
+                                                    BorderRadius.circular(2),
+                                              ),
                                               child: titleText(
                                                   '${noticeModel.selectedTime2.hour.toString().padLeft(2, "0")}:${noticeModel.selectedTime2.minute.toString().padLeft(2, "0")}',
                                                   Colors.black,
@@ -458,10 +472,15 @@ class _NoticePageState extends State<NoticePage> {
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 6),
                                               height: 50,
-                                              color: noticeModel.noticeEnable &&
-                                                      noticeModel.time3Enable
-                                                  ? Colors.white
-                                                  : Colors.white30,
+                                              decoration: BoxDecoration(
+                                                color: noticeModel
+                                                            .noticeEnable &&
+                                                        noticeModel.time3Enable
+                                                    ? Colors.white
+                                                    : Colors.white30,
+                                                borderRadius:
+                                                    BorderRadius.circular(2),
+                                              ),
                                               child: titleText(
                                                   '${noticeModel.selectedTime3.hour.toString().padLeft(2, "0")}:${noticeModel.selectedTime3.minute.toString().padLeft(2, "0")}',
                                                   Colors.black,
