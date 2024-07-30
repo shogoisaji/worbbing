@@ -3,16 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/application/usecase/ticket_manager.dart';
-import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/settings_page.dart';
 import 'package:worbbing/pages/notice_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -45,23 +43,11 @@ class _HomePageState extends State<HomePage>
   void _handleStateChange(AppLifecycleState state) {
     if (_state == AppLifecycleState.inactive &&
         state == AppLifecycleState.resumed) {
-      NoticeUsecase().shuffleNotification();
+      NoticeUsecase().shuffleNotifications();
     }
     setState(() {
       _state = state;
     });
-  }
-
-  Future<List<TranslateLanguage>> loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    final loadedOriginalString = prefs.getString("original_lang") ?? "english";
-    final loadedTranslateString =
-        prefs.getString("translate_lang") ?? "japanese";
-    final original = TranslateLanguage.values
-        .firstWhere((e) => e.lowerString == loadedOriginalString);
-    final translate = TranslateLanguage.values
-        .firstWhere((e) => e.lowerString == loadedTranslateString);
-    return [original, translate];
   }
 
   Future<void> loadTicket() async {
@@ -69,7 +55,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void handleTapFAB(BuildContext context) async {
-    final langs = await loadPreferences();
+    // final langs = await loadPreferences();
     if (!mounted) return;
     await showModalBottomSheet(
         backgroundColor: Colors.transparent,
@@ -77,10 +63,7 @@ class _HomePageState extends State<HomePage>
         isDismissible: false,
         isScrollControlled: true,
         context: context,
-        builder: (context) => RegistrationBottomSheet(
-              initialOriginalLang: langs[0],
-              initialTranslateLang: langs[1],
-            ));
+        builder: (context) => const RegistrationBottomSheet());
     setState(() {});
   }
 
@@ -127,8 +110,8 @@ class _HomePageState extends State<HomePage>
     }
     _isLoading.addListener(() {
       if (!_isLoading.value) {
-        _animationController.value = 0.0;
-        _animationController.forward();
+        _animationController.reset();
+        _animationController.forward(from: 0.3);
       }
     });
   }

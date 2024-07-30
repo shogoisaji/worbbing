@@ -1,12 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:worbbing/models/notice_model.dart';
+import 'package:worbbing/models/notice_data_model.dart';
+import 'package:worbbing/models/notice_manage_model.dart';
 import 'package:worbbing/models/word_model.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
+import 'package:worbbing/repository/sqflite/notification_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/notice_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -58,7 +60,7 @@ class NoticeUsecase {
     return false;
   }
 
-  // notification time
+  /// set next notification time
   tz.TZDateTime _nextInstance(TimeOfDay selectedTime) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month,
@@ -71,11 +73,11 @@ class NoticeUsecase {
 
   /// sample notification
   Future<void> sampleNotification() async {
-    List<WordModel> words = await SqfliteRepository.instance.getRandomWords(1);
+    WordModel word = await SqfliteRepository.instance.getRandomWord();
     await flutterLocalNotificationsPlugin.show(
-      0,
-      words[0].originalWord,
-      words[0].translatedWord,
+      2147483647,
+      word.originalWord,
+      word.translatedWord,
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'show notification', 'show notification',
@@ -90,94 +92,126 @@ class NoticeUsecase {
             // badgeNumber: 1,
             ),
       ),
+      payload: 'notice_tap',
     );
   }
 
-  Future<void> setScheduleDetail(
-      int notificationId, int wordCount, TimeOfDay selectedTime) async {
-    List<WordModel> words =
-        await SqfliteRepository.instance.getRandomWords(wordCount);
+  /// スマートフォンへ通知を設定
+  Future<void> setNotificationSchedule(NoticeDataModel noticeDataModel) async {
+    if (noticeDataModel.noticeId == null) {
+      throw Exception('noticeId is null');
+    }
 
-    for (int row = 0; row < words.length; row++) {
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-        notificationId + row,
-        words[row].originalWord,
-        words[row].translatedWord,
-        _nextInstance(selectedTime),
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'worbbing schedule notice',
-            'worbbing schedule notice',
-            channelDescription: 'worbbing schedule notice',
-            //saved => /android/app/src/main/res/drawable/notice_icon.png
-            icon: 'drawable/notice_icon',
-            importance: Importance.max,
-            priority: Priority.max,
-          ),
-          iOS: DarwinNotificationDetails(
-              // badgeNumber: 1,
-              ),
+    WordModel word = await SqfliteRepository.instance.getRandomWord();
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      noticeDataModel.noticeId!,
+      word.originalWord,
+      word.translatedWord,
+      _nextInstance(noticeDataModel.time),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'worbbing schedule notice',
+          'worbbing schedule notice',
+          channelDescription: 'worbbing schedule notice',
+          //saved => /android/app/src/main/res/drawable/notice_icon.png
+          icon: 'drawable/notice_icon',
+          importance: Importance.max,
+          priority: Priority.max,
         ),
-        androidScheduleMode: AndroidScheduleMode.alarmClock,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time,
-        androidAllowWhileIdle: true,
-      );
+        iOS: DarwinNotificationDetails(
+            // badgeNumber: 1,
+            ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      androidAllowWhileIdle: true,
+    );
+  }
+
+  /// 通知単語をシャッフル
+  Future<void> shuffleNotifications() async {
+    final List<NoticeDataModel> list =
+        await NotificationRepository.instance.queryAllRows();
+    for (int i = 0; i < list.length; i++) {
+      final WordModel newWord =
+          await SqfliteRepository.instance.getRandomWord();
+      final NoticeDataModel newNotice = list[i].copyWith(
+          original: newWord.originalWord, translated: newWord.translatedWord);
+      await updateNotice(newNotice);
     }
   }
 
-  /// schedule notification
-  Future<void> setScheduleNotification(NoticeModel noticeModel) async {
-    /// shared preferencesに保存
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('noticeModel', jsonEncode(noticeModel.toJson()));
+  Future<void> switchEnable(bool isEnable) async {
+    await SharedPreferencesRepository()
+        .save<bool>(SharedPreferencesKey.noticeEnable, isEnable);
+    if (isEnable) {
+      await setAllScheduleNotification();
+    } else {
+      await cancelAllNotification();
+    }
+  }
 
-    const setTimeCount = 3;
+  Future<void> addNotice(TimeOfDay time) async {
+    final word = await SqfliteRepository.instance.getRandomWord();
+    final NoticeDataModel notice = NoticeDataModel(
+      noticeId: null,
+      wordId: word.id,
+      original: word.originalWord,
+      translated: word.translatedWord,
+      time: time,
+    );
+    final id = await NotificationRepository.instance.insertData(notice);
+    final isEnable = SharedPreferencesRepository().fetch<bool>(
+          SharedPreferencesKey.noticeEnable,
+        ) ??
+        false;
+    if (!isEnable) return;
+    await setNotificationSchedule(notice.copyWith(noticeId: id));
+  }
 
-    /// 一度全ての通知をキャンセル
-    await flutterLocalNotificationsPlugin.cancelAll();
+  Future<void> removeNotice(int noticeId) async {
+    await NotificationRepository.instance.deleteRow(noticeId);
+    await cancelNotification(noticeId);
+  }
 
-    /// 通知が無効なら処理を中断
-    if (!noticeModel.noticeEnable) return;
+  Future<void> updateNotice(NoticeDataModel notice) async {
+    await NotificationRepository.instance.updateNoticeTime(notice);
+    await cancelNotification(notice.noticeId!);
+    final isEnable = SharedPreferencesRepository().fetch<bool>(
+          SharedPreferencesKey.noticeEnable,
+        ) ??
+        false;
+    if (!isEnable) return;
+    await setNotificationSchedule(notice);
+  }
+
+  /// 全ての通知を設定
+  Future<void> setAllScheduleNotification() async {
+    NoticeManageModel noticeList = await loadNoticeData();
 
     /// それぞれの通知を設定
-    for (int i = 0; i < setTimeCount; i++) {
-      switch (i) {
-        case 0:
-          if (!noticeModel.time1Enable) continue;
-          await setScheduleDetail((i + 1) * 10, noticeModel.selectedWordCount,
-              noticeModel.selectedTime1);
-        case 1:
-          if (!noticeModel.time2Enable) continue;
-          await setScheduleDetail((i + 1) * 10, noticeModel.selectedWordCount,
-              noticeModel.selectedTime2);
-        case 2:
-          if (!noticeModel.time3Enable) continue;
-          await setScheduleDetail((i + 1) * 10, noticeModel.selectedWordCount,
-              noticeModel.selectedTime3);
-      }
+    for (NoticeDataModel notice in noticeList.noticeList) {
+      await setNotificationSchedule(notice);
     }
   }
 
-  Future<NoticeModel> loadCurrentNoticeData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final noticeModelJson = prefs.getString('noticeModel');
-    if (noticeModelJson == null) {
-      return const NoticeModel();
-    }
-    final noticeModel = NoticeModel.fromJson(jsonDecode(noticeModelJson));
-    return noticeModel;
+  Future<void> cancelAllNotification() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  Future<void> saveNoticeData(NoticeModel noticeModel) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('noticeModel', jsonEncode(noticeModel.toJson()));
+  Future<void> cancelNotification(int noticeId) async {
+    await flutterLocalNotificationsPlugin.cancel(noticeId);
   }
 
-  /// notice tap callback
-  Future<void> shuffleNotification() async {
-    final currentNoticeModel = await loadCurrentNoticeData();
-    await setScheduleNotification(currentNoticeModel);
+  Future<NoticeManageModel> loadNoticeData() async {
+    final isEnable = SharedPreferencesRepository()
+            .fetch<bool>(SharedPreferencesKey.noticeEnable) ??
+        false;
+    List<NoticeDataModel> noticeList =
+        await NotificationRepository.instance.queryAllRows();
+    return NoticeManageModel(noticeEnable: isEnable, noticeList: noticeList);
   }
 }

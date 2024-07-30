@@ -83,7 +83,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                         },
                         dropdownColor: Colors.grey.shade800,
                         alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(left: 16),
                         underline: const SizedBox.shrink(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
@@ -126,7 +126,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                         },
                         dropdownColor: Colors.grey.shade600,
                         alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(left: 16),
                         underline: const SizedBox.shrink(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),

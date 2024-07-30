@@ -785,7 +785,7 @@ packages:
     source: hosted
     version: "1.8.0"
   rive:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: rive
       sha256: "24868d5e5ad7e7937dbaaed508e48ca96d164fb4fbeac3400be119596588ab72"
