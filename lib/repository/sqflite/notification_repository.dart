@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:worbbing/models/notice_data_model.dart';
 
 class NotificationRepository {
-  static const _databaseName = "Notification_Database_test３.db";
+  static const _databaseName = "Notification_Database.db";
   static const _databaseVersion = 1;
 
   static const table = 'data_table';
