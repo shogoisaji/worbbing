@@ -18,7 +18,6 @@ dependencies:
   url_launcher:
   google_fonts:
   sqflite:
-  rive:
   flutter_local_notifications:
   device_info_plus:
   intl:
