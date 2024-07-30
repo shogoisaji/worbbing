@@ -14,17 +14,16 @@ import 'package:worbbing/presentation/widgets/language_dropdown_vertical.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:lottie/lottie.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class RegistrationBottomSheet extends StatefulWidget {
-  final TranslateLanguage initialOriginalLang;
-  final TranslateLanguage initialTranslateLang;
-  const RegistrationBottomSheet(
-      {super.key,
-      required this.initialOriginalLang,
-      required this.initialTranslateLang});
+  const RegistrationBottomSheet({
+    super.key,
+  });
 
   @override
   State<RegistrationBottomSheet> createState() =>
@@ -51,6 +50,22 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   Color _translateColor = MyTheme.orange;
   bool _isLoading = false;
 
+  List<TranslateLanguage> loadPreferences() {
+    final loadedOriginalString = SharedPreferencesRepository().fetch<String>(
+          SharedPreferencesKey.originalLang,
+        ) ??
+        "english";
+    final loadedTranslateString = SharedPreferencesRepository().fetch<String>(
+          SharedPreferencesKey.translateLang,
+        ) ??
+        "japanese";
+    final originalLanguage = TranslateLanguage.values
+        .firstWhere((e) => e.lowerString == loadedOriginalString);
+    final translateLanguage = TranslateLanguage.values
+        .firstWhere((e) => e.lowerString == loadedTranslateString);
+    return [originalLanguage, translateLanguage];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -72,8 +87,9 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       curve: Curves.easeInOut,
     );
     _focusNode.requestFocus();
-    originalLanguage = widget.initialOriginalLang;
-    translateLanguage = widget.initialTranslateLang;
+
+    originalLanguage = loadPreferences()[0];
+    translateLanguage = loadPreferences()[1];
   }
 
   Future<void> shakeAnimation(AnimationController controller,

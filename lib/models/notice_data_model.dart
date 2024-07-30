@@ -7,7 +7,9 @@ part 'notice_data_model.g.dart';
 @freezed
 class NoticeDataModel with _$NoticeDataModel {
   const factory NoticeDataModel({
+    // ignore: invalid_annotation_target
     @JsonKey(name: 'notice_id') int? noticeId,
+    // ignore: invalid_annotation_target
     @JsonKey(name: 'word_id') required String wordId,
     required String original,
     required String translated,

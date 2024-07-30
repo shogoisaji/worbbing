@@ -49,16 +49,25 @@ class _AdBannerState extends State<AdBanner> {
 
   @override
   Widget build(BuildContext context) {
-    return _bannerAd != null
-        ? SizedBox(
-            width: _bannerAd!.size.width.toDouble(),
-            height: _bannerAd!.size.height.toDouble(),
-            child: AdWidget(ad: _bannerAd!),
-          )
-        : Container(
-            width: widget.width,
-            height: height,
-            color: Colors.grey.withOpacity(0.15),
-          );
+    return Container(
+        width: widget.width,
+        height: height,
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              blurRadius: 7,
+              offset: const Offset(0, -3),
+            ),
+          ],
+          color: Colors.grey.withOpacity(0.15),
+        ),
+        child: _bannerAd == null
+            ? const SizedBox.shrink()
+            : SizedBox(
+                width: _bannerAd!.size.width.toDouble(),
+                height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              ));
   }
 }

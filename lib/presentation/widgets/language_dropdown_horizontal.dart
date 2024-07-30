@@ -59,7 +59,7 @@ class _LanguageDropdownHorizontalState
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 120,
+            width: 110,
             height: 30,
             decoration: BoxDecoration(
               color: Colors.grey.shade700,
@@ -74,7 +74,7 @@ class _LanguageDropdownHorizontalState
                 },
                 dropdownColor: Colors.grey.shade700,
                 alignment: Alignment.bottomLeft,
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 20),
                 underline: const SizedBox.shrink(),
                 style: const TextStyle(color: Colors.white, fontSize: 16),
                 iconEnabledColor: Colors.transparent,
@@ -106,7 +106,7 @@ class _LanguageDropdownHorizontalState
                 size: 32, color: Colors.white),
           )),
           Container(
-            width: 120,
+            width: 110,
             height: 30,
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
@@ -121,7 +121,7 @@ class _LanguageDropdownHorizontalState
                 },
                 dropdownColor: Colors.grey.shade300,
                 alignment: Alignment.bottomLeft,
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 20),
                 underline: const SizedBox.shrink(),
                 style: const TextStyle(color: Colors.black, fontSize: 16),
                 iconEnabledColor: Colors.transparent,

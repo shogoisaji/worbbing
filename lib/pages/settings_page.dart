@@ -7,6 +7,8 @@ import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -25,11 +27,15 @@ class _SettingsPageState extends State<SettingsPage> {
   late Future<Map<int, int>> countNotice;
   final Widget _contentSpacer = const SizedBox(height: 22);
 
-  Future<List<TranslateLanguage>> loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    final loadedOriginalString = prefs.getString("original_lang") ?? "english";
-    final loadedTranslateString =
-        prefs.getString("translate_lang") ?? "japanese";
+  List<TranslateLanguage> loadPreferences() {
+    final loadedOriginalString = SharedPreferencesRepository().fetch<String>(
+          SharedPreferencesKey.originalLang,
+        ) ??
+        "english";
+    final loadedTranslateString = SharedPreferencesRepository().fetch<String>(
+          SharedPreferencesKey.translateLang,
+        ) ??
+        "japanese";
     final originalLanguage = TranslateLanguage.values
         .firstWhere((e) => e.lowerString == loadedOriginalString);
     final translateLanguage = TranslateLanguage.values
@@ -208,7 +214,17 @@ class _SettingsPageState extends State<SettingsPage> {
                             constraints: const BoxConstraints(
                               maxWidth: 500,
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Colors.white.withOpacity(0.5),
+                                  width: 0.5),
+                            ),
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, bottom: 70),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 24),
                             child: Column(
                               children: [
                                 _buildDefaultLang(),
@@ -222,9 +238,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                 _buildForgettingCurve(),
                                 _contentSpacer,
                                 _buildAppVersion(),
-                                const SizedBox(
-                                  height: 100,
-                                ),
                               ],
                             ),
                           ),
@@ -264,30 +277,15 @@ class _SettingsPageState extends State<SettingsPage> {
             // color: MyTheme.lemon,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Row(
-            children: [
-              FutureBuilder(
-                  future: loadPreferences(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: SizedBox.shrink());
-                    }
-                    if (snapshot.hasError) {
-                      return const Text('error');
-                    }
-                    final data = snapshot.data!;
-                    return LanguageDropdownHorizontal(
-                      onOriginalSelected: (value) {
-                        updateOriginalLanguage(value);
-                      },
-                      onTranslateSelected: (value) {
-                        updateTranslateLanguage(value);
-                      },
-                      originalLanguage: data[0],
-                      translateLanguage: data[1],
-                    );
-                  })
-            ],
+          child: LanguageDropdownHorizontal(
+            onOriginalSelected: (value) {
+              updateOriginalLanguage(value);
+            },
+            onTranslateSelected: (value) {
+              updateTranslateLanguage(value);
+            },
+            originalLanguage: loadPreferences()[0],
+            translateLanguage: loadPreferences()[1],
           ),
         )
       ],
