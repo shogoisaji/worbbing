@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:worbbing/models/word_model.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/detail_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -12,7 +12,7 @@ class WordListTile extends StatefulWidget {
   final WordModel wordModel;
   final Function onWordUpdate;
 
-  static const HEIGHT = 90.0;
+  static const HEIGHT = 87.0;
 
   const WordListTile({
     super.key,
