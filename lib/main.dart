@@ -23,7 +23,7 @@ Future<void> main() async {
   tz.setLocalLocation(tz.getLocation("Asia/Tokyo"));
 
   /// 通知のバッジの削除
-  FlutterAppBadger.removeBadge();
+  // FlutterAppBadger.removeBadge();
 
   /// 広告の初期化
   MobileAds.instance.initialize();
@@ -32,6 +32,9 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
+  /// 上部にシステムUIを表示
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   /// 通知&ATT許可
   initializeNotificationsAndATT();

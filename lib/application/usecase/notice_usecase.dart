@@ -164,6 +164,11 @@ class NoticeUsecase {
       time: time,
     );
     final id = await NotificationRepository.instance.insertData(notice);
+    final isEnable = SharedPreferencesRepository().fetch<bool>(
+          SharedPreferencesKey.noticeEnable,
+        ) ??
+        false;
+    if (!isEnable) return;
     await setNotificationSchedule(notice.copyWith(noticeId: id));
   }
 
@@ -175,8 +180,12 @@ class NoticeUsecase {
   Future<void> updateNotice(NoticeDataModel notice) async {
     await NotificationRepository.instance.updateNoticeTime(notice);
     await cancelNotification(notice.noticeId!);
+    final isEnable = SharedPreferencesRepository().fetch<bool>(
+          SharedPreferencesKey.noticeEnable,
+        ) ??
+        false;
+    if (!isEnable) return;
     await setNotificationSchedule(notice);
-    print('updateNotice $notice');
   }
 
   /// 全ての通知を設定

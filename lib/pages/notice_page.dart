@@ -244,13 +244,16 @@ class _NoticePageState extends State<NoticePage> {
                         ),
                         noticeManageModel.noticeEnable
                             ? const SizedBox.shrink()
-                            : DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade900.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: Colors.white.withOpacity(0.9),
-                                      width: 0.7),
+                            : IgnorePointer(
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Colors.grey.shade900.withOpacity(0.8),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.white.withOpacity(0.9),
+                                        width: 0.7),
+                                  ),
                                 ),
                               )
                       ],
