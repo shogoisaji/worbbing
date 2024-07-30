@@ -5,18 +5,18 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/pages/splash_page.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:worbbing/presentation/theme/theme.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// 通知内容のシャッフル
-  NoticeUsecase().shuffleNotification();
+  /// shared_preferencesの初期化
+  await SharedPreferencesRepository.init();
 
   /// 通知用のタイムゾーンの初期化
   tz.initializeTimeZones();
@@ -51,6 +51,14 @@ Future<void> initializeNotificationsAndATT() async {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(),
     ),
+
+    /// 通知をタップした時の処理
+    ///
+    // onDidReceiveNotificationResponse: (NotificationResponse details) {
+    //   if (details.payload == 'notice_tap') {
+    //     print('notice id : ${details.id}');
+    //   }
+    // },
   );
 
   /// ATTの許可

@@ -5,7 +5,7 @@ import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';

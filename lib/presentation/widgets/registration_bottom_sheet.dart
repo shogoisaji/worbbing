@@ -14,7 +14,7 @@ import 'package:worbbing/presentation/widgets/language_dropdown_vertical.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:lottie/lottie.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 

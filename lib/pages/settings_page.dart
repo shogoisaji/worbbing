@@ -7,7 +7,7 @@ import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';

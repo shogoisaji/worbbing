@@ -290,10 +290,11 @@ class SqfliteRepository {
   }
 
 // notification words get random words
-  Future<List<WordModel>> getRandomWords(int count) async {
+  Future<WordModel> getRandomWord() async {
     final db = await database;
-    String query = "SELECT * FROM $table ORDER BY RANDOM() LIMIT $count";
-    List<Map<String, Object?>> result = await db.rawQuery(query);
-    return result.map((e) => WordModel.fromJson(e)).toList();
+    String query = "SELECT * FROM $table ORDER BY RANDOM() LIMIT 1";
+    Map<String, Object?> result =
+        await db.rawQuery(query).then((value) => value.first);
+    return WordModel.fromJson(result);
   }
 }

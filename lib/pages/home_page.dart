@@ -12,7 +12,7 @@ import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
-import 'package:worbbing/repository/sqflite_repository.dart';
+import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/settings_page.dart';
 import 'package:worbbing/pages/notice_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage>
   void _handleStateChange(AppLifecycleState state) {
     if (_state == AppLifecycleState.inactive &&
         state == AppLifecycleState.resumed) {
-      NoticeUsecase().shuffleNotification();
+      NoticeUsecase().shuffleNotifications();
     }
     setState(() {
       _state = state;
