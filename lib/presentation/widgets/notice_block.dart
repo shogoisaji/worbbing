@@ -43,6 +43,12 @@ Widget noticeBlock(double size, int number, Color color) {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(size * 0.025),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 7,
+            ),
+          ],
         ),
         child: number == 99
             ? Text(

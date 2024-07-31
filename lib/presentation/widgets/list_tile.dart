@@ -87,6 +87,15 @@ class _WordListTileState extends State<WordListTile>
               builder: (BuildContext context, BoxConstraints constraints) {
             final viewWidth = constraints.maxWidth;
             return GestureDetector(
+              onTap: () async {
+                HapticFeedback.lightImpact();
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DetailPage(id: widget.wordModel.id)),
+                );
+                widget.onWordUpdate();
+              },
               onHorizontalDragDown: (DragDownDetails details) {
                 _clear();
               },
@@ -222,13 +231,15 @@ class _SlideCard extends StatelessWidget {
                   Padding(
                       padding: const EdgeInsets.only(left: 25),
                       child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () async {
-                            HapticFeedback.lightImpact();
-                            await Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailPage(id: wordModel.id)),
-                            );
+                            // HapticFeedback.lightImpact();
+                            // await Navigator.of(context).pushReplacement(
+                            //   MaterialPageRoute(
+                            //       builder: (context) =>
+                            //           DetailPage(id: wordModel.id)),
+                            // );
+                            print('--------onTap');
                           },
                           child: SizedBox(
                               width: MediaQuery.of(context).size.width - 150,

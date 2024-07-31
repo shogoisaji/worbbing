@@ -96,8 +96,8 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Align(
                 child: Image.asset(
                   'assets/images/custom_arrow.png',
-                  width: 35,
-                  height: 35,
+                  width: 30,
+                  height: 30,
                 ),
               ),
               onTap: () {
