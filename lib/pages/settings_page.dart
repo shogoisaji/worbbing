@@ -221,8 +221,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   color: Colors.white.withOpacity(0.5),
                                   width: 0.5),
                             ),
-                            margin: const EdgeInsets.only(
-                                left: 20, right: 20, bottom: 70),
+                            margin: const EdgeInsets.only(left: 20, right: 20),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 24),
                             child: Column(
@@ -236,11 +235,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                 _buildLicense(),
                                 _contentSpacer,
                                 _buildForgettingCurve(),
-                                _contentSpacer,
-                                _buildAppVersion(),
                               ],
                             ),
                           ),
+                          _contentSpacer,
+                          _buildAppVersion(),
                         ]),
                   ),
                 ),
@@ -404,18 +403,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildAppVersion() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
-        ),
-        const Expanded(
-          child: Text('App Version',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500)),
-        ),
+        const Text('Version',
+            style: TextStyle(
+                color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
+        const SizedBox(width: 10),
         FutureBuilder(
             future: loadVersion(),
             builder: (context, snapshot) {
@@ -423,15 +416,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 return const SizedBox.shrink();
               }
               if (snapshot.hasError) {
-                return const Text('error');
+                return const Text('---');
               }
               final data = snapshot.data!;
               return Padding(
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Text(data,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
+                        color: Colors.grey,
+                        fontSize: 18,
                         fontWeight: FontWeight.w500)),
               );
             }),

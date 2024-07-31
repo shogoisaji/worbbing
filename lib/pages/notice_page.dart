@@ -226,8 +226,7 @@ class _NoticePageState extends State<NoticePage> {
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                              color: Colors.white.withOpacity(0.5), width: 0.5),
+                          border: Border.all(color: MyTheme.lemon, width: 1.0),
                         ),
                         child: SingleChildScrollView(
                           child: Column(children: [
