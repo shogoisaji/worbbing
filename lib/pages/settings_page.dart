@@ -360,6 +360,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Switch(
           value: AppStateUsecase().isEnableSlideHint(),
           onChanged: (value) async {
+            HapticFeedback.lightImpact();
             await AppStateUsecase().switchEnableSlideHint(value);
             setState(() {});
           },

@@ -137,14 +137,9 @@ class _HomePageState extends State<HomePage>
           backgroundColor: MyTheme.grey,
           elevation: 0,
           centerTitle: true,
-          title: GestureDetector(
-            onTap: () {
-              AppStateUsecase().showDemo(context);
-            },
-            child: Image.asset(
-              'assets/images/worbbing_logo.png',
-              width: 150,
-            ),
+          title: Image.asset(
+            'assets/images/worbbing_logo.png',
+            width: 150,
           ),
           // leadingWidth: 40,
           leading: IconButton(

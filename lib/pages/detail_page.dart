@@ -312,22 +312,60 @@ class _DetailPageState extends State<DetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(
-                    height: 24,
+                    height: 18,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        noticeBlock(
-                            72, wordModel!.noticeDuration, MyTheme.lemon),
-                        _buildDurationLabel(wordModel!),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 110,
+                        width: 135,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            bottomLeft: Radius.circular(8),
+                          ),
+                          color: Colors.white12,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: noticeBlock(
+                                  72,
+                                  wordModel!.noticeDuration,
+                                  (forgettingDuration <
+                                              wordModel!.noticeDuration) ||
+                                          (wordModel!.noticeDuration == 99)
+                                      ? MyTheme.lemon
+                                      : MyTheme.orange),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 3,
+                        height: 110,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 110,
+                        width: 135,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(8),
+                            bottomRight: Radius.circular(8),
+                          ),
+                          color: Colors.white12,
+                        ),
+                        child: Center(child: _buildDurationLabel(wordModel!)),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
                   AdBanner(width: MediaQuery.of(context).size.width),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 42.0),
                     child: Column(
@@ -598,51 +636,49 @@ class _DetailPageState extends State<DetailPage> {
         DateTime.parse(wordModel.updateDate.toIso8601String());
     final int forgettingDuration =
         (updateDateTime.difference(DateTime.now()).inDays).abs();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Last Update",
-                  style: TextStyle(
-                    height: 1.0,
-                    color: Colors.grey.shade400,
-                    fontSize: 13,
-                  )),
-              Text(updateDateTime.toIso8601String().toYMDString(),
-                  style: TextStyle(
-                    height: 1.0,
-                    color: Colors.grey.shade400,
-                    fontSize: 14,
-                  )),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: 100,
-          height: 65,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              CustomPaint(
-                painter: DurationArrowPainter(),
-              ),
-              Align(
-                alignment: const Alignment(0.0, -0.9),
-                child: Text(forgettingDuration.toString(),
+    return SizedBox(
+      width: 100,
+      height: 95,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Last Update",
                     style: TextStyle(
-                        height: 1.0,
-                        color: MyTheme.orange,
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold)),
-              ),
-            ],
+                      height: 1.0,
+                      color: Colors.grey.shade400,
+                      fontSize: 13,
+                    )),
+                Text(updateDateTime.toIso8601String().toYMDString(),
+                    style: TextStyle(
+                      height: 1.0,
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    )),
+              ],
+            ),
           ),
-        ),
-      ],
+          Align(
+            alignment: const Alignment(0.0, 1.0),
+            child: CustomPaint(
+              size: const Size(100, 70),
+              painter: DurationArrowPainter(),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0.0, 0.0),
+            child: Text(forgettingDuration.toString(),
+                style: TextStyle(
+                    height: 1.0,
+                    color: MyTheme.orange,
+                    fontSize: 42,
+                    fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
     );
   }
 }

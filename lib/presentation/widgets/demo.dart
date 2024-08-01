@@ -35,8 +35,8 @@ class DemoPage extends StatelessWidget {
           itemBuilder: (context, index) {
             const angleList = [-0.04, 0.04, -0.03];
             const offsetList = [
-              Offset(-10, -100.0),
-              Offset(15, -80.0),
+              Offset(-2, -100.0),
+              Offset(12, -80.0),
               Offset(12, -60.0)
             ];
             return Align(
