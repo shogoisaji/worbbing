@@ -238,6 +238,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 _contentSpacer,
                                 _buildInquiry(),
                                 _contentSpacer,
+                                _buildDemo(),
+                                _contentSpacer,
                                 _buildLicense(),
                                 _contentSpacer,
                                 _buildForgettingCurve(),
@@ -437,6 +439,31 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const Expanded(
             child: Text('License',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500)),
+          ),
+          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDemo() {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        AppStateUsecase().showDemo(context);
+      },
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
+          ),
+          const Expanded(
+            child: Text('Show Demo',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,

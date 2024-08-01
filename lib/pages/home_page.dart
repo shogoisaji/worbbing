@@ -115,6 +115,12 @@ class _HomePageState extends State<HomePage>
         _animationController.forward(from: 0.3);
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (AppStateUsecase().isFirst()) {
+        TicketManager.addInitialTicket();
+        AppStateUsecase().showDemo(context);
+      }
+    });
   }
 
   @override

@@ -36,16 +36,12 @@ class AppStateUsecase {
         builder: (context) {
           return Stack(
             children: [
-              GestureDetector(
-                onTap: () {
-                  removeOverlay();
-                },
-                child: const DemoPage(),
-              ),
+              const DemoPage(),
               Align(
                 alignment: const Alignment(0.0, 0.85),
                 child: GestureDetector(
                   onTap: () {
+                    AppStateUsecase().doneFirst();
                     removeOverlay();
                   },
                   child: Container(

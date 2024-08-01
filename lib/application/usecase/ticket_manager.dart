@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:worbbing/application/usecase/app_state_usecase.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 
@@ -10,20 +9,16 @@ class TicketManager {
   static final ValueNotifier<int> ticketNotifier = ValueNotifier<int>(0);
 
   static Future<void> loadTicket() async {
-    final bool isFirst = AppStateUsecase().isFirst();
-    // TODO: hint実装時、表示後にfalseにする
-    // 初回実行時の処理
-    // if (isFirst) {
-    //   ticketNotifier.value = initialTicket;
-
-    //   SharedPreferencesRepository()
-    //       .save<int>(SharedPreferencesKey.ticket, initialTicket);
-    //   return;
-    // }
     final ticket =
         SharedPreferencesRepository().fetch<int>(SharedPreferencesKey.ticket) ??
             0;
     ticketNotifier.value = ticket;
+  }
+
+  static Future<void> addInitialTicket() async {
+    SharedPreferencesRepository().save<int>(
+        SharedPreferencesKey.ticket, ticketNotifier.value + initialTicket);
+    ticketNotifier.value = ticketNotifier.value + initialTicket;
   }
 
   static Future<void> useTicket() async {
