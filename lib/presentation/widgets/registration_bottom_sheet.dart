@@ -366,17 +366,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _isLoading
-                  ? Center(
-                      child: SizedBox(
-                        width: 170,
-                        height: 170,
-                        child: Lottie.asset(
-                          'assets/lottie/w_loading.json',
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+              _isLoading ? _buildLoading(h, w) : const SizedBox.shrink(),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
@@ -726,8 +716,25 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                   ),
                 ),
               ),
+              // _buildLoading(h, w),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoading(double h, double w) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        color: Colors.transparent,
+        width: w,
+        height: h * 0.7,
+        child: Lottie.asset(
+          fit: BoxFit.fitWidth,
+          'assets/lottie/t.json',
+          // 'assets/lottie/w_loading.json',
         ),
       ),
     );
@@ -752,41 +759,41 @@ class TranslateButton extends StatefulWidget {
 
 class _TranslateButtonState extends State<TranslateButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  OverlayEntry? _overlayEntry;
-  final GlobalKey _widgetKey = GlobalKey();
+  late AnimationController animationController;
+  OverlayEntry? overlayEntry;
+  final GlobalKey widgetKey = GlobalKey();
 
-  void _showOverlay(BuildContext context) {
-    final currentContext = _widgetKey.currentContext;
+  void showOverlay(BuildContext context) {
+    final currentContext = widgetKey.currentContext;
     if (currentContext == null) return;
 
     final RenderBox renderBox = currentContext.findRenderObject() as RenderBox;
     final position = renderBox.localToGlobal(Offset.zero);
-    _overlayEntry = OverlayEntry(
+    overlayEntry = OverlayEntry(
         builder: (context) => Positioned(
               top: position.dy,
               left: position.dx,
               child: AnimatedBuilder(
-                  animation: _animationController,
+                  animation: animationController,
                   builder: (context, child) {
                     return Opacity(
-                      opacity: 1 - _animationController.value,
+                      opacity: 1 - animationController.value,
                       child: Transform.scale(
-                        scale: 1 + 0.5 * _animationController.value,
+                        scale: 1 + 0.5 * animationController.value,
                         child: Material(
                           color: Colors.transparent,
-                          child: _buildKatiButton(),
+                          child: buildKatiButton(),
                         ),
                       ),
                     );
                   }),
             ));
-    Overlay.of(context).insert(_overlayEntry!);
+    Overlay.of(context).insert(overlayEntry!);
   }
 
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
+  void removeOverlay() {
+    overlayEntry?.remove();
+    overlayEntry = null;
   }
 
   @override
@@ -794,15 +801,15 @@ class _TranslateButtonState extends State<TranslateButton>
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _animationController = AnimationController(
+      animationController = AnimationController(
           vsync: this, duration: const Duration(milliseconds: 400));
-      _animationController.addStatusListener((status) {
+      animationController.addStatusListener((status) {
         if (status == AnimationStatus.forward) {
-          _showOverlay(context);
+          showOverlay(context);
         } else if (status == AnimationStatus.completed) {
-          _removeOverlay();
+          removeOverlay();
         } else {
-          _removeOverlay();
+          removeOverlay();
         }
       });
     });
@@ -810,8 +817,8 @@ class _TranslateButtonState extends State<TranslateButton>
 
   @override
   void dispose() {
-    _removeOverlay();
-    _animationController.dispose();
+    removeOverlay();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -820,18 +827,18 @@ class _TranslateButtonState extends State<TranslateButton>
     return Expanded(
       child: Align(
           alignment: Alignment.centerRight,
-          child: _buildKatiButton(key: _widgetKey)),
+          child: buildKatiButton(key: widgetKey)),
     );
   }
 
-  Widget _buildKatiButton({Key? key}) {
+  Widget buildKatiButton({Key? key}) {
     return KatiButton(
       key: key,
       onPressed: () async {
         widget.onPressed();
         if (!widget.isEnable) return;
-        await _animationController.forward();
-        _animationController.reset();
+        await animationController.forward();
+        animationController.reset();
       },
       width: widget.width.clamp(50, 200),
       height: 85,

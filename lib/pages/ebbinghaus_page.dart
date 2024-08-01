@@ -24,8 +24,8 @@ class EbbinghausPage extends StatelessWidget {
                     child: InkWell(
                         child: Image.asset(
                           'assets/images/custom_arrow.png',
-                          width: 35,
-                          height: 35,
+                          width: 30,
+                          height: 30,
                         ),
                         onTap: () {
                           Navigator.pop(context);

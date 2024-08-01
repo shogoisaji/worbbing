@@ -6,12 +6,12 @@ import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
-import 'package:worbbing/application/date_format.dart';
 import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:worbbing/strings.dart';
 
 enum ContentType {
   original,
@@ -50,9 +50,25 @@ TextEditingController _exampleTranslatedController = TextEditingController();
 
 class _DetailPageState extends State<DetailPage> {
   bool flag = false;
+  WordModel? wordModel;
+  int forgettingDuration = 0;
+
+  Future<void> _initialLoad() async {
+    final loadModel = await SqfliteRepository.instance.queryRows(widget.id);
+    final DateTime updateDateTime =
+        DateTime.parse(loadModel.updateDate.toIso8601String());
+    final DateTime currentDateTime = DateTime.now();
+    forgettingDuration =
+        (updateDateTime.difference(currentDateTime).inDays).abs();
+    setState(() {
+      wordModel = loadModel;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    _initialLoad();
     _originalController = TextEditingController();
     _translatedController = TextEditingController();
     _exampleController = TextEditingController();
@@ -178,19 +194,13 @@ class _DetailPageState extends State<DetailPage> {
                             _translatedController.text,
                             _exampleController.text,
                             _exampleTranslatedController.text);
-                        setState(() {});
-                        if (context1.mounted) {
-                          Navigator.pop(context1);
-                          Navigator.of(context1).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context2) => const HomePage()),
-                            (route) => false,
-                          );
-                        }
+                        _initialLoad();
+                        if (!context1.mounted) return;
+                        Navigator.pop(context1);
                       },
-                      child: const Text('Update',
+                      child: Text('Update',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: MyTheme.greyForOrange,
                               fontWeight: FontWeight.bold,
                               fontSize: 24)),
                     ),
@@ -203,7 +213,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<void> handleTapFlag() async {
     // change flag state
     await SqfliteRepository.instance
-        .updateFlag(widget.id, !flag)
+        .updateFlag(widget.id, !wordModel!.flag)
         .catchError((e) {
       MySimpleDialog.show(
           context,
@@ -216,26 +226,18 @@ class _DetailPageState extends State<DetailPage> {
         //
       });
     });
-    setState(() {
-      if (!flag) {
-        flag = true;
-      } else {
-        flag = false;
-      }
-    });
+    _initialLoad();
   }
 
   Future<void> handleTapDelete() async {
     showDialog(
         context: context,
-        builder: (BuildContext context2) =>
-            // deleteDialog(context, widget.id),
-            AlertDialog(
+        builder: (BuildContext context2) => AlertDialog(
               shape:
                   const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               backgroundColor: MyTheme.grey,
               title: const Text(
-                'Are you sure you want to delete this data?',
+                'Do you really want to delete it?',
                 style: TextStyle(
                     overflow: TextOverflow.clip,
                     color: Colors.white,
@@ -290,214 +292,118 @@ class _DetailPageState extends State<DetailPage> {
             child: Align(
               child: Image.asset(
                 'assets/images/custom_arrow.png',
-                width: 35,
-                height: 35,
+                width: 30,
+                height: 30,
               ),
             ),
             onTap: () {
               HapticFeedback.lightImpact();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const HomePage()),
-              );
+              Navigator.of(context).pop();
             }),
+        actions: [_buildFlag()],
         backgroundColor: Colors.transparent,
       ),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-            child: FutureBuilder<WordModel>(
-          future: SqfliteRepository.instance.queryRows(widget.id),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox.shrink();
-            }
-
-            if (snapshot.hasError) {
-              return const Text('エラーが発生しました');
-            }
-
-            final wordModel = snapshot.data!;
-            final formatRegistrationDate =
-                formatForDisplay(wordModel.registrationDate.toIso8601String());
-            final formatUpdateDate =
-                formatForDisplay(wordModel.updateDate.toIso8601String());
-            final DateTime updateDateTime =
-                DateTime.parse(wordModel.updateDate.toIso8601String());
-            final DateTime currentDateTime = DateTime.now();
-            final int forgettingDuration =
-                (updateDateTime.difference(currentDateTime).inDays).abs();
-
-            flag = wordModel.flag;
-
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+      body: wordModel == null
+          ? const SizedBox.shrink()
+          : SingleChildScrollView(
+              child: Container(
               constraints: const BoxConstraints(maxWidth: 500),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(
-                    height: 30,
+                    height: 18,
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      noticeBlock(72, wordModel.noticeDuration, MyTheme.lemon),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Column(
+                      Container(
+                        height: 100,
+                        width: 135,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            bottomLeft: Radius.circular(8),
+                          ),
+                          color: Colors.white12,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                                'Last Update\n${formatUpdateDate.split(' ')[0]}',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    height: 1.0,
-                                    color: Colors.grey.shade600,
-                                    fontSize: 16)),
-                            Container(
-                              margin: const EdgeInsets.only(top: 2),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(2),
-                                  border: Border.all(color: Colors.grey)),
-                              child: Row(
-                                children: [
-                                  const Text('Forgetting\nDuration',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white)),
-                                  // bodyText('Forgetting\n  Duration', Colors.white),
-                                  const SizedBox(
-                                    width: 12,
-                                  ),
-                                  // change forgetting duration
-                                  Text(forgettingDuration.toString(),
-                                      style: TextStyle(
-                                          color: MyTheme.orange, fontSize: 34)),
-                                ],
-                              ),
+                            Center(
+                              child: noticeBlock(
+                                  54,
+                                  wordModel!.noticeDuration,
+                                  (forgettingDuration <
+                                              wordModel!.noticeDuration) ||
+                                          (wordModel!.noticeDuration == 99)
+                                      ? MyTheme.lemon
+                                      : MyTheme.orange,
+                                  false),
                             ),
                           ],
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () async {
-                          HapticFeedback.lightImpact();
-                          await handleTapFlag();
-                        },
-                        child: flag
-                            ? Icon(Icons.flag_rounded,
-                                size: 54, color: MyTheme.lemon)
-                            : const Icon(Icons.outlined_flag_rounded,
-                                size: 54, color: Colors.white24),
+                      Container(
+                        width: 3,
+                        height: 100,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 100,
+                        width: 135,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(8),
+                            bottomRight: Radius.circular(8),
+                          ),
+                          color: Colors.white12,
+                        ),
+                        child: Center(child: _buildDurationLabel(wordModel!)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   AdBanner(width: MediaQuery.of(context).size.width),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 42.0),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                // width: 50,
-                                // color: Colors.red,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: MyTheme.blue),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                                margin: const EdgeInsets.only(
-                                    top: 30.0,
-                                    bottom: 16.0,
-                                    left: 0.0,
-                                    right: 24.0),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4.0, horizontal: 12.0),
-
-                                child: AutoSizeText(
-                                    "${wordModel.originalLang.string} → ${wordModel.translatedLang.string}",
-                                    maxLines: 1,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: MyTheme.blue, fontSize: 20)),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 24.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  handleTapEdit(
-                                    wordModel.id,
-                                    wordModel.originalWord,
-                                    wordModel.translatedWord,
-                                    wordModel.example ?? '',
-                                    wordModel.exampleTranslated ?? '',
-                                  );
-                                },
-                                child: const Icon(
-                                  Icons.create,
-                                  color: Colors.white,
-                                  size: 32,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                         _detailWordContent(
-                            ContentType.original, wordModel.originalWord),
+                            ContentType.original, wordModel!.originalWord),
                         _detailWordContent(
-                            ContentType.translated, wordModel.translatedWord),
+                            ContentType.translated, wordModel!.translatedWord),
                         _detailWordContent(
-                            ContentType.example, wordModel.example ?? ''),
+                            ContentType.example, wordModel!.example ?? ''),
                         _detailWordContent(ContentType.exampleTranslated,
-                            wordModel.exampleTranslated ?? ''),
-                        Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        color: Colors.grey.shade600,
-                                        width: 1.0))),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                            wordModel!.exampleTranslated ?? ''),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            final width = constraints.maxWidth;
+                            return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // change registration data
-                                Text('Registration Date',
-                                    style: TextStyle(
-                                        color: Colors.grey.shade600,
-                                        fontSize: 16)),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                Text(formatRegistrationDate.split(' ')[0],
-                                    style: TextStyle(
-                                        color: Colors.grey.shade600,
-                                        fontSize: 16)),
+                                _buildDeleteButton(width * 0.46),
+                                _buildEditButton(width * 0.46),
                               ],
-                            )),
-                        const SizedBox(
-                          height: 40,
+                            );
+                          }),
                         ),
-                        _buildDeleteButton(),
+                        const SizedBox(height: 32),
+                        _buildRegistrationDate(),
                         const SizedBox(
-                          height: 100,
+                          height: 70,
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-            );
-          },
-        )),
-      ),
+            )),
     );
   }
 
@@ -511,10 +417,16 @@ class _DetailPageState extends State<DetailPage> {
       ContentType.example => 2,
       ContentType.exampleTranslated => 2,
     };
+    final height = switch (type) {
+      ContentType.original => 55.0,
+      ContentType.translated => 55.0,
+      ContentType.example => 80.0,
+      ContentType.exampleTranslated => 80.0,
+    };
     final fontSize = switch (type) {
-      ContentType.original => 30.0,
-      ContentType.translated => 30.0,
-      ContentType.example => 20.0,
+      ContentType.original => 32.0,
+      ContentType.translated => 24.0,
+      ContentType.example => 22.0,
       ContentType.exampleTranslated => 20.0,
     };
     final titleColor = switch (type) {
@@ -523,21 +435,63 @@ class _DetailPageState extends State<DetailPage> {
       ContentType.example => MyTheme.lemon.withOpacity(0.7),
       ContentType.exampleTranslated => Colors.orangeAccent.withOpacity(0.8),
     };
+    final language = switch (type) {
+      ContentType.original => Container(
+          padding:
+              const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 1),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            border:
+                Border.all(color: MyTheme.blue.withOpacity(0.7), width: 1.0),
+          ),
+          child: Text(
+            wordModel!.originalLang.string,
+            style:
+                TextStyle(color: MyTheme.blue.withOpacity(0.7), fontSize: 18),
+          ),
+        ),
+      ContentType.translated => Container(
+          padding:
+              const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 1),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            border:
+                Border.all(color: MyTheme.blue.withOpacity(0.7), width: 1.0),
+          ),
+          child: Text(
+            wordModel!.translatedLang.string,
+            style:
+                TextStyle(color: MyTheme.blue.withOpacity(0.7), fontSize: 18),
+          ),
+        ),
+      ContentType.example => const SizedBox.shrink(),
+      ContentType.exampleTranslated => const SizedBox.shrink(),
+    };
 
     return Column(
       children: [
-        Container(
-          alignment: Alignment.topLeft,
-          width: double.infinity,
-          child: bodyText(type.string, titleColor),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  type.string,
+                  style: TextStyle(color: titleColor, fontSize: 18),
+                ),
+              ),
+            ),
+            language
+          ],
         ),
         Container(
           alignment: Alignment.center,
           width: double.infinity,
-          height: 50,
-          decoration: const BoxDecoration(
-              border:
-                  Border(bottom: BorderSide(color: Colors.white, width: 1.0))),
+          height: height,
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(color: Colors.grey.shade600, width: 1.0))),
           child: AutoSizeText(
             word,
             maxLines: maxLines,
@@ -545,24 +499,72 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ),
         const SizedBox(
-          height: 32,
+          height: 30,
         )
       ],
     );
   }
 
-  Widget _buildDeleteButton() {
+  Widget _buildEditButton(double width) {
+    return KatiButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        handleTapEdit(
+          wordModel!.id,
+          wordModel!.originalWord,
+          wordModel!.translatedWord,
+          wordModel!.example ?? '',
+          wordModel!.exampleTranslated ?? '',
+        );
+      },
+      width: width,
+      height: 65,
+      elevation: 8,
+      buttonRadius: 12,
+      stageOffset: 5,
+      inclinationRate: 0.7,
+      buttonColor: MyTheme.orange,
+      stageColor: Colors.blueGrey.shade800,
+      stagePointColor: Colors.blueGrey.shade700,
+      edgeLineColor: Colors.orange.shade300,
+      edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
+      child: Align(
+        alignment: const Alignment(0.8, 0.9),
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.rotationX(0.5),
+          child: Text(
+            'Edit',
+            style: TextStyle(
+              fontSize: 27,
+              color: MyTheme.greyForOrange,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                BoxShadow(
+                  color: Colors.grey.shade500,
+                  blurRadius: 1.0,
+                  offset: const Offset(0, -0.8),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton(double width) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
         handleTapDelete();
       },
-      width: 180,
+      width: width,
       height: 65,
       elevation: 8,
       buttonRadius: 12,
       stageOffset: 5,
-      inclinationRate: 0.9,
+      inclinationRate: 0.7,
       buttonColor: MyTheme.red,
       stageColor: Colors.blueGrey.shade800,
       stagePointColor: Colors.blueGrey.shade700,
@@ -592,4 +594,138 @@ class _DetailPageState extends State<DetailPage> {
       ),
     );
   }
+
+  Widget _buildFlag() {
+    return GestureDetector(
+      onTap: () async {
+        HapticFeedback.lightImpact();
+        await handleTapFlag();
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: (wordModel != null ? wordModel!.flag : false)
+            ? Icon(Icons.flag_rounded, size: 49, color: MyTheme.lemon)
+            : const Icon(Icons.outlined_flag_rounded,
+                size: 46, color: Colors.grey),
+      ),
+    );
+  }
+
+  Widget _buildRegistrationDate() {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: Colors.grey.shade600, width: 1.0))),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // change registration data
+            Text('Registration Date',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+            const SizedBox(
+              width: 12,
+            ),
+            Text(wordModel!.registrationDate.toIso8601String().toYMDString(),
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+          ],
+        ));
+  }
+
+  Widget _buildDurationLabel(WordModel wordModel) {
+    final DateTime updateDateTime =
+        DateTime.parse(wordModel.updateDate.toIso8601String());
+    final int forgettingDuration =
+        (updateDateTime.difference(DateTime.now()).inDays).abs();
+    return SizedBox(
+      width: 80,
+      height: 80,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Last Update",
+                    style: TextStyle(
+                      height: 1.0,
+                      color: Colors.grey.shade400,
+                      fontSize: 13,
+                    )),
+                Text(updateDateTime.toIso8601String().toYMDString(),
+                    style: TextStyle(
+                      height: 1.0,
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    )),
+              ],
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0.0, 1.0),
+            child: CustomPaint(
+              size: const Size(80, 55),
+              painter: DurationArrowPainter(),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0.0, 0.1),
+            child: Text(forgettingDuration.toString(),
+                style: TextStyle(
+                    height: 1.0,
+                    color: MyTheme.orange,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DurationArrowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const double offset = 8.0;
+
+    const text = TextSpan(
+      text: 'Today',
+      style: TextStyle(color: Colors.white, fontSize: 15),
+    );
+    final textPainter = TextPainter(
+      text: text,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    final textSize = textPainter.size;
+    textPainter.paint(canvas,
+        Offset(size.width - textSize.width, size.height - textSize.height));
+
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+    final tipPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    path.moveTo(offset, offset * 0.8);
+    path.lineTo(offset, size.height - offset);
+    path.lineTo(size.width - offset - textSize.width, size.height - offset);
+
+    final tipPath = Path();
+    const arrowRate = 0.8;
+    tipPath.moveTo(
+        size.width - offset / 2 - textSize.width, size.height - offset);
+    tipPath.relativeLineTo(-offset, -offset * arrowRate);
+    tipPath.relativeLineTo(0, offset * 2 * arrowRate);
+    tipPath.close();
+    canvas.drawPath(path, paint);
+    canvas.drawPath(tipPath, tipPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:worbbing/application/usecase/app_state_usecase.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/models/word_model.dart';
@@ -114,6 +115,12 @@ class _HomePageState extends State<HomePage>
         _animationController.forward(from: 0.3);
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (AppStateUsecase().isFirst()) {
+        TicketManager.addInitialTicket();
+        AppStateUsecase().showDemo(context);
+      }
+    });
   }
 
   @override
@@ -166,12 +173,13 @@ class _HomePageState extends State<HomePage>
             ),
             IconButton(
                 padding: const EdgeInsets.only(top: 5, right: 8),
-                onPressed: () {
+                onPressed: () async {
                   HapticFeedback.lightImpact();
-                  Navigator.of(context).push(
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (context) => const SettingsPage()),
                   );
+                  setState(() {});
                 },
                 icon: const Icon(
                   Icons.settings_rounded,
@@ -309,7 +317,7 @@ class _HomePageState extends State<HomePage>
                                           ),
                                         ),
                                         const SizedBox(
-                                          height: 200,
+                                          height: 170,
                                         ),
                                       ],
                                     )
