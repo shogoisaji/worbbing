@@ -291,7 +291,8 @@ class _SlideCard extends StatelessWidget {
                               (forgettingDuration < wordModel.noticeDuration) ||
                                       (wordModel.noticeDuration == 99)
                                   ? MyTheme.lemon
-                                  : MyTheme.orange)),
+                                  : MyTheme.orange,
+                              forgettingDuration >= wordModel.noticeDuration)),
                     ],
                   )
                 ],

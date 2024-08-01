@@ -177,8 +177,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                               MainAxisAlignment.end,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            noticeBlock(
-                                                36, duration, MyTheme.lemon),
+                                            noticeBlock(36, duration,
+                                                MyTheme.lemon, false),
                                             const SizedBox(height: 8),
                                             mediumText(
                                                 countNotice[duration]

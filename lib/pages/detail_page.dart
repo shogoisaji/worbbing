@@ -318,7 +318,7 @@ class _DetailPageState extends State<DetailPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        height: 110,
+                        height: 100,
                         width: 135,
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
@@ -333,24 +333,25 @@ class _DetailPageState extends State<DetailPage> {
                           children: [
                             Center(
                               child: noticeBlock(
-                                  72,
+                                  54,
                                   wordModel!.noticeDuration,
                                   (forgettingDuration <
                                               wordModel!.noticeDuration) ||
                                           (wordModel!.noticeDuration == 99)
                                       ? MyTheme.lemon
-                                      : MyTheme.orange),
+                                      : MyTheme.orange,
+                                  false),
                             ),
                           ],
                         ),
                       ),
                       Container(
                         width: 3,
-                        height: 110,
+                        height: 100,
                         color: Colors.black,
                       ),
                       Container(
-                        height: 110,
+                        height: 100,
                         width: 135,
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
@@ -637,8 +638,8 @@ class _DetailPageState extends State<DetailPage> {
     final int forgettingDuration =
         (updateDateTime.difference(DateTime.now()).inDays).abs();
     return SizedBox(
-      width: 100,
-      height: 95,
+      width: 80,
+      height: 80,
       child: Stack(
         children: [
           Align(
@@ -664,17 +665,17 @@ class _DetailPageState extends State<DetailPage> {
           Align(
             alignment: const Alignment(0.0, 1.0),
             child: CustomPaint(
-              size: const Size(100, 70),
+              size: const Size(80, 55),
               painter: DurationArrowPainter(),
             ),
           ),
           Align(
-            alignment: const Alignment(0.0, 0.0),
+            alignment: const Alignment(0.0, 0.1),
             child: Text(forgettingDuration.toString(),
                 style: TextStyle(
                     height: 1.0,
                     color: MyTheme.orange,
-                    fontSize: 42,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold)),
           ),
         ],
@@ -686,7 +687,7 @@ class _DetailPageState extends State<DetailPage> {
 class DurationArrowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    const double offset = 10.0;
+    const double offset = 8.0;
 
     const text = TextSpan(
       text: 'Today',
@@ -699,7 +700,7 @@ class DurationArrowPainter extends CustomPainter {
     textPainter.layout();
     final textSize = textPainter.size;
     textPainter.paint(canvas,
-        Offset(size.width - textSize.width, size.height - textSize.height - 1));
+        Offset(size.width - textSize.width, size.height - textSize.height));
 
     final paint = Paint()
       ..color = Colors.white
