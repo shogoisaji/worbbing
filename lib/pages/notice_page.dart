@@ -223,11 +223,25 @@ class _NoticePageState extends State<NoticePage> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
                             vertical: 2, horizontal: 14),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: MyTheme.lemon, width: 1.0),
-                        ),
+                        decoration: noticeManageModel.noticeEnable
+                            ? BoxDecoration(
+                                color: Colors.grey.shade900,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: MyTheme.lemon, width: 1.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: MyTheme.lemon.withOpacity(0.8),
+                                    blurRadius: 5.0,
+                                  )
+                                ],
+                              )
+                            : BoxDecoration(
+                                color: Colors.grey.shade900,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: Colors.grey.shade100, width: 0.7),
+                              ),
                         child: SingleChildScrollView(
                           child: Column(children: [
                             ...noticeManageModel.noticeList
@@ -243,14 +257,10 @@ class _NoticePageState extends State<NoticePage> {
                           ? const SizedBox.shrink()
                           : IgnorePointer(
                               child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade900.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: Colors.white.withOpacity(0.9),
-                                      width: 0.7),
-                                ),
-                              ),
+                                  decoration: BoxDecoration(
+                                color: Colors.grey.shade900.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(10),
+                              )),
                             )
                     ],
                   ),

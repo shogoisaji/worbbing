@@ -320,7 +320,7 @@ class _DetailPageState extends State<DetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         noticeBlock(
-                            80, wordModel!.noticeDuration, MyTheme.lemon),
+                            72, wordModel!.noticeDuration, MyTheme.lemon),
                         _buildDurationLabel(wordModel!),
                       ],
                     ),
@@ -610,20 +610,20 @@ class _DetailPageState extends State<DetailPage> {
                   style: TextStyle(
                     height: 1.0,
                     color: Colors.grey.shade400,
-                    fontSize: 14,
+                    fontSize: 13,
                   )),
               Text(updateDateTime.toIso8601String().toYMDString(),
                   style: TextStyle(
                     height: 1.0,
                     color: Colors.grey.shade400,
-                    fontSize: 15,
+                    fontSize: 14,
                   )),
             ],
           ),
         ),
         SizedBox(
           width: 100,
-          height: 70,
+          height: 65,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -636,7 +636,7 @@ class _DetailPageState extends State<DetailPage> {
                     style: TextStyle(
                         height: 1.0,
                         color: MyTheme.orange,
-                        fontSize: 45,
+                        fontSize: 42,
                         fontWeight: FontWeight.bold)),
               ),
             ],
@@ -654,7 +654,7 @@ class DurationArrowPainter extends CustomPainter {
 
     const text = TextSpan(
       text: 'Today',
-      style: TextStyle(color: Colors.white, fontSize: 16),
+      style: TextStyle(color: Colors.white, fontSize: 15),
     );
     final textPainter = TextPainter(
       text: text,
@@ -663,7 +663,7 @@ class DurationArrowPainter extends CustomPainter {
     textPainter.layout();
     final textSize = textPainter.size;
     textPainter.paint(canvas,
-        Offset(size.width - textSize.width, size.height - textSize.height));
+        Offset(size.width - textSize.width, size.height - textSize.height - 1));
 
     final paint = Paint()
       ..color = Colors.white

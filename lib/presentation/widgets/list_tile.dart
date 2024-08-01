@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:worbbing/application/usecase/app_state_usecase.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/detail_page.dart';
@@ -8,11 +10,11 @@ import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
+const HEIGHT = 87.0;
+
 class WordListTile extends StatefulWidget {
   final WordModel wordModel;
   final Function onWordUpdate;
-
-  static const HEIGHT = 87.0;
 
   const WordListTile({
     super.key,
@@ -25,15 +27,22 @@ class WordListTile extends StatefulWidget {
 }
 
 class _WordListTileState extends State<WordListTile>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
+  final GlobalKey _key = GlobalKey();
+
   late final AnimationController _animationController;
+
+  static const double _dragRangeX = 80.0;
+  static const double _dragRangeY = 85.0;
+
+  bool _isEnd = false;
 
   double? _dragStartX;
   double? _dragStartY;
-  bool? _isOpening;
-  Widget? _widget;
+  Widget _widget = const SizedBox.shrink();
+  Color _color = MyTheme.lemon;
 
-  Color? _color;
+  bool _isEnableSlideHint = true;
 
   onWordUpdate() {
     widget.onWordUpdate();
@@ -44,25 +53,58 @@ class _WordListTileState extends State<WordListTile>
         maxLines: 1, style: const TextStyle(color: Colors.black, fontSize: 26));
   }
 
+  void _dragReset() {
+    _dragStartX = null;
+  }
+
+  OverlayEntry? overlay;
+
+  void showHint(
+    BuildContext context,
+    Offset position,
+  ) {
+    if (overlay != null || !_isEnableSlideHint) return;
+    final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+    final offset = renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+    overlay = OverlayEntry(
+      builder: (context) {
+        return Stack(
+          children: [
+            HintWidget(position: offset, isEnd: _isEnd),
+          ],
+        );
+      },
+    );
+
+    Overlay.of(context).insert(overlay!);
+  }
+
+  void removeOverlay() {
+    overlay?.remove();
+    overlay = null;
+  }
+
   @override
   void initState() {
     super.initState();
-    _color = MyTheme.lemon;
     _widget = _translatedWord();
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
+    _isEnableSlideHint = AppStateUsecase().isEnableSlideHint();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    removeOverlay();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: WordListTile.HEIGHT,
+      key: _key,
+      height: HEIGHT,
       child: Stack(
         children: [
           Container(
@@ -70,7 +112,7 @@ class _WordListTileState extends State<WordListTile>
             alignment: Alignment.centerLeft,
             color: _color,
             width: double.infinity,
-            height: WordListTile.HEIGHT,
+            height: HEIGHT,
             child: _widget,
           ),
           SlideTransition(
@@ -78,7 +120,7 @@ class _WordListTileState extends State<WordListTile>
               begin: const Offset(0.002, 0),
               end: const Offset(1, 0),
             ).animate(_animationController),
-// slide page
+            // slide page
             child: _SlideCard(
               wordModel: widget.wordModel,
             ),
@@ -96,33 +138,32 @@ class _WordListTileState extends State<WordListTile>
                 );
                 widget.onWordUpdate();
               },
-              onHorizontalDragDown: (DragDownDetails details) {
-                _clear();
-              },
               onHorizontalDragStart: (DragStartDetails details) {
+                _dragReset();
                 final startX = details.localPosition.dx;
                 final startY = details.localPosition.dy;
                 final viewWidth = MediaQuery.of(context).size.width;
                 if (startX <= viewWidth / 1.5) {
                   _dragStartX = startX;
                   _dragStartY = startY;
-                  _isOpening = _animationController.value != 1.0;
                 }
+                _isEnd = false;
               },
               onHorizontalDragUpdate: (DragUpdateDetails details) {
                 final dragStartX = _dragStartX;
                 final dragStartY = _dragStartY;
-                final isOpening = _isOpening;
-                if (dragStartX == null ||
-                    dragStartY == null ||
-                    isOpening == null) return;
+                if (dragStartX == null || dragStartY == null) return;
 
                 final newX = details.localPosition.dx;
                 final newY = details.localPosition.dy;
                 final diffX = newX - dragStartX;
                 final diffY = newY - dragStartY;
 
-                if (diffY > 100 && diffX > 80) {
+                if (diffX > _dragRangeX) {
+                  showHint(context, details.localPosition);
+                }
+
+                if (diffY > _dragRangeY && diffX > _dragRangeX) {
                   if (_color != MyTheme.blue) {
                     HapticFeedback.lightImpact();
                     setState(() {
@@ -134,7 +175,7 @@ class _WordListTileState extends State<WordListTile>
                       );
                     });
                   }
-                } else if (diffY < -100 && diffX > 80) {
+                } else if (diffY < -_dragRangeY && diffX > _dragRangeX) {
                   if (_color != MyTheme.orange) {
                     HapticFeedback.lightImpact();
                     setState(() {
@@ -147,10 +188,12 @@ class _WordListTileState extends State<WordListTile>
                     });
                   }
                 } else {
-                  setState(() {
-                    _color = MyTheme.lemon;
-                    _widget = _translatedWord();
-                  });
+                  if (_color != MyTheme.lemon) {
+                    setState(() {
+                      _color = MyTheme.lemon;
+                      _widget = _translatedWord();
+                    });
+                  }
                 }
 
                 _animationController.value =
@@ -174,21 +217,22 @@ class _WordListTileState extends State<WordListTile>
                 setState(() {
                   _color = MyTheme.lemon;
                   _widget = _translatedWord();
+                  _isEnd = true;
+                });
+                overlay?.markNeedsBuild();
+                Future.delayed(const Duration(milliseconds: 400), () {
+                  removeOverlay();
                 });
               },
               onHorizontalDragCancel: () {
-                _clear();
+                _dragReset();
+                removeOverlay();
               },
             );
           }),
         ],
       ),
     );
-  }
-
-  void _clear() {
-    _dragStartX = null;
-    _isOpening = null;
   }
 }
 
@@ -208,12 +252,12 @@ class _SlideCard extends StatelessWidget {
         color: Colors.black,
       ),
       width: MediaQuery.of(context).size.width,
-      height: WordListTile.HEIGHT,
+      height: HEIGHT,
       child: Stack(
         children: [
           Container(
               width: double.infinity,
-              height: WordListTile.HEIGHT,
+              height: HEIGHT,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -230,21 +274,10 @@ class _SlideCard extends StatelessWidget {
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(left: 25),
-                      child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () async {
-                            // HapticFeedback.lightImpact();
-                            // await Navigator.of(context).pushReplacement(
-                            //   MaterialPageRoute(
-                            //       builder: (context) =>
-                            //           DetailPage(id: wordModel.id)),
-                            // );
-                            print('--------onTap');
-                          },
-                          child: SizedBox(
-                              width: MediaQuery.of(context).size.width - 150,
-                              child: titleText(
-                                  wordModel.originalWord, null, null)))),
+                      child: SizedBox(
+                          width: MediaQuery.of(context).size.width - 150,
+                          child:
+                              titleText(wordModel.originalWord, null, null))),
                   Row(
                     children: [
                       if (wordModel.flag)
@@ -265,6 +298,84 @@ class _SlideCard extends StatelessWidget {
               )),
         ],
       ),
+    );
+  }
+}
+
+class HintWidget extends StatefulWidget {
+  final Offset position;
+  final bool isEnd;
+  const HintWidget({super.key, required this.position, required this.isEnd});
+
+  @override
+  State<HintWidget> createState() => _HintWidgetState();
+}
+
+class _HintWidgetState extends State<HintWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  final double _hintSize = 50.0;
+  final double _spacerX = 30.0;
+  final double _spacerY = 10.0;
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 400))
+      ..forward();
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant HintWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isEnd != oldWidget.isEnd) {
+      if (widget.isEnd) {
+        _animationController.reverse();
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: widget.position.dx + _spacerX,
+      top: widget.position.dy - _hintSize - _spacerY,
+      child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return Opacity(
+              opacity: _animation.value,
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/good.svg',
+                    width: 50,
+                    height: 50,
+                  ),
+                  SizedBox(height: _spacerY),
+                  const SizedBox(height: HEIGHT),
+                  SizedBox(height: _spacerY),
+                  SvgPicture.asset(
+                    'assets/svg/bad.svg',
+                    width: 50,
+                    height: 50,
+                  )
+                ],
+              ),
+            );
+          }),
     );
   }
 }
