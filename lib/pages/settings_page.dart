@@ -26,8 +26,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  int totalWords = 0;
+  int? totalWords;
   Map<int, int> countNotice = {};
+  String version = "";
 
   final Widget _contentSpacer = const SizedBox(height: 22);
 
@@ -65,14 +66,15 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<String> loadVersion() async {
+  Future<void> loadVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo.version;
+    version = packageInfo.version;
   }
 
   Future<void> _initialLoad() async {
     totalWords = await SqfliteRepository.instance.totalWords();
     countNotice = await SqfliteRepository.instance.countNoticeDuration();
+    await loadVersion();
     setState(() {});
   }
 
@@ -158,8 +160,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                       children: [
                                         mediumText('Total Words', Colors.white),
                                         // total words
-                                        titleText(totalWords.toString(),
-                                            MyTheme.orange, 36),
+                                        titleText(
+                                            totalWords != null
+                                                ? totalWords.toString()
+                                                : "",
+                                            MyTheme.orange,
+                                            36),
                                       ]),
                                 ),
                                 SizedBox(
@@ -247,7 +253,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ],
                             ),
                           ),
-                          _contentSpacer,
+                          const SizedBox(height: 14),
                           _buildAppVersion(),
                           const SizedBox(
                             height: 50,
@@ -503,25 +509,14 @@ class _SettingsPageState extends State<SettingsPage> {
             style: TextStyle(
                 color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
         const SizedBox(width: 10),
-        FutureBuilder(
-            future: loadVersion(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox.shrink();
-              }
-              if (snapshot.hasError) {
-                return const Text('---');
-              }
-              final data = snapshot.data!;
-              return Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: Text(data,
-                    style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500)),
-              );
-            }),
+        Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child: Text(version,
+              style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500)),
+        )
       ],
     );
   }

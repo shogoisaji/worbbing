@@ -319,12 +319,12 @@ class _DetailPageState extends State<DetailPage> {
                       Container(
                         height: 100,
                         width: 135,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             bottomLeft: Radius.circular(8),
                           ),
-                          color: Colors.white12,
+                          color: Colors.white.withOpacity(0.15),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -352,18 +352,17 @@ class _DetailPageState extends State<DetailPage> {
                       Container(
                         height: 100,
                         width: 135,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                          ),
-                          color: Colors.white12,
-                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                            color: Colors.white.withOpacity(0.15)),
                         child: Center(child: _buildDurationLabel(wordModel!)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 22),
                   AdBanner(width: MediaQuery.of(context).size.width),
                   const SizedBox(height: 20),
                   Padding(
@@ -638,7 +637,7 @@ class _DetailPageState extends State<DetailPage> {
         (updateDateTime.difference(DateTime.now()).inDays).abs();
     return SizedBox(
       width: 85,
-      height: 80,
+      height: 85,
       child: Stack(
         children: [
           Align(
