@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
-import 'package:worbbing/pages/home_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:worbbing/routes/router.dart';
 import 'package:worbbing/strings.dart';
 
 enum ContentType {
@@ -172,7 +173,7 @@ class _DetailPageState extends State<DetailPage> {
                     TextButton(
                       onPressed: () {
                         HapticFeedback.lightImpact();
-                        Navigator.pop(context1);
+                        context1.pop();
                       },
                       child: subText('Cancel', MyTheme.orange),
                     ),
@@ -196,7 +197,7 @@ class _DetailPageState extends State<DetailPage> {
                             _exampleTranslatedController.text);
                         _initialLoad();
                         if (!context1.mounted) return;
-                        Navigator.pop(context1);
+                        context1.pop();
                       },
                       child: Text('Update',
                           style: TextStyle(
@@ -247,7 +248,7 @@ class _DetailPageState extends State<DetailPage> {
                 TextButton(
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    Navigator.pop(context2);
+                    context2.pop();
                   },
                   child: subText('Cancel', MyTheme.red),
                 ),
@@ -265,12 +266,10 @@ class _DetailPageState extends State<DetailPage> {
                     HapticFeedback.lightImpact();
                     await SqfliteRepository.instance.deleteRow(widget.id);
                     if (context2.mounted) {
-                      Navigator.pop(context2);
-                      Navigator.of(context2).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context2) => const HomePage()),
-                        (route) => false,
-                      );
+                      context2.pop();
+                      if (mounted) {
+                        context.pushReplacement(PagePath.home);
+                      }
                     }
                   },
                   child: subText('Delete', Colors.white),
@@ -298,7 +297,7 @@ class _DetailPageState extends State<DetailPage> {
             ),
             onTap: () {
               HapticFeedback.lightImpact();
-              Navigator.of(context).pop();
+              context.pop();
             }),
         actions: [_buildFlag()],
         backgroundColor: Colors.transparent,
@@ -638,7 +637,7 @@ class _DetailPageState extends State<DetailPage> {
     final int forgettingDuration =
         (updateDateTime.difference(DateTime.now()).inDays).abs();
     return SizedBox(
-      width: 80,
+      width: 85,
       height: 80,
       child: Stack(
         children: [
@@ -648,16 +647,20 @@ class _DetailPageState extends State<DetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Last Update",
+                    softWrap: false,
                     style: TextStyle(
                       height: 1.0,
                       color: Colors.grey.shade400,
                       fontSize: 13,
+                      overflow: TextOverflow.fade,
                     )),
                 Text(updateDateTime.toIso8601String().toYMDString(),
+                    softWrap: false,
                     style: TextStyle(
                       height: 1.0,
                       color: Colors.grey.shade400,
                       fontSize: 14,
+                      overflow: TextOverflow.fade,
                     )),
               ],
             ),

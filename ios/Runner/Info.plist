@@ -254,5 +254,18 @@
 		<string>ca-app-pub-9902729215705615~2353894386</string>
 		<!-- use test -->
 		<!-- <string>ca-app-pub-3940256099942544~3347511713</string> -->
+		<key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>SharingMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+                </array>
+            </dict>
+        </array>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>To share photos, please allow permission to access your photo library.</string>
 	</dict>
 </plist>

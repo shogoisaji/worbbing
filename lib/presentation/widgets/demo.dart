@@ -18,12 +18,9 @@ class DemoPage extends StatelessWidget {
       const Demo(title: 'Notification', lottie: 'assets/lottie/demo3.json'),
     ];
     final w = MediaQuery.of(context).size.width;
-    final h = MediaQuery.of(context).size.height;
-    final viewPortRate = switch (h) {
-      > 900 => 0.37,
-      > 700 => 0.47,
-      _ => 0.57,
-    };
+    final adjust = w > 500 ? 0.1 : 0;
+    final viewPortRate = 0.4 + w / 6000 + adjust;
+
     return Material(
       color: Colors.black.withOpacity(0.8),
       child: Align(

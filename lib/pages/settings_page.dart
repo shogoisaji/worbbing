@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,10 +13,10 @@ import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart'
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
-import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
+import 'package:worbbing/routes/router.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -112,7 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pop();
+                context.pop();
               }),
           backgroundColor: Colors.transparent,
         ),
@@ -423,14 +424,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LicensePage(
-              applicationName: 'Worbbing',
-            ),
-          ),
-        );
+        context.push(PagePath.license);
       },
       child: Row(
         children: [
@@ -480,10 +474,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EbbinghausPage()),
-        );
+        context.push(PagePath.ebbinghaus);
       },
       child: Row(
         children: [

@@ -22,9 +22,6 @@ dependencies:
   device_info_plus:
   intl:
   timezone:
-  flutter_app_badger:
-  android_intent_plus:
-  receive_sharing_intent:
   flutter_animate:
   envied:
   uuid:
@@ -35,9 +32,10 @@ dependencies:
   lottie:
   flutter_svg:
   package_info_plus:
-  flutter_native_splash:
   google_mobile_ads:
   app_tracking_transparency:
+  flutter_sharing_intent:
+  go_router:
 
 dev_dependencies:
   flutter_test:
@@ -70,15 +68,3 @@ flutter_icons:
   image_path: "assets/images/worbbing_icon.png"
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/worbbing_icon.png"
-
-flutter_native_splash:
-  color: "#000000"
-  # image: "assets/images/splash.png"
-  color_dark: "#000000"
-  # image_dark: "assets/images/splash.png"
-  fullscreen: true
-  android_12:
-    icon_background_color: "#000000"
-    image: "assets/images/splash.png"
-    icon_background_color_dark: "#000000"
-    image_dark: "assets/images/splash.png"

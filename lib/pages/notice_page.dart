@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/models/notice_data_model.dart';
 import 'package:worbbing/models/notice_manage_model.dart';
@@ -38,10 +39,6 @@ class _NoticePageState extends State<NoticePage> {
   void handleTapSample() async {
     await NoticeUsecase().requestPermissions();
     final isPermitted = await NoticeUsecase().checkNotificationPermissions();
-    if (!isPermitted) {
-      await showNoticePermissionDialog();
-      return;
-    }
     if (!isPermitted) {
       await showNoticePermissionDialog();
       return;
@@ -117,7 +114,7 @@ class _NoticePageState extends State<NoticePage> {
                 TextButton(
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   child: subText('Cancel', MyTheme.red),
                 ),
@@ -134,7 +131,7 @@ class _NoticePageState extends State<NoticePage> {
                     HapticFeedback.lightImpact();
                     await _removeTime(notice.noticeId!);
                     if (!context.mounted) return;
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   child: subText('Delete', Colors.white),
                 ),
@@ -180,7 +177,7 @@ class _NoticePageState extends State<NoticePage> {
               ),
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).pop();
+                context.pop();
               }),
           backgroundColor: Colors.transparent,
         ),

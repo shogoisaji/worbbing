@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 
@@ -28,7 +29,7 @@ class EbbinghausPage extends StatelessWidget {
                           height: 30,
                         ),
                         onTap: () {
-                          Navigator.pop(context);
+                          context.pop();
                         }),
                   ),
                 ],

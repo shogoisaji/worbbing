@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 class MySimpleDialog {
@@ -31,7 +32,7 @@ class MySimpleDialog {
                   onPressed: () async {
                     HapticFeedback.lightImpact();
                     onTap();
-                    Navigator.pop(dialogContext);
+                    context.pop();
                   },
                   child: Text(buttonLabel,
                       style: TextStyle(

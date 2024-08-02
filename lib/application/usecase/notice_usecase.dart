@@ -80,17 +80,14 @@ class NoticeUsecase {
       word.translatedWord,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'show notification', 'show notification',
+          'show notification',
+          'show notification',
           channelDescription: 'show notification',
-          //saved => /android/app/src/main/res/drawable/notice_icon.png
           icon: 'drawable/notice_icon',
           importance: Importance.max,
           priority: Priority.max,
-          // actions: [AndroidNotificationAction('1', 'ok')]
         ),
-        iOS: DarwinNotificationDetails(
-            // badgeNumber: 1,
-            ),
+        iOS: DarwinNotificationDetails(),
       ),
       payload: 'notice_tap',
     );
@@ -114,20 +111,16 @@ class NoticeUsecase {
           'worbbing schedule notice',
           'worbbing schedule notice',
           channelDescription: 'worbbing schedule notice',
-          //saved => /android/app/src/main/res/drawable/notice_icon.png
           icon: 'drawable/notice_icon',
           importance: Importance.max,
           priority: Priority.max,
         ),
-        iOS: DarwinNotificationDetails(
-            // badgeNumber: 1,
-            ),
+        iOS: DarwinNotificationDetails(),
       ),
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      androidScheduleMode: AndroidScheduleMode.exact,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      androidAllowWhileIdle: true,
     );
   }
 
