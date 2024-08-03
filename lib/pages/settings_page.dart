@@ -142,8 +142,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Container(
                                 width: contentWidth,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 0, vertical: 12),
+                                padding: const EdgeInsets.only(
+                                    left: 0, right: 0, top: 4, bottom: 14),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(10),
@@ -164,11 +164,17 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 color: Colors.white, width: 1)),
                                       ),
                                       child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            mediumText(
-                                                'Total Words', Colors.white),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 3.0),
+                                              child: mediumText(
+                                                  'Total Words', Colors.white),
+                                            ),
                                             // total words
                                             titleText(
                                                 totalWords != null
@@ -179,29 +185,66 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ]),
                                     ),
                                     SizedBox(
-                                      height: 110,
+                                      height: 120,
                                       child: ListView(
                                         scrollDirection: Axis.horizontal,
                                         children:
                                             noticeDurationList.map((duration) {
                                           return Padding(
                                             padding: EdgeInsets.only(
-                                              left: duration == 1 ? 20 : 8,
-                                              right: duration == 99 ? 24 : 8,
+                                              left: duration == 1 ? 16 : 3,
+                                              right: duration == 99 ? 20 : 3,
                                             ),
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.end,
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                noticeBlock(36, duration,
-                                                    MyTheme.lemon, false),
-                                                const SizedBox(height: 8),
-                                                mediumText(
-                                                    countNotice[duration]
-                                                            ?.toString() ??
-                                                        "0",
-                                                    Colors.white)
+                                                Container(
+                                                  width: 55,
+                                                  height: 59,
+                                                  alignment: const Alignment(
+                                                      -0.2, 0.0),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.white12,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      topLeft:
+                                                          Radius.circular(10),
+                                                      topRight:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  child: noticeBlock(
+                                                      34,
+                                                      duration,
+                                                      MyTheme.lemon,
+                                                      false),
+                                                ),
+                                                const SizedBox(height: 3),
+                                                Container(
+                                                  width: 55,
+                                                  height: 40,
+                                                  alignment: const Alignment(
+                                                      0.0, -0.4),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.white12,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      bottomLeft:
+                                                          Radius.circular(10),
+                                                      bottomRight:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  child: mediumText(
+                                                      countNotice[duration]
+                                                              ?.toString() ??
+                                                          "0",
+                                                      Colors.white),
+                                                )
                                               ],
                                             ),
                                           );
@@ -274,7 +317,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                   ),
-                  AdBanner(width: MediaQuery.of(context).size.width)
+                  AdBanner(
+                    width: MediaQuery.of(context).size.width,
+                    shadow: true,
+                  )
                 ],
               ),
             )),
@@ -379,6 +425,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
         Switch(
+          activeTrackColor: MyTheme.lemon,
+          inactiveThumbColor: Colors.grey,
+          inactiveTrackColor: Colors.white,
           value: AppStateUsecase().isEnableSlideHint(),
           onChanged: (value) async {
             HapticFeedback.lightImpact();

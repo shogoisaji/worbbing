@@ -198,7 +198,7 @@ class _HomePageState extends State<HomePage>
         Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
-              backgroundColor: MyTheme.grey,
+              backgroundColor: MyTheme.appBarGrey,
               elevation: 0,
               centerTitle: true,
               title: Image.asset(
@@ -226,6 +226,7 @@ class _HomePageState extends State<HomePage>
                         count: value,
                         size: 50,
                         isEnableUseAnimation: true,
+                        bgColor: MyTheme.appBarGrey,
                       );
                     },
                   ),
@@ -256,7 +257,7 @@ class _HomePageState extends State<HomePage>
               children: [
                 Container(
                   decoration: BoxDecoration(
-                      color: MyTheme.grey,
+                      color: MyTheme.appBarGrey,
                       border: const Border(
                           bottom: BorderSide(color: Colors.white, width: 3))),
                   child: Column(
@@ -393,7 +394,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _customFloatingActionButton() {
-    const buttonAngle = 1.2;
+    const buttonAngle = 1.22;
     return Stack(
       children: [
         Transform.rotate(
@@ -442,7 +443,7 @@ class _HomePageState extends State<HomePage>
                     child: const Icon(
                       Icons.add_rounded,
                       color: Colors.black,
-                      size: 42,
+                      size: 46,
                     ),
                   ))),
         ),

@@ -426,6 +426,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                     count: value,
                                                     size: 65,
                                                     isEnableUseAnimation: true,
+                                                    bgColor: MyTheme.grey,
                                                   );
                                                 },
                                               ),
