@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,10 +13,10 @@ import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart'
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
-import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
+import 'package:worbbing/routes/router.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -25,8 +26,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  int totalWords = 0;
+  int? totalWords;
   Map<int, int> countNotice = {};
+  String version = "";
 
   final Widget _contentSpacer = const SizedBox(height: 22);
 
@@ -64,14 +66,15 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<String> loadVersion() async {
+  Future<void> loadVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo.version;
+    version = packageInfo.version;
   }
 
   Future<void> _initialLoad() async {
     totalWords = await SqfliteRepository.instance.totalWords();
     countNotice = await SqfliteRepository.instance.countNoticeDuration();
+    await loadVersion();
     setState(() {});
   }
 
@@ -95,170 +98,234 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final contentWidth =
         (MediaQuery.of(context).size.width * 0.9).clamp(100.0, 500.0);
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Image.asset(
-            'assets/images/settings.png',
-            width: 150,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: MyTheme.bgGradient,
           ),
-          leading: InkWell(
-              child: Align(
-                child: Image.asset(
-                  'assets/images/custom_arrow.png',
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.of(context).pop();
-              }),
-          backgroundColor: Colors.transparent,
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            height: 26,
-                          ),
-                          Container(
-                            width: contentWidth,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 0.5),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: 220,
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.white, width: 1)),
-                                  ),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        mediumText('Total Words', Colors.white),
-                                        // total words
-                                        titleText(totalWords.toString(),
-                                            MyTheme.orange, 36),
-                                      ]),
-                                ),
-                                SizedBox(
-                                  height: 110,
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children:
-                                        noticeDurationList.map((duration) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(
-                                          left: duration == 1 ? 20 : 8,
-                                          right: duration == 99 ? 24 : 8,
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            noticeBlock(36, duration,
-                                                MyTheme.lemon, false),
-                                            const SizedBox(height: 8),
-                                            mediumText(
-                                                countNotice[duration]
-                                                        ?.toString() ??
-                                                    "0",
-                                                Colors.white)
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            width: contentWidth,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 0.5),
-                            ),
-                            margin: const EdgeInsets.only(left: 20, right: 20),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 24),
-                            child: Column(
-                              children: [
-                                _buildDefaultLang(),
-                                _contentSpacer,
-                                _buildSlideHintSwitch(),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            width: contentWidth,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 0.5),
-                            ),
-                            margin: const EdgeInsets.only(left: 20, right: 20),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 24),
-                            child: Column(
-                              children: [
-                                _buildPrivacyPolicy(),
-                                _contentSpacer,
-                                _buildInquiry(),
-                                _contentSpacer,
-                                _buildDemo(),
-                                _contentSpacer,
-                                _buildLicense(),
-                                _contentSpacer,
-                                _buildForgettingCurve(),
-                              ],
-                            ),
-                          ),
-                          _contentSpacer,
-                          _buildAppVersion(),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                        ]),
-                  ),
-                ),
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              centerTitle: true,
+              title: Image.asset(
+                'assets/images/settings.png',
+                width: 150,
               ),
-              AdBanner(width: MediaQuery.of(context).size.width)
-            ],
-          ),
-        ));
+              leading: InkWell(
+                  child: Align(
+                    child: Image.asset(
+                      'assets/images/custom_arrow.png',
+                      width: 30,
+                      height: 30,
+                    ),
+                  ),
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.pop();
+                  }),
+              backgroundColor: Colors.transparent,
+            ),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      child: SingleChildScrollView(
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 26,
+                              ),
+                              Container(
+                                width: contentWidth,
+                                padding: const EdgeInsets.only(
+                                    left: 0, right: 0, top: 4, bottom: 14),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 0.5),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: 220,
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                color: Colors.white, width: 1)),
+                                      ),
+                                      child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 3.0),
+                                              child: mediumText(
+                                                  'Total Words', Colors.white),
+                                            ),
+                                            // total words
+                                            titleText(
+                                                totalWords != null
+                                                    ? totalWords.toString()
+                                                    : "",
+                                                MyTheme.orange,
+                                                36),
+                                          ]),
+                                    ),
+                                    SizedBox(
+                                      height: 120,
+                                      child: ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children:
+                                            noticeDurationList.map((duration) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                              left: duration == 1 ? 16 : 3,
+                                              right: duration == 99 ? 20 : 3,
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  width: 55,
+                                                  height: 59,
+                                                  alignment: const Alignment(
+                                                      -0.2, 0.0),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.white12,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      topLeft:
+                                                          Radius.circular(10),
+                                                      topRight:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  child: noticeBlock(
+                                                      34,
+                                                      duration,
+                                                      MyTheme.lemon,
+                                                      false),
+                                                ),
+                                                const SizedBox(height: 3),
+                                                Container(
+                                                  width: 55,
+                                                  height: 40,
+                                                  alignment: const Alignment(
+                                                      0.0, -0.4),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.white12,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      bottomLeft:
+                                                          Radius.circular(10),
+                                                      bottomRight:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  child: mediumText(
+                                                      countNotice[duration]
+                                                              ?.toString() ??
+                                                          "0",
+                                                      Colors.white),
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                width: contentWidth,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 0.5),
+                                ),
+                                margin:
+                                    const EdgeInsets.only(left: 20, right: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 24),
+                                child: Column(
+                                  children: [
+                                    _buildDefaultLang(),
+                                    _contentSpacer,
+                                    _buildSlideHintSwitch(),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                width: contentWidth,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 0.5),
+                                ),
+                                margin:
+                                    const EdgeInsets.only(left: 20, right: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 24),
+                                child: Column(
+                                  children: [
+                                    _buildPrivacyPolicy(),
+                                    _contentSpacer,
+                                    _buildInquiry(),
+                                    _contentSpacer,
+                                    _buildDemo(),
+                                    _contentSpacer,
+                                    _buildLicense(),
+                                    _contentSpacer,
+                                    _buildForgettingCurve(),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              _buildAppVersion(),
+                              const SizedBox(
+                                height: 50,
+                              ),
+                            ]),
+                      ),
+                    ),
+                  ),
+                  AdBanner(
+                    width: MediaQuery.of(context).size.width,
+                    shadow: true,
+                  )
+                ],
+              ),
+            )),
+      ],
+    );
   }
 
   Widget _buildDefaultLang() {
@@ -358,6 +425,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
         Switch(
+          activeTrackColor: MyTheme.lemon,
+          inactiveThumbColor: Colors.grey,
+          inactiveTrackColor: Colors.white,
           value: AppStateUsecase().isEnableSlideHint(),
           onChanged: (value) async {
             HapticFeedback.lightImpact();
@@ -423,14 +493,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LicensePage(
-              applicationName: 'Worbbing',
-            ),
-          ),
-        );
+        context.push(PagePath.license);
       },
       child: Row(
         children: [
@@ -480,10 +543,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EbbinghausPage()),
-        );
+        context.push(PagePath.ebbinghaus);
       },
       child: Row(
         children: [
@@ -512,25 +572,14 @@ class _SettingsPageState extends State<SettingsPage> {
             style: TextStyle(
                 color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
         const SizedBox(width: 10),
-        FutureBuilder(
-            future: loadVersion(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox.shrink();
-              }
-              if (snapshot.hasError) {
-                return const Text('---');
-              }
-              final data = snapshot.data!;
-              return Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: Text(data,
-                    style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500)),
-              );
-            }),
+        Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child: Text(version,
+              style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500)),
+        )
       ],
     );
   }

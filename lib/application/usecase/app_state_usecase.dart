@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/widgets/demo.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 
-class AppStateUsecase {
-  AppStateUsecase();
+class AppStateUsecase extends WidgetsBindingObserver {
+  AppStateUsecase() {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      removeOverlay();
+    }
+  }
 
   bool isFirst() {
     return SharedPreferencesRepository()
@@ -41,6 +51,7 @@ class AppStateUsecase {
                 alignment: const Alignment(0.0, 0.85),
                 child: GestureDetector(
                   onTap: () {
+                    HapticFeedback.lightImpact();
                     AppStateUsecase().doneFirst();
                     removeOverlay();
                   },
@@ -77,5 +88,6 @@ class AppStateUsecase {
   void removeOverlay() {
     overlay?.remove();
     overlay = null;
+    WidgetsBinding.instance.removeObserver(this);
   }
 }

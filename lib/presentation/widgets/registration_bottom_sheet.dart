@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:worbbing/application/api/translate_api.dart';
 import 'package:worbbing/application/usecase/ticket_manager.dart';
@@ -21,8 +22,10 @@ import 'package:lottie/lottie.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class RegistrationBottomSheet extends StatefulWidget {
+  final String? initialText;
   const RegistrationBottomSheet({
     super.key,
+    this.initialText,
   });
 
   @override
@@ -69,6 +72,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   @override
   void initState() {
     super.initState();
+    _originalWordController.text = widget.initialText ?? "";
     TicketManager.loadTicket();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -333,7 +337,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
       });
     } else {
       if (mounted) {
-        Navigator.of(context).pop();
+        context.pop();
       }
     }
   }
@@ -422,6 +426,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                                     count: value,
                                                     size: 65,
                                                     isEnableUseAnimation: true,
+                                                    bgColor: MyTheme.grey,
                                                   );
                                                 },
                                               ),
@@ -440,7 +445,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                               InkWell(
                                                 onTap: () {
                                                   HapticFeedback.lightImpact();
-                                                  Navigator.of(context).pop();
+                                                  context.pop();
                                                 },
                                                 child: Icon(
                                                     Icons.cancel_rounded,
@@ -615,7 +620,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
                                         KatiButton(
                                           onPressed: () {
                                             HapticFeedback.lightImpact();
-                                            Navigator.of(context).pop();
+                                            context.pop();
                                           },
                                           width: cancelWidth,
                                           height: 65,

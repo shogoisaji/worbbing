@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 class TwoWayDialog {
@@ -113,7 +114,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                       child: InkWell(
                     onTap: () {
                       HapticFeedback.lightImpact();
-                      Navigator.pop(context);
+                      context.pop();
                       onLeftButtonPressed();
                     },
                     child: Container(
@@ -144,7 +145,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         HapticFeedback.lightImpact();
-                        Navigator.pop(context);
+                        context.pop();
                         onRightButtonPressed();
                       },
                       child: Container(

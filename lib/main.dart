@@ -1,15 +1,15 @@
+import 'dart:async';
+
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:worbbing/pages/home_page.dart';
-import 'package:worbbing/pages/splash_page.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
+import 'package:worbbing/routes/router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +20,6 @@ Future<void> main() async {
   /// 通知用のタイムゾーンの初期化
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Asia/Tokyo"));
-
-  /// 通知のバッジの削除
-  // FlutterAppBadger.removeBadge();
 
   /// 広告の初期化
   MobileAds.instance.initialize();
@@ -83,12 +80,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FlutterNativeSplash.remove();
+    // FlutterNativeSplash.remove();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -100,11 +97,7 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: Colors.black,
         useMaterial3: true,
       ),
-      home: const AppSplashPage(),
-      routes: {
-        '/splash': (context) => const AppSplashPage(),
-        '/home': (context) => const HomePage(),
-      },
+      routerConfig: router,
     );
   }
 }
