@@ -160,127 +160,141 @@ class _NoticePageState extends State<NoticePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Image.asset(
-            'assets/images/notice.png',
-            width: 150,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: MyTheme.bgGradient,
           ),
-          leading: InkWell(
-              child: Align(
-                child: Image.asset(
-                  'assets/images/custom_arrow.png',
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.pop();
-              }),
-          backgroundColor: Colors.transparent,
         ),
-        body: SafeArea(
-            child: Center(
-          child: Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-              child: Column(children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Random word \nNotifications',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500)),
-                    Switch(
-                      activeTrackColor: MyTheme.lemon,
-                      inactiveThumbColor: Colors.grey,
-                      inactiveTrackColor: Colors.white,
-                      value: noticeManageModel.noticeEnable,
-                      activeColor: MyTheme.grey,
-                      onChanged: (bool value) async {
-                        HapticFeedback.lightImpact();
-                        await handleChangeSwitch(value);
-                      },
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                // vertical line
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2, horizontal: 14),
-                        decoration: noticeManageModel.noticeEnable
-                            ? BoxDecoration(
-                                color: Colors.grey.shade900,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: MyTheme.lemon, width: 1.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: MyTheme.lemon.withOpacity(0.8),
-                                    blurRadius: 5.0,
-                                  )
-                                ],
-                              )
-                            : BoxDecoration(
-                                color: Colors.grey.shade900,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: Colors.grey.shade100, width: 0.7),
-                              ),
-                        child: SingleChildScrollView(
-                          child: Column(children: [
-                            ...noticeManageModel.noticeList
-                                .map((e) => _buildTimeContent(context, e))
-                                .toList(),
-                            const SizedBox(
-                              height: 50,
-                            )
-                          ]),
-                        ),
-                      ),
-                      noticeManageModel.noticeEnable
-                          ? const SizedBox.shrink()
-                          : IgnorePointer(
-                              child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                color: Colors.grey.shade900.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(10),
-                              )),
-                            )
-                    ],
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              centerTitle: true,
+              title: Image.asset(
+                'assets/images/notice.png',
+                width: 150,
+              ),
+              leading: InkWell(
+                  child: Align(
+                    child: Image.asset(
+                      'assets/images/custom_arrow.png',
+                      width: 30,
+                      height: 30,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 42,
-                ),
-                LayoutBuilder(builder: (context, constraints) {
-                  const space = 30.0;
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildSampleButton((constraints.maxWidth - space) * 0.5),
-                      _buildAddButton((constraints.maxWidth - space) * 0.5),
-                    ],
-                  );
-                }),
-                const SizedBox(
-                  height: 34,
-                ),
-                AdBanner(width: MediaQuery.of(context).size.width)
-              ])),
-        )));
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.pop();
+                  }),
+              backgroundColor: Colors.transparent,
+            ),
+            body: SafeArea(
+                child: Center(
+              child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                  child: Column(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Random word \nNotifications',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500)),
+                        Switch(
+                          activeTrackColor: MyTheme.lemon,
+                          inactiveThumbColor: Colors.grey,
+                          inactiveTrackColor: Colors.white,
+                          value: noticeManageModel.noticeEnable,
+                          activeColor: MyTheme.grey,
+                          onChanged: (bool value) async {
+                            HapticFeedback.lightImpact();
+                            await handleChangeSwitch(value);
+                          },
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    // vertical line
+                    Expanded(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 2, horizontal: 14),
+                            decoration: noticeManageModel.noticeEnable
+                                ? BoxDecoration(
+                                    color: Colors.grey.shade900,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: MyTheme.lemon, width: 1.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: MyTheme.lemon.withOpacity(0.8),
+                                        blurRadius: 5.0,
+                                      )
+                                    ],
+                                  )
+                                : BoxDecoration(
+                                    color: Colors.grey.shade900,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.grey.shade100,
+                                        width: 0.7),
+                                  ),
+                            child: SingleChildScrollView(
+                              child: Column(children: [
+                                ...noticeManageModel.noticeList
+                                    .map((e) => _buildTimeContent(context, e))
+                                    .toList(),
+                                const SizedBox(
+                                  height: 50,
+                                )
+                              ]),
+                            ),
+                          ),
+                          noticeManageModel.noticeEnable
+                              ? const SizedBox.shrink()
+                              : IgnorePointer(
+                                  child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                    color:
+                                        Colors.grey.shade900.withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(10),
+                                  )),
+                                )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 42,
+                    ),
+                    LayoutBuilder(builder: (context, constraints) {
+                      const space = 30.0;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildSampleButton(
+                              (constraints.maxWidth - space) * 0.5),
+                          _buildAddButton((constraints.maxWidth - space) * 0.5),
+                        ],
+                      );
+                    }),
+                    const SizedBox(
+                      height: 34,
+                    ),
+                    AdBanner(width: MediaQuery.of(context).size.width)
+                  ])),
+            ))),
+      ],
+    );
   }
 
   Widget _buildTimeContent(BuildContext context, NoticeDataModel notice) {

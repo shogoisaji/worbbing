@@ -71,7 +71,9 @@ class _HomePageState extends State<HomePage>
         builder: (context) => RegistrationBottomSheet(
               initialText: sharedText,
             ));
-    setState(() {});
+    setState(() {
+      sharedText = "";
+    });
   }
 
   void handleTapTicket() async {
@@ -186,198 +188,208 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: MyTheme.grey,
-          elevation: 0,
-          centerTitle: true,
-          title: Image.asset(
-            'assets/images/worbbing_logo.png',
-            width: 150,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: MyTheme.bgGradient,
           ),
-          // leadingWidth: 40,
-          leading: IconButton(
-              padding: const EdgeInsets.only(top: 5, left: 4, right: 4),
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                context.push(PagePath.notice);
-              },
-              icon: const Icon(
-                Icons.notifications_rounded,
-                color: Colors.white,
-                size: 30,
-              )),
-          actions: [
-            AdReward(
-              child: ValueListenableBuilder<int>(
-                valueListenable: TicketManager.ticketNotifier,
-                builder: (context, value, child) {
-                  return TicketWidget(
-                    count: value,
-                    size: 50,
-                    isEnableUseAnimation: true,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(
-              width: 4,
-            ),
-            IconButton(
-                padding: const EdgeInsets.only(top: 5, right: 8),
-                onPressed: () async {
-                  HapticFeedback.lightImpact();
-                  await context.push(PagePath.settings);
-                  setState(() {});
-                },
-                icon: const Icon(
-                  Icons.settings_rounded,
-                  color: Colors.white,
-                  size: 30,
-                )),
-          ],
         ),
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: MyTheme.grey,
+              elevation: 0,
+              centerTitle: true,
+              title: Image.asset(
+                'assets/images/worbbing_logo.png',
+                width: 150,
+              ),
+              // leadingWidth: 40,
+              leading: IconButton(
+                  padding: const EdgeInsets.only(top: 5, left: 4, right: 4),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    context.push(PagePath.notice);
+                  },
+                  icon: const Icon(
+                    Icons.notifications_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  )),
+              actions: [
+                AdReward(
+                  child: ValueListenableBuilder<int>(
+                    valueListenable: TicketManager.ticketNotifier,
+                    builder: (context, value, child) {
+                      return TicketWidget(
+                        count: value,
+                        size: 50,
+                        isEnableUseAnimation: true,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                IconButton(
+                    padding: const EdgeInsets.only(top: 5, right: 8),
+                    onPressed: () async {
+                      HapticFeedback.lightImpact();
+                      await context.push(PagePath.settings);
+                      setState(() {});
+                    },
+                    icon: const Icon(
+                      Icons.settings_rounded,
+                      color: Colors.white,
+                      size: 30,
+                    )),
+              ],
+            ),
 
-        /// floating Action Button
-        floatingActionButton: Padding(
-            padding: const EdgeInsets.only(bottom: 5, right: 10.0),
-            child: _customFloatingActionButton()),
-        body: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: MyTheme.grey,
-                  border: const Border(
-                      bottom: BorderSide(color: Colors.white, width: 3))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  /// tag
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+            /// floating Action Button
+            floatingActionButton: Padding(
+                padding: const EdgeInsets.only(bottom: 5, right: 10.0),
+                child: _customFloatingActionButton()),
+            body: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: MyTheme.grey,
+                      border: const Border(
+                          bottom: BorderSide(color: Colors.white, width: 3))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      tagSelect('Notice', _tagState, 0, () {
-                        setState(() {
-                          _tagState = 0;
-                        });
-                      }),
-                      tagSelect('LatestAdd', _tagState, 1, () {
-                        setState(() {
-                          _tagState = 1;
-                        });
-                      }),
-                      tagSelect('Flag', _tagState, 2, () {
-                        setState(() {
-                          _tagState = 2;
-                        });
-                      }),
+                      /// tag
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          tagSelect('Notice', _tagState, 0, () {
+                            setState(() {
+                              _tagState = 0;
+                            });
+                          }),
+                          tagSelect('LatestAdd', _tagState, 1, () {
+                            setState(() {
+                              _tagState = 1;
+                            });
+                          }),
+                          tagSelect('Flag', _tagState, 2, () {
+                            setState(() {
+                              _tagState = 2;
+                            });
+                          }),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                ],
-              ),
-            ),
-// list
-            Expanded(
-              child: FutureBuilder<List<WordModel>>(
-                future: handleReload(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: SizedBox.shrink());
-                  }
-                  if (snapshot.hasError) {
-                    return const Text('error');
-                  }
-                  final wordList = snapshot.data!;
-                  final DateTime currentDateTime = DateTime.now();
-                  int noticeDurationTime;
-                  int forgettingDuration;
-                  DateTime updateDateTime;
-
-                  // change list expired top of list
-                  if (_tagState == 0) {
-                    for (var i = 0; i < wordList.length; i++) {
-                      noticeDurationTime = wordList[i].noticeDuration;
-                      updateDateTime = wordList[i].updateDate;
-                      forgettingDuration =
-                          currentDateTime.difference(updateDateTime).inDays;
-                      if (forgettingDuration >= noticeDurationTime &&
-                          noticeDurationTime != 99) {
-                        // insert top of array
-                        var insertData = wordList.removeAt(i);
-                        wordList.insert(0, insertData);
+                ),
+                // list
+                Expanded(
+                  child: FutureBuilder<List<WordModel>>(
+                    future: handleReload(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: SizedBox.shrink());
                       }
-                    }
-                  }
-                  return AnimatedBuilder(
-                      animation: _animation,
-                      builder: (context, child) {
-                        return Opacity(
-                          opacity: (_animation.value),
-                          child: ListView.separated(
-                            separatorBuilder: (context, index) => Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    MyTheme.lemon,
-                                    MyTheme.grey,
-                                    MyTheme.grey,
-                                    MyTheme.orange,
-                                  ],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ),
-                              ),
-                              height: 1,
-                            ),
-                            padding: EdgeInsets.zero,
-                            itemCount: wordList.length,
-                            itemBuilder: (context, index) {
-                              final item = wordList[index];
-                              return Column(
-                                children: [
-                                  WordListTile(
-                                    onWordUpdate: () => setState(() {}),
-                                    wordModel: item,
-                                  ),
-                                  // under space
-                                  if (index == wordList.length - 1)
-                                    Column(
-                                      children: [
-                                        Container(
-                                          width: double.infinity,
-                                          height: 1,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                MyTheme.lemon,
-                                                MyTheme.grey,
-                                                MyTheme.grey,
-                                                MyTheme.orange,
-                                              ],
-                                              begin: Alignment.centerLeft,
-                                              end: Alignment.centerRight,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 170,
-                                        ),
+                      if (snapshot.hasError) {
+                        return const Text('error');
+                      }
+                      final wordList = snapshot.data!;
+                      final DateTime currentDateTime = DateTime.now();
+                      int noticeDurationTime;
+                      int forgettingDuration;
+                      DateTime updateDateTime;
+
+                      // change list expired top of list
+                      if (_tagState == 0) {
+                        for (var i = 0; i < wordList.length; i++) {
+                          noticeDurationTime = wordList[i].noticeDuration;
+                          updateDateTime = wordList[i].updateDate;
+                          forgettingDuration =
+                              currentDateTime.difference(updateDateTime).inDays;
+                          if (forgettingDuration >= noticeDurationTime &&
+                              noticeDurationTime != 99) {
+                            // insert top of array
+                            var insertData = wordList.removeAt(i);
+                            wordList.insert(0, insertData);
+                          }
+                        }
+                      }
+                      return AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return Opacity(
+                              opacity: (_animation.value),
+                              child: ListView.separated(
+                                separatorBuilder: (context, index) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        MyTheme.lemon,
+                                        MyTheme.grey,
+                                        MyTheme.grey,
+                                        MyTheme.orange,
                                       ],
-                                    )
-                                ],
-                              );
-                            },
-                          ),
-                        );
-                      });
-                },
-              ),
-            )
-          ],
-        ));
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                    ),
+                                  ),
+                                  height: 1,
+                                ),
+                                padding: EdgeInsets.zero,
+                                itemCount: wordList.length,
+                                itemBuilder: (context, index) {
+                                  final item = wordList[index];
+                                  return Column(
+                                    children: [
+                                      WordListTile(
+                                        onWordUpdate: () => setState(() {}),
+                                        wordModel: item,
+                                      ),
+                                      // under space
+                                      if (index == wordList.length - 1)
+                                        Column(
+                                          children: [
+                                            Container(
+                                              width: double.infinity,
+                                              height: 1,
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    MyTheme.lemon,
+                                                    MyTheme.grey,
+                                                    MyTheme.grey,
+                                                    MyTheme.orange,
+                                                  ],
+                                                  begin: Alignment.centerLeft,
+                                                  end: Alignment.centerRight,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 170,
+                                            ),
+                                          ],
+                                        )
+                                    ],
+                                  );
+                                },
+                              ),
+                            );
+                          });
+                    },
+                  ),
+                )
+              ],
+            )),
+      ],
+    );
   }
 
   Widget _customFloatingActionButton() {

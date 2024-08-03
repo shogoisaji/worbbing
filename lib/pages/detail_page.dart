@@ -280,128 +280,151 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Image.asset(
-          'assets/images/detail.png',
-          width: 150,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: MyTheme.bgGradient,
+          ),
         ),
-        leading: InkWell(
-            child: Align(
-              child: Image.asset(
-                'assets/images/custom_arrow.png',
-                width: 30,
-                height: 30,
-              ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Image.asset(
+              'assets/images/detail.png',
+              width: 150,
             ),
-            onTap: () {
-              HapticFeedback.lightImpact();
-              context.pop();
-            }),
-        actions: [_buildFlag()],
-        backgroundColor: Colors.transparent,
-      ),
-      body: wordModel == null
-          ? const SizedBox.shrink()
-          : SingleChildScrollView(
-              child: Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(
-                    height: 18,
+            leading: InkWell(
+                child: Align(
+                  child: Image.asset(
+                    'assets/images/custom_arrow.png',
+                    width: 30,
+                    height: 30,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 100,
-                        width: 135,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            bottomLeft: Radius.circular(8),
+                ),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.pop();
+                }),
+            actions: [_buildFlag()],
+            backgroundColor: Colors.transparent,
+          ),
+          body: wordModel == null
+              ? const SizedBox.shrink()
+              : Stack(
+                  children: [
+                    SingleChildScrollView(
+                        child: Container(
+                      constraints: const BoxConstraints(maxWidth: 500),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(
+                            height: 18,
                           ),
-                          color: Colors.white.withOpacity(0.15),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: noticeBlock(
-                                  54,
-                                  wordModel!.noticeDuration,
-                                  (forgettingDuration <
-                                              wordModel!.noticeDuration) ||
-                                          (wordModel!.noticeDuration == 99)
-                                      ? MyTheme.lemon
-                                      : MyTheme.orange,
-                                  false),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 3,
-                        height: 100,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 100,
-                        width: 135,
-                        decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(8),
-                              bottomRight: Radius.circular(8),
-                            ),
-                            color: Colors.white.withOpacity(0.15)),
-                        child: Center(child: _buildDurationLabel(wordModel!)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 22),
-                  AdBanner(width: MediaQuery.of(context).size.width),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 42.0),
-                    child: Column(
-                      children: [
-                        _detailWordContent(
-                            ContentType.original, wordModel!.originalWord),
-                        _detailWordContent(
-                            ContentType.translated, wordModel!.translatedWord),
-                        _detailWordContent(
-                            ContentType.example, wordModel!.example ?? ''),
-                        _detailWordContent(ContentType.exampleTranslated,
-                            wordModel!.exampleTranslated ?? ''),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: LayoutBuilder(builder: (context, constraints) {
-                            final width = constraints.maxWidth;
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 100,
+                                width: 135,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(8),
+                                    bottomLeft: Radius.circular(8),
+                                  ),
+                                  color: Colors.white.withOpacity(0.15),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: noticeBlock(
+                                          54,
+                                          wordModel!.noticeDuration,
+                                          (forgettingDuration <
+                                                      wordModel!
+                                                          .noticeDuration) ||
+                                                  (wordModel!.noticeDuration ==
+                                                      99)
+                                              ? MyTheme.lemon
+                                              : MyTheme.orange,
+                                          false),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: 3,
+                                height: 100,
+                                color: Colors.black,
+                              ),
+                              Container(
+                                height: 100,
+                                width: 135,
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(8),
+                                      bottomRight: Radius.circular(8),
+                                    ),
+                                    color: Colors.white.withOpacity(0.15)),
+                                child: Center(
+                                    child: _buildDurationLabel(wordModel!)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 22),
+                          AdBanner(width: MediaQuery.of(context).size.width),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 42.0),
+                            child: Column(
                               children: [
-                                _buildDeleteButton(width * 0.46),
-                                _buildEditButton(width * 0.46),
+                                _detailWordContent(ContentType.original,
+                                    wordModel!.originalWord),
+                                _detailWordContent(ContentType.translated,
+                                    wordModel!.translatedWord),
+                                _detailWordContent(ContentType.example,
+                                    wordModel!.example ?? ''),
+                                _detailWordContent(
+                                    ContentType.exampleTranslated,
+                                    wordModel!.exampleTranslated ?? ''),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  child: LayoutBuilder(
+                                      builder: (context, constraints) {
+                                    final width = constraints.maxWidth;
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        _buildDeleteButton(width * 0.46),
+                                        _buildEditButton(width * 0.46),
+                                      ],
+                                    );
+                                  }),
+                                ),
+                                const SizedBox(height: 32),
+                                _buildRegistrationDate(),
+                                const SizedBox(
+                                  height: 70,
+                                ),
                               ],
-                            );
-                          }),
-                        ),
-                        const SizedBox(height: 32),
-                        _buildRegistrationDate(),
-                        const SizedBox(
-                          height: 70,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+                  ],
+                ),
+        ),
+      ],
     );
   }
 
@@ -637,32 +660,20 @@ class _DetailPageState extends State<DetailPage> {
         (updateDateTime.difference(DateTime.now()).inDays).abs();
     return SizedBox(
       width: 85,
-      height: 85,
+      height: 75,
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Last Update",
-                    softWrap: false,
-                    style: TextStyle(
-                      height: 1.0,
-                      color: Colors.grey.shade400,
-                      fontSize: 13,
-                      overflow: TextOverflow.fade,
-                    )),
-                Text(updateDateTime.toIso8601String().toYMDString(),
-                    softWrap: false,
-                    style: TextStyle(
-                      height: 1.0,
-                      color: Colors.grey.shade400,
-                      fontSize: 14,
-                      overflow: TextOverflow.fade,
-                    )),
-              ],
-            ),
+            alignment: Alignment.topLeft,
+            child: Text("Last Update",
+                // child: Text(updateDateTime.toIso8601String().toYMDString(),
+                softWrap: false,
+                style: TextStyle(
+                  height: 1.0,
+                  color: Colors.grey.shade300,
+                  fontSize: 13,
+                  overflow: TextOverflow.fade,
+                )),
           ),
           Align(
             alignment: const Alignment(0.0, 1.0),
@@ -672,7 +683,7 @@ class _DetailPageState extends State<DetailPage> {
             ),
           ),
           Align(
-            alignment: const Alignment(0.0, 0.1),
+            alignment: const Alignment(0.0, -0.1),
             child: Text(forgettingDuration.toString(),
                 style: TextStyle(
                     height: 1.0,
@@ -691,9 +702,9 @@ class DurationArrowPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     const double offset = 8.0;
 
-    const text = TextSpan(
+    final text = TextSpan(
       text: 'Today',
-      style: TextStyle(color: Colors.white, fontSize: 15),
+      style: TextStyle(color: Colors.grey.shade300, fontSize: 15),
     );
     final textPainter = TextPainter(
       text: text,
@@ -705,15 +716,15 @@ class DurationArrowPainter extends CustomPainter {
         Offset(size.width - textSize.width, size.height - textSize.height));
 
     final paint = Paint()
-      ..color = Colors.white
+      ..color = Colors.grey.shade300
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
     final tipPaint = Paint()
-      ..color = Colors.white
+      ..color = Colors.grey.shade300
       ..style = PaintingStyle.fill;
 
     final path = Path();
-    path.moveTo(offset, offset * 0.8);
+    path.moveTo(offset, offset * 0.3);
     path.lineTo(offset, size.height - offset);
     path.lineTo(size.width - offset - textSize.width, size.height - offset);
 

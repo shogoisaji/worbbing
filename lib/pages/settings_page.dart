@@ -98,174 +98,188 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final contentWidth =
         (MediaQuery.of(context).size.width * 0.9).clamp(100.0, 500.0);
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Image.asset(
-            'assets/images/settings.png',
-            width: 150,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: MyTheme.bgGradient,
           ),
-          leading: InkWell(
-              child: Align(
-                child: Image.asset(
-                  'assets/images/custom_arrow.png',
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.pop();
-              }),
-          backgroundColor: Colors.transparent,
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            height: 26,
-                          ),
-                          Container(
-                            width: contentWidth,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 0.5),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: 220,
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.white, width: 1)),
-                                  ),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        mediumText('Total Words', Colors.white),
-                                        // total words
-                                        titleText(
-                                            totalWords != null
-                                                ? totalWords.toString()
-                                                : "",
-                                            MyTheme.orange,
-                                            36),
-                                      ]),
-                                ),
-                                SizedBox(
-                                  height: 110,
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children:
-                                        noticeDurationList.map((duration) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(
-                                          left: duration == 1 ? 20 : 8,
-                                          right: duration == 99 ? 24 : 8,
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            noticeBlock(36, duration,
-                                                MyTheme.lemon, false),
-                                            const SizedBox(height: 8),
-                                            mediumText(
-                                                countNotice[duration]
-                                                        ?.toString() ??
-                                                    "0",
-                                                Colors.white)
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            width: contentWidth,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 0.5),
-                            ),
-                            margin: const EdgeInsets.only(left: 20, right: 20),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 24),
-                            child: Column(
-                              children: [
-                                _buildDefaultLang(),
-                                _contentSpacer,
-                                _buildSlideHintSwitch(),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            width: contentWidth,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 0.5),
-                            ),
-                            margin: const EdgeInsets.only(left: 20, right: 20),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 24),
-                            child: Column(
-                              children: [
-                                _buildPrivacyPolicy(),
-                                _contentSpacer,
-                                _buildInquiry(),
-                                _contentSpacer,
-                                _buildDemo(),
-                                _contentSpacer,
-                                _buildLicense(),
-                                _contentSpacer,
-                                _buildForgettingCurve(),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          _buildAppVersion(),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                        ]),
-                  ),
-                ),
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              centerTitle: true,
+              title: Image.asset(
+                'assets/images/settings.png',
+                width: 150,
               ),
-              AdBanner(width: MediaQuery.of(context).size.width)
-            ],
-          ),
-        ));
+              leading: InkWell(
+                  child: Align(
+                    child: Image.asset(
+                      'assets/images/custom_arrow.png',
+                      width: 30,
+                      height: 30,
+                    ),
+                  ),
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.pop();
+                  }),
+              backgroundColor: Colors.transparent,
+            ),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      child: SingleChildScrollView(
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 26,
+                              ),
+                              Container(
+                                width: contentWidth,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 0.5),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: 220,
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                color: Colors.white, width: 1)),
+                                      ),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            mediumText(
+                                                'Total Words', Colors.white),
+                                            // total words
+                                            titleText(
+                                                totalWords != null
+                                                    ? totalWords.toString()
+                                                    : "",
+                                                MyTheme.orange,
+                                                36),
+                                          ]),
+                                    ),
+                                    SizedBox(
+                                      height: 110,
+                                      child: ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children:
+                                            noticeDurationList.map((duration) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                              left: duration == 1 ? 20 : 8,
+                                              right: duration == 99 ? 24 : 8,
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                noticeBlock(36, duration,
+                                                    MyTheme.lemon, false),
+                                                const SizedBox(height: 8),
+                                                mediumText(
+                                                    countNotice[duration]
+                                                            ?.toString() ??
+                                                        "0",
+                                                    Colors.white)
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                width: contentWidth,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 0.5),
+                                ),
+                                margin:
+                                    const EdgeInsets.only(left: 20, right: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 24),
+                                child: Column(
+                                  children: [
+                                    _buildDefaultLang(),
+                                    _contentSpacer,
+                                    _buildSlideHintSwitch(),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                width: contentWidth,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 0.5),
+                                ),
+                                margin:
+                                    const EdgeInsets.only(left: 20, right: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 24),
+                                child: Column(
+                                  children: [
+                                    _buildPrivacyPolicy(),
+                                    _contentSpacer,
+                                    _buildInquiry(),
+                                    _contentSpacer,
+                                    _buildDemo(),
+                                    _contentSpacer,
+                                    _buildLicense(),
+                                    _contentSpacer,
+                                    _buildForgettingCurve(),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              _buildAppVersion(),
+                              const SizedBox(
+                                height: 50,
+                              ),
+                            ]),
+                      ),
+                    ),
+                  ),
+                  AdBanner(width: MediaQuery.of(context).size.width)
+                ],
+              ),
+            )),
+      ],
+    );
   }
 
   Widget _buildDefaultLang() {
