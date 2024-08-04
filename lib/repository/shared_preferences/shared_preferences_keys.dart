@@ -6,6 +6,7 @@ enum SharedPreferencesKey {
   ticketGetDate('ticketGetDate'),
   noticeEnable('notice_enable'),
   isEnableSlideHint('is_enable_slide_hint'),
+  shuffledDate('shuffled_date'),
   ;
 
   const SharedPreferencesKey(this.value);

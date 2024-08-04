@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 class TwoWayDialog {
@@ -10,41 +9,52 @@ class TwoWayDialog {
       {required String leftButtonText,
       required String rightButtonText,
       required Function onLeftButtonPressed,
-      required Function onRightButtonPressed}) async {
+      required Function onRightButtonPressed,
+      Color? titleColor,
+      Color? leftBgColor,
+      Color? leftTextColor}) async {
     showDialog(
         context: context,
         builder: (context) => Align(
               alignment: const Alignment(0.0, 1.0),
               child: TwoWayDialogWidget(
                   title: title,
+                  titleColor: titleColor,
                   icon: icon,
                   content: content,
                   leftButtonText: leftButtonText,
                   rightButtonText: rightButtonText,
                   onLeftButtonPressed: onLeftButtonPressed,
-                  onRightButtonPressed: onRightButtonPressed),
+                  onRightButtonPressed: onRightButtonPressed,
+                  leftBgColor: leftBgColor,
+                  leftTextColor: leftTextColor),
             ));
   }
 }
 
 class TwoWayDialogWidget extends StatelessWidget {
   final String title;
+  final Color? titleColor;
   final Widget? icon;
   final Widget? content;
   final String leftButtonText;
   final String rightButtonText;
   final Function onLeftButtonPressed;
   final Function onRightButtonPressed;
-
+  final Color? leftBgColor;
+  final Color? leftTextColor;
   const TwoWayDialogWidget({
     super.key,
     required this.title,
+    this.titleColor,
     this.icon,
     this.content,
     required this.leftButtonText,
     required this.rightButtonText,
     required this.onLeftButtonPressed,
     required this.onRightButtonPressed,
+    this.leftBgColor,
+    this.leftTextColor,
   });
 
   @override
@@ -95,7 +105,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
-                      color: MyTheme.lemon,
+                      color: titleColor ?? MyTheme.lemon,
                       fontWeight: FontWeight.w700,
                       shadows: [
                         BoxShadow(
@@ -114,7 +124,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                       child: InkWell(
                     onTap: () {
                       HapticFeedback.lightImpact();
-                      context.pop();
+                      Navigator.of(context).pop();
                       onLeftButtonPressed();
                     },
                     child: Container(
@@ -145,14 +155,14 @@ class TwoWayDialogWidget extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         HapticFeedback.lightImpact();
-                        context.pop();
+                        Navigator.of(context).pop();
                         onRightButtonPressed();
                       },
                       child: Container(
                           height: 50,
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
-                            color: MyTheme.lemon,
+                            color: leftBgColor ?? MyTheme.lemon,
                             borderRadius: BorderRadius.circular(2),
                             boxShadow: [
                               BoxShadow(
@@ -166,7 +176,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                               child: AutoSizeText(rightButtonText,
                                   style: TextStyle(
                                     fontSize: 24,
-                                    color: MyTheme.grey,
+                                    color: leftTextColor ?? MyTheme.grey,
                                     fontWeight: FontWeight.bold,
                                   )))),
                     ),

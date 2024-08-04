@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:worbbing/application/state/router_path_state.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/routes/router.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +38,12 @@ Future<void> main() async {
   /// 通知&ATT許可
   initializeNotificationsAndATT();
 
-  runApp(const MyApp());
+  const app = MyApp();
+  const scope = ProviderScope(child: app);
+  runApp(const MaterialApp(
+    home: scope,
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
 Future<void> initializeNotificationsAndATT() async {
@@ -69,22 +77,32 @@ Future<void> initializeNotificationsAndATT() async {
   }
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends HookConsumerWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    void handleRouteChange() {
+      // UI描画中だとエラーになるので、描画後に処理
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // 現在のRouteMatchListを取得
+        final config = router.routerDelegate.currentConfiguration;
 
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    // FlutterNativeSplash.remove();
-  }
+        // RouteMatchListから各種情報を取得
+        final path = config.last.matchedLocation; // stack最後=現在のパス
+        ref.read(routerPathStateProvider.notifier).setPathState(path);
+      });
+    }
 
-  @override
-  Widget build(BuildContext context) {
+    useEffect(() {
+      // 初期化時にリスナーへ追加
+      router.routerDelegate.addListener(handleRouteChange);
+      return () {
+        // dispose時にリスナーから削除
+        router.routerDelegate.removeListener(handleRouteChange);
+      };
+    }, const []);
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

@@ -126,6 +126,16 @@ class NoticeUsecase {
 
   /// 通知単語をシャッフル
   Future<void> shuffleNotifications() async {
+    /// 1日に1回のみ
+    final shuffledDate = SharedPreferencesRepository()
+            .fetch<String>(SharedPreferencesKey.shuffledDate) ??
+        DateTime.now().toIso8601String();
+    if (DateTime.parse(shuffledDate).day == DateTime.now().day) return;
+    await SharedPreferencesRepository().save<String>(
+      SharedPreferencesKey.shuffledDate,
+      DateTime.now().toIso8601String(),
+    );
+
     final List<NoticeDataModel> list =
         await NotificationRepository.instance.queryAllRows();
     for (int i = 0; i < list.length; i++) {
@@ -135,6 +145,7 @@ class NoticeUsecase {
           original: newWord.originalWord, translated: newWord.translatedWord);
       await updateNotice(newNotice);
     }
+    print("shuffleNotifications");
   }
 
   Future<void> switchEnable(bool isEnable) async {

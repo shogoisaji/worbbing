@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/pages/detail_page.dart';
 import 'package:worbbing/pages/ebbinghaus_page.dart';
 import 'package:worbbing/pages/home_page.dart';
@@ -55,7 +56,7 @@ GoRouter router = GoRouter(
     GoRoute(
       path: PagePath.detail,
       builder: (BuildContext context, GoRouterState state) {
-        return DetailPage(id: state.extra as String);
+        return DetailPage(wordModel: state.extra as WordModel);
       },
     ),
     GoRoute(

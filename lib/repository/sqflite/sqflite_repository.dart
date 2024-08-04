@@ -245,20 +245,19 @@ class SqfliteRepository {
   }
 
   // update original,translated,memo
-  Future<void> updateWords(String id, String newOriginal, String newTranslated,
-      String newExample, String newExampleTranslated) async {
+  Future<void> updateWords(WordModel wordModel) async {
     Database db = await instance.database;
     await db
         .update(
       table,
       {
-        originalWord: newOriginal,
-        translatedWord: newTranslated,
-        example: newExample,
-        exampleTranslated: newExampleTranslated,
+        originalWord: wordModel.originalWord,
+        translatedWord: wordModel.translatedWord,
+        example: wordModel.example,
+        exampleTranslated: wordModel.exampleTranslated,
       },
       where: '$columnId = ?',
-      whereArgs: [id],
+      whereArgs: [wordModel.id],
     )
         .catchError((e) {
       throw Exception('sqflite error: $e');

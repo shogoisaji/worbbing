@@ -20,8 +20,10 @@ NoticeDataModel _$NoticeDataModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NoticeDataModel {
+// ignore: invalid_annotation_target
   @JsonKey(name: 'notice_id')
-  int? get noticeId => throw _privateConstructorUsedError;
+  int? get noticeId =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'word_id')
   String get wordId => throw _privateConstructorUsedError;
   String get original => throw _privateConstructorUsedError;
@@ -164,9 +166,11 @@ class _$NoticeDataModelImpl implements _NoticeDataModel {
   factory _$NoticeDataModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$NoticeDataModelImplFromJson(json);
 
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'notice_id')
   final int? noticeId;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'word_id')
   final String wordId;
@@ -230,10 +234,10 @@ abstract class _NoticeDataModel implements NoticeDataModel {
   factory _NoticeDataModel.fromJson(Map<String, dynamic> json) =
       _$NoticeDataModelImpl.fromJson;
 
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'notice_id')
   int? get noticeId;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'word_id')
   String get wordId;
   @override

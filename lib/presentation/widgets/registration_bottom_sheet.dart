@@ -46,6 +46,7 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
   final TextEditingController _exampleTranslatedController =
       TextEditingController();
   final FocusNode _focusNode = FocusNode();
+
   TranslateLanguage originalLanguage = TranslateLanguage.english;
   TranslateLanguage translateLanguage = TranslateLanguage.japanese;
 
@@ -282,8 +283,8 @@ class _RegistrationBottomSheetState extends State<RegistrationBottomSheet>
     } finally {
       setState(() {
         _isLoading = false;
-        _animationController.reverse();
       });
+      _animationController.reverse();
     }
   }
 

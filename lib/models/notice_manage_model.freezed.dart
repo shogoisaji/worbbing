@@ -20,8 +20,10 @@ NoticeManageModel _$NoticeManageModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NoticeManageModel {
+// ignore: invalid_annotation_target
   @JsonKey(name: 'notice_enable')
-  bool get noticeEnable => throw _privateConstructorUsedError;
+  bool get noticeEnable =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'notice_list')
   List<NoticeDataModel> get noticeList => throw _privateConstructorUsedError;
 
@@ -123,10 +125,13 @@ class _$NoticeManageModelImpl implements _NoticeManageModel {
   factory _$NoticeManageModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$NoticeManageModelImplFromJson(json);
 
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'notice_enable')
   final bool noticeEnable;
+// ignore: invalid_annotation_target
   final List<NoticeDataModel> _noticeList;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'notice_list')
   List<NoticeDataModel> get noticeList {
@@ -180,10 +185,10 @@ abstract class _NoticeManageModel implements NoticeManageModel {
   factory _NoticeManageModel.fromJson(Map<String, dynamic> json) =
       _$NoticeManageModelImpl.fromJson;
 
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'notice_enable')
   bool get noticeEnable;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'notice_list')
   List<NoticeDataModel> get noticeList;
   @override
