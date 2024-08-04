@@ -101,12 +101,6 @@ class HomePageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void switchSlideHintState() {
-    AppStateUsecase().switchEnableSlideHint(!isEnableSlideHint);
-    setSlideHintState();
-    notifyListeners();
-  }
-
   void setSlideHintState() {
     final isEnableSlideHint = AppStateUsecase().isEnableSlideHint();
     _ref

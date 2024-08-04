@@ -2,102 +2,66 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:worbbing/application/usecase/app_state_usecase.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/pages/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
-import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:worbbing/routes/router.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends HookConsumerWidget {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(settingPageViewModelProvider);
 
-class _SettingsPageState extends State<SettingsPage> {
-  int? totalWords;
-  Map<int, int> countNotice = {};
-  String version = "";
-
-  final Widget _contentSpacer = const SizedBox(height: 22);
-
-  List<TranslateLanguage> loadPreferences() {
-    final loadedOriginalString = SharedPreferencesRepository().fetch<String>(
-          SharedPreferencesKey.originalLang,
-        ) ??
-        "english";
-    final loadedTranslateString = SharedPreferencesRepository().fetch<String>(
-          SharedPreferencesKey.translateLang,
-        ) ??
-        "japanese";
-    final originalLanguage = TranslateLanguage.values
-        .firstWhere((e) => e.lowerString == loadedOriginalString);
-    final translateLanguage = TranslateLanguage.values
-        .firstWhere((e) => e.lowerString == loadedTranslateString);
-    return [originalLanguage, translateLanguage];
-  }
-
-  Future<void> privacyURL() async {
-    final Uri url = Uri.parse('https://worbbing.vercel.app/privacy-policy');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      return;
-    }
-  }
-
-  Future<void> inquiryURL() async {
-    final Uri url = Uri.parse('https://worbbing.vercel.app/inquiry');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      return;
-    }
-  }
-
-  Future<void> loadVersion() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    version = packageInfo.version;
-  }
-
-  Future<void> _initialLoad() async {
-    totalWords = await SqfliteRepository.instance.totalWords();
-    countNotice = await SqfliteRepository.instance.countNoticeDuration();
-    await loadVersion();
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _initialLoad();
-  }
-
-  void updateOriginalLanguage(TranslateLanguage value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("original_lang", value.lowerString);
-  }
-
-  void updateTranslateLanguage(TranslateLanguage value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("translate_lang", value.lowerString);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    const Widget contentSpacer = SizedBox(height: 22);
     final contentWidth =
         (MediaQuery.of(context).size.width * 0.9).clamp(100.0, 500.0);
+
+    Future<void> privacyURL() async {
+      final Uri url = Uri.parse('https://worbbing.vercel.app/privacy-policy');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        return;
+      }
+    }
+
+    Future<void> inquiryURL() async {
+      final Uri url = Uri.parse('https://worbbing.vercel.app/inquiry');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        return;
+      }
+    }
+
+    void handleTapLicense() {
+      context.push(PagePath.license);
+    }
+
+    void handleTapDemo() {
+      AppStateUsecase().showDemo(context);
+    }
+
+    void handleTapForgettingCurve() {
+      context.push(PagePath.ebbinghaus);
+    }
+
+    useEffect(() {
+      viewModel.loadProperties();
+      return null;
+    }, []);
+
     return Stack(
       children: [
         Container(
@@ -177,8 +141,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                             ),
                                             // total words
                                             titleText(
-                                                totalWords != null
-                                                    ? totalWords.toString()
+                                                viewModel.totalWords != null
+                                                    ? viewModel.totalWords
+                                                        .toString()
                                                     : "",
                                                 MyTheme.orange,
                                                 36),
@@ -240,7 +205,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     ),
                                                   ),
                                                   child: mediumText(
-                                                      countNotice[duration]
+                                                      viewModel.noticeCount?[
+                                                                  duration]
                                                               ?.toString() ??
                                                           "0",
                                                       Colors.white),
@@ -272,9 +238,21 @@ class _SettingsPageState extends State<SettingsPage> {
                                     horizontal: 16, vertical: 24),
                                 child: Column(
                                   children: [
-                                    _buildDefaultLang(),
-                                    _contentSpacer,
-                                    _buildSlideHintSwitch(),
+                                    _buildDefaultLang(
+                                      viewModel.originalLanguage!,
+                                      viewModel.translateLanguage!,
+                                      (value) {
+                                        viewModel.updateOriginalLanguage(value);
+                                      },
+                                      (value) {
+                                        viewModel
+                                            .updateTranslateLanguage(value);
+                                      },
+                                    ),
+                                    contentSpacer,
+                                    _buildSlideHintSwitch(
+                                        viewModel.enableSlideHint,
+                                        viewModel.switchSlideHint),
                                   ],
                                 ),
                               ),
@@ -296,20 +274,21 @@ class _SettingsPageState extends State<SettingsPage> {
                                     horizontal: 16, vertical: 24),
                                 child: Column(
                                   children: [
-                                    _buildPrivacyPolicy(),
-                                    _contentSpacer,
-                                    _buildInquiry(),
-                                    _contentSpacer,
-                                    _buildDemo(),
-                                    _contentSpacer,
-                                    _buildLicense(),
-                                    _contentSpacer,
-                                    _buildForgettingCurve(),
+                                    _buildPrivacyPolicy(privacyURL),
+                                    contentSpacer,
+                                    _buildInquiry(inquiryURL),
+                                    contentSpacer,
+                                    _buildDemo(handleTapDemo),
+                                    contentSpacer,
+                                    _buildLicense(handleTapLicense),
+                                    contentSpacer,
+                                    _buildForgettingCurve(
+                                        handleTapForgettingCurve),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 14),
-                              _buildAppVersion(),
+                              _buildAppVersion(viewModel.version ?? ""),
                               const SizedBox(
                                 height: 50,
                               ),
@@ -328,7 +307,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildDefaultLang() {
+  Widget _buildDefaultLang(
+    TranslateLanguage originalLanguage,
+    TranslateLanguage translateLanguage,
+    Function(TranslateLanguage) onOriginalSelected,
+    Function(TranslateLanguage) onTranslateSelected,
+  ) {
     return Column(
       children: [
         Row(
@@ -356,21 +340,20 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           child: LanguageDropdownHorizontal(
             onOriginalSelected: (value) {
-              updateOriginalLanguage(value);
+              onOriginalSelected(value);
             },
             onTranslateSelected: (value) {
-              updateTranslateLanguage(value);
+              onTranslateSelected(value);
             },
-            originalLanguage: loadPreferences()[0],
-            translateLanguage: loadPreferences()[1],
+            originalLanguage: originalLanguage,
+            translateLanguage: translateLanguage,
           ),
         )
       ],
     );
   }
 
-  Widget _buildSlideHintSwitch() {
-    final isEnable = AppStateUsecase().isEnableSlideHint();
+  Widget _buildSlideHintSwitch(bool isEnable, VoidCallback onTap) {
     return Row(
       children: [
         Padding(
@@ -428,22 +411,21 @@ class _SettingsPageState extends State<SettingsPage> {
           activeTrackColor: MyTheme.lemon,
           inactiveThumbColor: Colors.grey,
           inactiveTrackColor: Colors.white,
-          value: AppStateUsecase().isEnableSlideHint(),
+          value: isEnable,
           onChanged: (value) async {
             HapticFeedback.lightImpact();
-            await AppStateUsecase().switchEnableSlideHint(value);
-            setState(() {});
+            onTap();
           },
         )
       ],
     );
   }
 
-  Widget _buildPrivacyPolicy() {
+  Widget _buildPrivacyPolicy(VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        privacyURL();
+        onTap();
       },
       child: Row(
         children: [
@@ -464,11 +446,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildInquiry() {
+  Widget _buildInquiry(VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        inquiryURL();
+        onTap();
       },
       child: Row(
         children: [
@@ -489,11 +471,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildLicense() {
+  Widget _buildLicense(VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        context.push(PagePath.license);
+        onTap();
       },
       child: Row(
         children: [
@@ -514,11 +496,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildDemo() {
+  Widget _buildDemo(VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        AppStateUsecase().showDemo(context);
+        onTap();
       },
       child: Row(
         children: [
@@ -539,11 +521,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildForgettingCurve() {
+  Widget _buildForgettingCurve(VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        context.push(PagePath.ebbinghaus);
+        onTap();
       },
       child: Row(
         children: [
@@ -564,7 +546,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildAppVersion() {
+  Widget _buildAppVersion(String version) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

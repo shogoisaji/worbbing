@@ -33,10 +33,10 @@ class AppStateUsecase extends WidgetsBindingObserver {
         true;
   }
 
-  Future<void> switchEnableSlideHint(bool value) async {
-    await SharedPreferencesRepository()
-        .save<bool>(SharedPreferencesKey.isEnableSlideHint, value);
-  }
+  // Future<void> switchEnableSlideHint(bool value) async {
+  //   await SharedPreferencesRepository()
+  //       .save<bool>(SharedPreferencesKey.isEnableSlideHint, value);
+  // }
 
   OverlayEntry? overlay;
 

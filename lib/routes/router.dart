@@ -68,7 +68,7 @@ GoRouter router = GoRouter(
     GoRoute(
       path: PagePath.license,
       builder: (BuildContext context, GoRouterState state) {
-        return const LicensePage();
+        return const LicensePage(applicationName: "Worbbing");
       },
     ),
   ],
