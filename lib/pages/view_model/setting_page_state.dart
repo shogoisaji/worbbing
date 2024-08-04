@@ -34,6 +34,7 @@ class SettingPageViewModel extends ChangeNotifier {
     _loadVersion();
     _loadTotalWords();
     _loadNoticeCount();
+    _loadSlideHint();
   }
 
   Future<void> _loadNoticeCount() async {
@@ -53,8 +54,19 @@ class SettingPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _loadSlideHint() {
+    _enableSlideHint = SharedPreferencesRepository().fetch<bool>(
+          SharedPreferencesKey.isEnableSlideHint,
+        ) ??
+        true;
+  }
+
   void switchSlideHint() {
     _enableSlideHint = !_enableSlideHint;
+    SharedPreferencesRepository().save<bool>(
+      SharedPreferencesKey.isEnableSlideHint,
+      _enableSlideHint,
+    );
     notifyListeners();
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/pages/view_model/home_page_view_model.dart';
+import 'package:worbbing/pages/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -18,8 +19,9 @@ class HomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('HomePage build');
     final viewModel = ref.watch(homePageViewModelProvider);
+    final isEnableSlideHint =
+        ref.watch(settingPageViewModelProvider).enableSlideHint;
 
     final appLifecycleState = useAppLifecycleState();
 
@@ -168,7 +170,7 @@ class HomePage extends HookConsumerWidget {
                               await context.push(PagePath.detail, extra: item);
                               viewModel.refreshWordList();
                             },
-                            isEnableSlideHint: true,
+                            isEnableSlideHint: isEnableSlideHint,
                           ),
                           // under space
                           if (index == viewModel.wordList.length - 1)
