@@ -7,11 +7,12 @@ import 'package:worbbing/application/state/share_text_state.dart';
 import 'package:worbbing/application/state/slide_hint_state.dart';
 import 'package:worbbing/application/state/ticket_state.dart';
 import 'package:worbbing/application/state/word_list_state.dart';
-import 'package:worbbing/application/usecase/app_state_usecase.dart';
 import 'package:worbbing/application/usecase/word_list_usecase.dart';
 import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/pages/registration_page.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
-import 'package:worbbing/presentation/widgets/registration_bottom_sheet.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/routes/router.dart';
 
 final homePageViewModelProvider = ChangeNotifierProvider((ref) {
@@ -86,7 +87,7 @@ class HomePageViewModel extends ChangeNotifier {
       isDismissible: false,
       isScrollControlled: true,
       context: context,
-      builder: (_) => RegistrationBottomSheet(
+      builder: (_) => RegistrationPage(
         initialText: sharedText,
       ),
     );
@@ -102,7 +103,10 @@ class HomePageViewModel extends ChangeNotifier {
   }
 
   void setSlideHintState() {
-    final isEnableSlideHint = AppStateUsecase().isEnableSlideHint();
+    final isEnableSlideHint = _ref
+            .read(sharedPreferencesRepositoryProvider)
+            .fetch<bool>(SharedPreferencesKey.isEnableSlideHint) ??
+        true;
     _ref
         .read(slideHintStateProvider.notifier)
         .setSlideHintState(isEnableSlideHint);

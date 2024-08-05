@@ -10,45 +10,45 @@ const int initialTicket = 10;
 class TicketState extends _$TicketState {
   @override
   int build() {
-    loadTicket();
-    return state;
+    return ref
+            .read(sharedPreferencesRepositoryProvider)
+            .fetch<int>(SharedPreferencesKey.ticket) ??
+        0;
   }
 
   void setTicketState(int ticketState) {
     state = ticketState;
   }
 
-  void loadTicket() {
-    final ticket =
-        SharedPreferencesRepository().fetch<int>(SharedPreferencesKey.ticket) ??
-            0;
-    state = ticket;
-  }
-
-  void addInitialTicket() async {
-    await SharedPreferencesRepository()
+  Future<void> addInitialTicket() async {
+    await ref
+        .read(sharedPreferencesRepositoryProvider)
         .save<int>(SharedPreferencesKey.ticket, state + initialTicket);
     state = state + initialTicket;
   }
 
-  void useTicket() async {
-    final currentTicket =
-        SharedPreferencesRepository().fetch<int>(SharedPreferencesKey.ticket) ??
-            0;
+  Future<void> useTicket() async {
+    final currentTicket = ref
+            .read(sharedPreferencesRepositoryProvider)
+            .fetch<int>(SharedPreferencesKey.ticket) ??
+        0;
     if (currentTicket <= 0) {
       return;
     }
-    SharedPreferencesRepository()
+    await ref
+        .read(sharedPreferencesRepositoryProvider)
         .save<int>(SharedPreferencesKey.ticket, currentTicket - 1);
     state = currentTicket - 1;
   }
 
-  void earnTicket(int earnTicket) async {
-    final currentTicket =
-        SharedPreferencesRepository().fetch<int>(SharedPreferencesKey.ticket) ??
-            0;
+  Future<void> earnTicket(int earnTicket) async {
+    final currentTicket = ref
+            .read(sharedPreferencesRepositoryProvider)
+            .fetch<int>(SharedPreferencesKey.ticket) ??
+        0;
     final earnedTicket = (currentTicket + earnTicket).clamp(0, 99);
-    SharedPreferencesRepository()
+    await ref
+        .read(sharedPreferencesRepositoryProvider)
         .save<int>(SharedPreferencesKey.ticket, earnedTicket);
     state = earnedTicket;
   }

@@ -4,16 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:worbbing/application/helper/ad_helper.dart';
 import 'package:worbbing/application/helper/ad_test_helper.dart';
-import 'package:worbbing/application/usecase/ticket_manager.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 
 class AdReward extends StatefulWidget {
   final Widget child;
+  final Function(int) onEarnTicket;
   const AdReward({
     super.key,
     required this.child,
+    required this.onEarnTicket,
   });
 
   @override
@@ -95,7 +96,7 @@ class _AdRewardState extends State<AdReward> {
 
       _rewardedAd?.show(
         onUserEarnedReward: (_, reward) {
-          TicketManager.earnTicket(earnTicketCount);
+          widget.onEarnTicket(earnTicketCount);
         },
       );
     });

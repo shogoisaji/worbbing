@@ -13,7 +13,6 @@ import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:worbbing/routes/router.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SettingsPage extends HookConsumerWidget {
@@ -22,6 +21,7 @@ class SettingsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(settingPageViewModelProvider);
+    final notifier = ref.read(settingPageViewModelProvider.notifier);
 
     const Widget contentSpacer = SizedBox(height: 22);
     final contentWidth =
@@ -50,17 +50,12 @@ class SettingsPage extends HookConsumerWidget {
     }
 
     void handleTapDemo() {
-      AppStateUsecase().showDemo(context);
+      ref.read(appStateUsecaseProvider.notifier).showDemo(context);
     }
 
     void handleTapForgettingCurve() {
       context.push(PagePath.ebbinghaus);
     }
-
-    useEffect(() {
-      viewModel.loadProperties();
-      return null;
-    }, []);
 
     return Stack(
       children: [
@@ -239,20 +234,19 @@ class SettingsPage extends HookConsumerWidget {
                                 child: Column(
                                   children: [
                                     _buildDefaultLang(
-                                      viewModel.originalLanguage!,
-                                      viewModel.translateLanguage!,
+                                      viewModel.originalLanguage,
+                                      viewModel.translateLanguage,
                                       (value) {
-                                        viewModel.updateOriginalLanguage(value);
+                                        notifier.updateOriginalLanguage(value);
                                       },
                                       (value) {
-                                        viewModel
-                                            .updateTranslateLanguage(value);
+                                        notifier.updateTranslateLanguage(value);
                                       },
                                     ),
                                     contentSpacer,
                                     _buildSlideHintSwitch(
                                         viewModel.enableSlideHint,
-                                        viewModel.switchSlideHint),
+                                        notifier.switchSlideHint),
                                   ],
                                 ),
                               ),

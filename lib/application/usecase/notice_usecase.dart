@@ -12,7 +12,20 @@ import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/pages/notice_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'notice_usecase.g.dart';
+
+@Riverpod(keepAlive: true)
+NoticeUsecase noticeUsecase(NoticeUsecaseRef ref) {
+  return NoticeUsecase(ref);
+}
+
 class NoticeUsecase {
+  NoticeUsecase(this._ref);
+
+  final NoticeUsecaseRef _ref;
+
   /// permissions
   Future<void> requestPermissions() async {
     if (Platform.isIOS || Platform.isMacOS) {
@@ -127,14 +140,15 @@ class NoticeUsecase {
   /// 通知単語をシャッフル
   Future<void> shuffleNotifications() async {
     /// 1日に1回のみ
-    final shuffledDate = SharedPreferencesRepository()
+    final shuffledDate = _ref
+            .read(sharedPreferencesRepositoryProvider)
             .fetch<String>(SharedPreferencesKey.shuffledDate) ??
         DateTime.now().toIso8601String();
     if (DateTime.parse(shuffledDate).day == DateTime.now().day) return;
-    await SharedPreferencesRepository().save<String>(
-      SharedPreferencesKey.shuffledDate,
-      DateTime.now().toIso8601String(),
-    );
+    await _ref.read(sharedPreferencesRepositoryProvider).save<String>(
+          SharedPreferencesKey.shuffledDate,
+          DateTime.now().toIso8601String(),
+        );
 
     final List<NoticeDataModel> list =
         await NotificationRepository.instance.queryAllRows();
@@ -149,7 +163,8 @@ class NoticeUsecase {
   }
 
   Future<void> switchEnable(bool isEnable) async {
-    await SharedPreferencesRepository()
+    await _ref
+        .read(sharedPreferencesRepositoryProvider)
         .save<bool>(SharedPreferencesKey.noticeEnable, isEnable);
     if (isEnable) {
       await setAllScheduleNotification();
@@ -168,9 +183,9 @@ class NoticeUsecase {
       time: time,
     );
     final id = await NotificationRepository.instance.insertData(notice);
-    final isEnable = SharedPreferencesRepository().fetch<bool>(
-          SharedPreferencesKey.noticeEnable,
-        ) ??
+    final isEnable = _ref
+            .read(sharedPreferencesRepositoryProvider)
+            .fetch<bool>(SharedPreferencesKey.noticeEnable) ??
         false;
     if (!isEnable) return;
     await setNotificationSchedule(notice.copyWith(noticeId: id));
@@ -184,9 +199,9 @@ class NoticeUsecase {
   Future<void> updateNotice(NoticeDataModel notice) async {
     await NotificationRepository.instance.updateNoticeTime(notice);
     await cancelNotification(notice.noticeId!);
-    final isEnable = SharedPreferencesRepository().fetch<bool>(
-          SharedPreferencesKey.noticeEnable,
-        ) ??
+    final isEnable = _ref
+            .read(sharedPreferencesRepositoryProvider)
+            .fetch<bool>(SharedPreferencesKey.noticeEnable) ??
         false;
     if (!isEnable) return;
     await setNotificationSchedule(notice);
@@ -211,7 +226,8 @@ class NoticeUsecase {
   }
 
   Future<NoticeManageModel> loadNoticeData() async {
-    final isEnable = SharedPreferencesRepository()
+    final isEnable = _ref
+            .read(sharedPreferencesRepositoryProvider)
             .fetch<bool>(SharedPreferencesKey.noticeEnable) ??
         false;
     List<NoticeDataModel> noticeList =

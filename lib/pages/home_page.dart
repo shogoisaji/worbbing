@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:worbbing/application/state/ticket_state.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/pages/view_model/home_page_view_model.dart';
 import 'package:worbbing/pages/view_model/setting_page_state.dart';
@@ -27,6 +28,10 @@ class HomePage extends HookConsumerWidget {
 
     final refresh = useState(false);
 
+    final handleEarnTicket = useCallback((int earnTicketCount) {
+      ref.read(ticketStateProvider.notifier).earnTicket(earnTicketCount);
+    }, [ref]);
+
     useEffect(() {
       SchedulerBinding.instance
           .addPostFrameCallback((_) => viewModel.setSlideHintState());
@@ -43,7 +48,7 @@ class HomePage extends HookConsumerWidget {
 
     useEffect(() {
       if (appLifecycleState == AppLifecycleState.resumed) {
-        NoticeUsecase().shuffleNotifications();
+        ref.read(noticeUsecaseProvider).shuffleNotifications();
       }
       return () {};
     }, [appLifecycleState]);
@@ -78,6 +83,7 @@ class HomePage extends HookConsumerWidget {
                   )),
               actions: [
                 AdReward(
+                  onEarnTicket: handleEarnTicket,
                   child: TicketWidget(
                     count: viewModel.ticketCount,
                     size: 50,
@@ -222,8 +228,8 @@ class HomePage extends HookConsumerWidget {
               color: Colors.grey.shade600,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  blurRadius: 15.0,
+                  color: MyTheme.darkGrey.withOpacity(0.6),
+                  blurRadius: 20.0,
                   spreadRadius: 5.0,
                 ),
               ],
@@ -240,8 +246,8 @@ class HomePage extends HookConsumerWidget {
                 color: MyTheme.orange,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 15.0,
+                    color: MyTheme.darkGrey.withOpacity(0.6),
+                    blurRadius: 20.0,
                     spreadRadius: 5.0,
                   ),
                 ],

@@ -11,7 +11,7 @@ enum TranslateLanguage {
 }
 
 extension TranslateLanguageExtension on TranslateLanguage {
-  TranslateLanguage fromString(String value) {
+  static TranslateLanguage fromString(String value) {
     final lowercaseValue = value.toLowerCase();
     return TranslateLanguage.values.firstWhere(
       (lang) => lang.lowerString == lowercaseValue,

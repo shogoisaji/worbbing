@@ -1,116 +1,118 @@
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:worbbing/application/state/translate_lang_state.dart';
+import 'package:worbbing/application/utils/package_info_utils.dart';
 import 'package:worbbing/models/translate_language.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 
-final settingPageViewModelProvider = ChangeNotifierProvider((_) {
-  return SettingPageViewModel();
-});
+part 'setting_page_state.g.dart';
 
-class SettingPageViewModel extends ChangeNotifier {
-  SettingPageViewModel() {
-    loadProperties();
+class SettingPageState {
+  final bool isLoading;
+  final String? errorMessage;
+  final int? totalWords;
+  final Map<int, int>? noticeCount;
+  final String? version;
+  final bool enableSlideHint;
+  final TranslateLanguage originalLanguage;
+  final TranslateLanguage translateLanguage;
+
+  SettingPageState({
+    this.isLoading = false,
+    this.errorMessage,
+    this.totalWords,
+    this.noticeCount,
+    this.version,
+    this.enableSlideHint = true,
+    this.originalLanguage = TranslateLanguage.english,
+    this.translateLanguage = TranslateLanguage.japanese,
+  });
+
+  SettingPageState copyWith({
+    bool? isLoading,
+    String? errorMessage,
+    String? version,
+    int? totalWords,
+    Map<int, int>? noticeCount,
+    bool? enableSlideHint,
+    TranslateLanguage? originalLanguage,
+    TranslateLanguage? translateLanguage,
+  }) {
+    return SettingPageState(
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage ?? this.errorMessage,
+      version: version ?? this.version,
+      totalWords: totalWords ?? this.totalWords,
+      noticeCount: noticeCount ?? this.noticeCount,
+      enableSlideHint: enableSlideHint ?? this.enableSlideHint,
+      originalLanguage: originalLanguage ?? this.originalLanguage,
+      translateLanguage: translateLanguage ?? this.translateLanguage,
+    );
+  }
+}
+
+@riverpod
+class SettingPageViewModel extends _$SettingPageViewModel {
+  @override
+  SettingPageState build() {
+    state = SettingPageState();
+    _initialize();
+    return state;
   }
 
-  int? _totalWords;
-  Map<int, int>? _noticeCount;
-  String? _version;
-  bool _enableSlideHint = true;
-  TranslateLanguage? _originalLanguage;
-  TranslateLanguage? _translateLanguage;
+  Future<void> _initialize() async {
+    try {
+      state = state.copyWith(isLoading: true);
 
-  int? get totalWords => _totalWords;
-  Map<int, int>? get noticeCount => _noticeCount;
-  String? get version => _version;
-  bool get enableSlideHint => _enableSlideHint;
-  TranslateLanguage? get originalLanguage => _originalLanguage;
-  TranslateLanguage? get translateLanguage => _translateLanguage;
+      final originalLanguage = ref.read(translateLangStateProvider)['original'];
+      final translateLanguage =
+          ref.read(translateLangStateProvider)['translate'];
+      final version = ref.read(packageInfoUtilsProvider).appVersion;
+      final totalWords = await SqfliteRepository.instance.totalWords();
+      final noticeCount =
+          await SqfliteRepository.instance.countNoticeDuration();
+      final enableSlideHint = _loadSlideHint();
 
-  Future<void> loadProperties() async {
-    _loadLanguages();
-    _loadVersion();
-    _loadTotalWords();
-    _loadNoticeCount();
-    _loadSlideHint();
+      state = state.copyWith(
+        isLoading: false,
+        originalLanguage: originalLanguage,
+        translateLanguage: translateLanguage,
+        version: version,
+        totalWords: totalWords,
+        noticeCount: noticeCount,
+        enableSlideHint: enableSlideHint,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+      );
+    }
   }
 
-  Future<void> _loadNoticeCount() async {
-    _noticeCount = await SqfliteRepository.instance.countNoticeDuration();
-    notifyListeners();
-  }
-
-  Future<void> _loadTotalWords() async {
-    final totalWords = await SqfliteRepository.instance.totalWords();
-    _totalWords = totalWords;
-    notifyListeners();
-  }
-
-  Future<void> _loadVersion() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    _version = packageInfo.version;
-    notifyListeners();
-  }
-
-  void _loadSlideHint() {
-    _enableSlideHint = SharedPreferencesRepository().fetch<bool>(
-          SharedPreferencesKey.isEnableSlideHint,
-        ) ??
+  bool _loadSlideHint() {
+    return ref.read(sharedPreferencesRepositoryProvider).fetch<bool>(
+              SharedPreferencesKey.isEnableSlideHint,
+            ) ??
         true;
   }
 
   void switchSlideHint() {
-    _enableSlideHint = !_enableSlideHint;
-    SharedPreferencesRepository().save<bool>(
-      SharedPreferencesKey.isEnableSlideHint,
-      _enableSlideHint,
-    );
-    notifyListeners();
-  }
-
-  void _loadLanguages() {
-    _originalLanguage = getOriginalLanguage();
-    _translateLanguage = getTranslateLanguage();
-  }
-
-  TranslateLanguage getOriginalLanguage() {
-    final loadedOriginalString = SharedPreferencesRepository().fetch<String>(
-          SharedPreferencesKey.originalLang,
-        ) ??
-        "english";
-
-    final originalLanguage = TranslateLanguage.values
-        .firstWhere((e) => e.lowerString == loadedOriginalString);
-    return originalLanguage;
-  }
-
-  TranslateLanguage getTranslateLanguage() {
-    final loadedTranslateString = SharedPreferencesRepository().fetch<String>(
-          SharedPreferencesKey.translateLang,
-        ) ??
-        "japanese";
-    final translateLanguage = TranslateLanguage.values
-        .firstWhere((e) => e.lowerString == loadedTranslateString);
-    return translateLanguage;
+    final enableSlideHint = !state.enableSlideHint;
+    ref.read(sharedPreferencesRepositoryProvider).save<bool>(
+          SharedPreferencesKey.isEnableSlideHint,
+          enableSlideHint,
+        );
+    state = state.copyWith(enableSlideHint: enableSlideHint);
   }
 
   void updateOriginalLanguage(TranslateLanguage value) async {
-    SharedPreferencesRepository().save<String>(
-      SharedPreferencesKey.originalLang,
-      value.lowerString,
-    );
-    _originalLanguage = value;
-    notifyListeners();
+    ref.read(translateLangStateProvider.notifier).changeOriginalLang(value);
+    state = state.copyWith(originalLanguage: value);
   }
 
   void updateTranslateLanguage(TranslateLanguage value) async {
-    SharedPreferencesRepository().save<String>(
-      SharedPreferencesKey.translateLang,
-      value.lowerString,
-    );
-    _translateLanguage = value;
-    notifyListeners();
+    ref.read(translateLangStateProvider.notifier).changeTranslateLang(value);
+    state = state.copyWith(translateLanguage: value);
   }
 }

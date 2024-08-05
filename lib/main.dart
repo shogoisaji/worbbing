@@ -6,9 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:worbbing/application/state/router_path_state.dart';
+import 'package:worbbing/application/utils/package_info_utils.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/routes/router.dart';
@@ -17,8 +20,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  late final PackageInfo packageInfo;
+
   /// shared_preferencesの初期化
-  await SharedPreferencesRepository.init();
+  late final SharedPreferences sharedPreferences;
+  sharedPreferences = await SharedPreferences.getInstance();
 
   /// 通知用のタイムゾーンの初期化
   tz.initializeTimeZones();
@@ -38,9 +44,18 @@ Future<void> main() async {
   /// 通知&ATT許可
   initializeNotificationsAndATT();
 
+  packageInfo = await PackageInfo.fromPlatform();
+
   const app = MyApp();
-  const scope = ProviderScope(child: app);
-  runApp(const MaterialApp(
+  final scope = ProviderScope(
+    overrides: [
+      sharedPreferencesRepositoryProvider
+          .overrideWithValue(SharedPreferencesRepository(sharedPreferences)),
+      packageInfoUtilsProvider.overrideWithValue(PackageInfoUtils(packageInfo)),
+    ],
+    child: app,
+  );
+  runApp(MaterialApp(
     home: scope,
     debugShowCheckedModeBanner: false,
   ));

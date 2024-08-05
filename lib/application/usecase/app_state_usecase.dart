@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:worbbing/presentation/widgets/demo.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 
-class AppStateUsecase extends WidgetsBindingObserver {
-  AppStateUsecase() {
+part 'app_state_usecase.g.dart';
+
+@riverpod
+class AppStateUsecase extends _$AppStateUsecase with WidgetsBindingObserver {
+  @override
+  AppStateUsecase build() {
     WidgetsBinding.instance.addObserver(this);
+    return this;
   }
 
   @override
@@ -17,26 +23,24 @@ class AppStateUsecase extends WidgetsBindingObserver {
   }
 
   bool isFirst() {
-    return SharedPreferencesRepository()
+    return ref
+            .read(sharedPreferencesRepositoryProvider)
             .fetch<bool>(SharedPreferencesKey.isFirst) ??
         true;
   }
 
   Future<void> doneFirst() async {
-    await SharedPreferencesRepository()
+    await ref
+        .read(sharedPreferencesRepositoryProvider)
         .save<bool>(SharedPreferencesKey.isFirst, false);
   }
 
   bool isEnableSlideHint() {
-    return SharedPreferencesRepository()
+    return ref
+            .read(sharedPreferencesRepositoryProvider)
             .fetch<bool>(SharedPreferencesKey.isEnableSlideHint) ??
         true;
   }
-
-  // Future<void> switchEnableSlideHint(bool value) async {
-  //   await SharedPreferencesRepository()
-  //       .save<bool>(SharedPreferencesKey.isEnableSlideHint, value);
-  // }
 
   OverlayEntry? overlay;
 
@@ -52,7 +56,7 @@ class AppStateUsecase extends WidgetsBindingObserver {
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    AppStateUsecase().doneFirst();
+                    doneFirst();
                     removeOverlay();
                   },
                   child: Container(

@@ -16,6 +16,7 @@ class PagePath {
   static const detail = '/detail';
   static const ebbinghaus = '/ebbinghaus';
   static const license = '/license';
+  static const registration = 'registration';
 }
 
 GoRouter router = GoRouter(

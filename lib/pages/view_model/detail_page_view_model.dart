@@ -10,15 +10,14 @@ import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 final detailPageViewModelProvider =
     ChangeNotifierProvider.family<DetailPageViewModel, WordModel>((ref, word) {
   final usecase = ref.watch(wordListUsecaseProvider);
-  return DetailPageViewModel(ref, usecase, word);
+  return DetailPageViewModel(usecase, word);
 });
 
 class DetailPageViewModel extends ChangeNotifier {
-  final Ref _ref;
   final WordListUsecase _usecase;
   WordModel _wordModel;
 
-  DetailPageViewModel(this._ref, this._usecase, WordModel initialWord)
+  DetailPageViewModel(this._usecase, WordModel initialWord)
       : _wordModel = initialWord;
 
   WordModel get wordModel => _wordModel;

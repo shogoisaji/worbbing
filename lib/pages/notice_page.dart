@@ -12,6 +12,8 @@ import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -20,146 +22,141 @@ const AndroidInitializationSettings initializationSettingsAndroid =
 const InitializationSettings initializationSettings =
     InitializationSettings(android: initializationSettingsAndroid);
 
-class NoticePage extends StatefulWidget {
+class NoticePage extends HookConsumerWidget {
   const NoticePage({super.key});
 
   @override
-  State<NoticePage> createState() => _NoticePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final noticeManageModel = useState(const NoticeManageModel());
 
-class _NoticePageState extends State<NoticePage> {
-  NoticeManageModel noticeManageModel = const NoticeManageModel();
-
-  @override
-  void initState() {
-    super.initState();
-    loadSchedule();
-  }
-
-  void handleTapSample() async {
-    await NoticeUsecase().requestPermissions();
-    final isPermitted = await NoticeUsecase().checkNotificationPermissions();
-    if (!isPermitted) {
-      await showNoticePermissionDialog();
-      return;
+    Future<void> loadSchedule() async {
+      final loadedNoticeModel =
+          await ref.read(noticeUsecaseProvider).loadNoticeData();
+      noticeManageModel.value = loadedNoticeModel;
     }
-    await NoticeUsecase().sampleNotification();
-  }
 
-  void _handleTapAdd(BuildContext context) {
-    _addTime(context);
-  }
+    useEffect(() {
+      loadSchedule();
+      return null;
+    }, []);
 
-  Future<void> handleChangeSwitch(bool value) async {
-    if (value) {
-      final isPermitted = await NoticeUsecase().checkNotificationPermissions();
+    Future<void> showNoticePermissionDialog() async {
+      MySimpleDialog.show(
+          context,
+          const Text(
+            'Notification permission is OFF.\nPlease turn ON notification permission.',
+            style: TextStyle(
+                overflow: TextOverflow.clip, color: Colors.white, fontSize: 20),
+          ),
+          'Go Settings', () {
+        AppSettings.openAppSettings();
+      });
+    }
+
+    Future<void> handleChangeSwitch(bool value) async {
+      if (value) {
+        final isPermitted = await ref
+            .read(noticeUsecaseProvider)
+            .checkNotificationPermissions();
+        if (!isPermitted) {
+          await showNoticePermissionDialog();
+          return;
+        }
+      }
+      await ref.read(noticeUsecaseProvider).switchEnable(value);
+      loadSchedule();
+    }
+
+    Future<void> addTime() async {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        initialEntryMode: TimePickerEntryMode.dialOnly,
+      );
+      if (picked != null) {
+        await ref.read(noticeUsecaseProvider).addNotice(picked);
+        loadSchedule();
+      }
+      HapticFeedback.lightImpact();
+    }
+
+    Future<void> removeTime(int noticeId) async {
+      await ref.read(noticeUsecaseProvider).removeNotice(noticeId);
+      loadSchedule();
+    }
+
+    void handleTapRemove(NoticeDataModel notice) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero),
+                backgroundColor: MyTheme.grey,
+                title: const Text(
+                  'Do you want to delete this data?',
+                  style: TextStyle(
+                      overflow: TextOverflow.clip,
+                      color: Colors.white,
+                      fontSize: 20),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.of(context).pop();
+                    },
+                    child: subText('Cancel', MyTheme.red),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 12, right: 12, bottom: 4, top: 4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      backgroundColor: MyTheme.red,
+                    ),
+                    onPressed: () async {
+                      HapticFeedback.lightImpact();
+                      await removeTime(notice.noticeId!);
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
+                    },
+                    child: subText('Delete', Colors.white),
+                  ),
+                ],
+              ));
+    }
+
+    Future<void> changeTime(NoticeDataModel notice) async {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        initialEntryMode: TimePickerEntryMode.dialOnly,
+      );
+      if (picked != null) {
+        final newNotice = notice.copyWith(time: picked);
+        await ref.read(noticeUsecaseProvider).updateNotice(newNotice);
+        loadSchedule();
+      }
+      HapticFeedback.lightImpact();
+    }
+
+    void handleTapSample() async {
+      await ref.read(noticeUsecaseProvider).requestPermissions();
+      final isPermitted =
+          await ref.read(noticeUsecaseProvider).checkNotificationPermissions();
       if (!isPermitted) {
         await showNoticePermissionDialog();
         return;
       }
+      await ref.read(noticeUsecaseProvider).sampleNotification();
     }
-    await NoticeUsecase().switchEnable(value);
-    loadSchedule();
-  }
 
-  Future<void> loadSchedule() async {
-    final NoticeManageModel loadedNoticeModel =
-        await NoticeUsecase().loadNoticeData();
-    setState(() {
-      noticeManageModel = loadedNoticeModel;
-    });
-  }
-
-  Future<void> showNoticePermissionDialog() async {
-    MySimpleDialog.show(
-        context,
-        const Text(
-          'Notification permission is OFF.\nPlease turn ON notification permission.',
-          style: TextStyle(
-              overflow: TextOverflow.clip, color: Colors.white, fontSize: 20),
-        ),
-        'Go Settings', () {
-      AppSettings.openAppSettings();
-    });
-  }
-
-  Future<void> _addTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.dialOnly,
-    );
-    if (picked != null) {
-      await NoticeUsecase().addNotice(picked);
-      loadSchedule();
+    void handleTapAdd() {
+      addTime();
     }
-    HapticFeedback.lightImpact();
-  }
 
-  void _handleTapRemove(NoticeDataModel notice) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              shape:
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              backgroundColor: MyTheme.grey,
-              title: const Text(
-                'Do you want to delete this data?',
-                style: TextStyle(
-                    overflow: TextOverflow.clip,
-                    color: Colors.white,
-                    fontSize: 20),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    context.pop();
-                  },
-                  child: subText('Cancel', MyTheme.red),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(
-                        left: 12, right: 12, bottom: 4, top: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    backgroundColor: MyTheme.red,
-                  ),
-                  onPressed: () async {
-                    HapticFeedback.lightImpact();
-                    await _removeTime(notice.noticeId!);
-                    if (!context.mounted) return;
-                    context.pop();
-                  },
-                  child: subText('Delete', Colors.white),
-                ),
-              ],
-            ));
-  }
-
-  Future<void> _removeTime(int noticeId) async {
-    await NoticeUsecase().removeNotice(noticeId);
-    loadSchedule();
-  }
-
-  Future<void> _changeTime(BuildContext context, NoticeDataModel notice) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.dialOnly,
-    );
-    if (picked != null) {
-      final newNotice = notice.copyWith(time: picked);
-      await NoticeUsecase().updateNotice(newNotice);
-      loadSchedule();
-    }
-    HapticFeedback.lightImpact();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
@@ -211,7 +208,7 @@ class _NoticePageState extends State<NoticePage> {
                                 activeTrackColor: MyTheme.lemon,
                                 inactiveThumbColor: Colors.grey,
                                 inactiveTrackColor: Colors.white,
-                                value: noticeManageModel.noticeEnable,
+                                value: noticeManageModel.value.noticeEnable,
                                 activeColor: MyTheme.grey,
                                 onChanged: (bool value) async {
                                   HapticFeedback.lightImpact();
@@ -232,34 +229,36 @@ class _NoticePageState extends State<NoticePage> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 2, horizontal: 14),
-                                  decoration: noticeManageModel.noticeEnable
-                                      ? BoxDecoration(
-                                          color: Colors.grey.shade900,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              color: MyTheme.lemon, width: 1.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: MyTheme.lemon
-                                                  .withOpacity(0.8),
-                                              blurRadius: 5.0,
+                                  decoration:
+                                      noticeManageModel.value.noticeEnable
+                                          ? BoxDecoration(
+                                              color: Colors.grey.shade900,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: MyTheme.lemon,
+                                                  width: 1.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: MyTheme.lemon
+                                                      .withOpacity(0.8),
+                                                  blurRadius: 5.0,
+                                                )
+                                              ],
                                             )
-                                          ],
-                                        )
-                                      : BoxDecoration(
-                                          color: Colors.grey.shade900,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              color: Colors.grey.shade100,
-                                              width: 0.7),
-                                        ),
+                                          : BoxDecoration(
+                                              color: Colors.grey.shade900,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade100,
+                                                  width: 0.7),
+                                            ),
                                   child: SingleChildScrollView(
                                     child: Column(children: [
-                                      ...noticeManageModel.noticeList
-                                          .map((e) =>
-                                              _buildTimeContent(context, e))
+                                      ...noticeManageModel.value.noticeList
+                                          .map((e) => _buildTimeContent(
+                                              e, changeTime, handleTapRemove))
                                           .toList(),
                                       const SizedBox(
                                         height: 50,
@@ -267,7 +266,7 @@ class _NoticePageState extends State<NoticePage> {
                                     ]),
                                   ),
                                 ),
-                                noticeManageModel.noticeEnable
+                                noticeManageModel.value.noticeEnable
                                     ? const SizedBox.shrink()
                                     : IgnorePointer(
                                         child: DecoratedBox(
@@ -285,14 +284,16 @@ class _NoticePageState extends State<NoticePage> {
                             height: 42,
                           ),
                           LayoutBuilder(builder: (context, constraints) {
-                            const space = 30.0;
+                            const space = 24.0;
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 _buildSampleButton(
-                                    (constraints.maxWidth - space) * 0.5),
+                                    (constraints.maxWidth - space) * 0.5,
+                                    handleTapSample),
                                 _buildAddButton(
-                                    (constraints.maxWidth - space) * 0.5),
+                                    (constraints.maxWidth - space) * 0.5,
+                                    handleTapAdd),
                               ],
                             );
                           }),
@@ -309,7 +310,8 @@ class _NoticePageState extends State<NoticePage> {
     );
   }
 
-  Widget _buildTimeContent(BuildContext context, NoticeDataModel notice) {
+  Widget _buildTimeContent(NoticeDataModel notice,
+      Function(NoticeDataModel) onTap, Function(NoticeDataModel) onTapDelete) {
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.only(top: 6, bottom: 6, left: 18, right: 6),
@@ -321,7 +323,7 @@ class _NoticePageState extends State<NoticePage> {
         behavior: HitTestBehavior.opaque,
         onTap: () {
           HapticFeedback.lightImpact();
-          _changeTime(context, notice);
+          onTap(notice);
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -345,7 +347,7 @@ class _NoticePageState extends State<NoticePage> {
             ),
             IconButton(
                 onPressed: () {
-                  _handleTapRemove(notice);
+                  onTapDelete(notice);
                 },
                 icon: Icon(Icons.delete_rounded,
                     color: Colors.grey.shade300, size: 32))
@@ -355,11 +357,11 @@ class _NoticePageState extends State<NoticePage> {
     );
   }
 
-  Widget _buildSampleButton(double width) {
+  Widget _buildSampleButton(double width, Function() onTap) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
-        handleTapSample();
+        onTap();
       },
       width: width,
       height: 65,
@@ -411,11 +413,11 @@ class _NoticePageState extends State<NoticePage> {
     );
   }
 
-  Widget _buildAddButton(double width) {
+  Widget _buildAddButton(double width, Function() onTap) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
-        _handleTapAdd(context);
+        onTap();
       },
       width: width,
       height: 65,
