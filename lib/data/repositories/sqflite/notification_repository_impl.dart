@@ -24,7 +24,6 @@ class NotificationRepositoryImpl implements NotificationRepository {
   static const time = 'time';
 
   static Database? _database;
-  @override
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();

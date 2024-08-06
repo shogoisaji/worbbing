@@ -38,6 +38,7 @@ dependencies:
   go_router:
   riverpod_annotation:
   hooks_riverpod:
+  path:
 
 dev_dependencies:
   flutter_test:
