@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:worbbing/models/translate_language.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 class LanguageDropdownVertical extends StatefulWidget {
@@ -102,7 +102,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                           return DropdownMenuItem<TranslateLanguage>(
                             value: value,
                             child: Text(
-                              value.string,
+                              value.upperString,
                             ),
                           );
                         }).toList(),
@@ -145,7 +145,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                           return DropdownMenuItem<TranslateLanguage>(
                             value: value,
                             child: Text(
-                              value.string,
+                              value.upperString,
                             ),
                           );
                         }).toList(),

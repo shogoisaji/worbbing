@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:worbbing/application/usecase/app_state_usecase.dart';
-import 'package:worbbing/models/translate_language.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';

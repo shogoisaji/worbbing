@@ -2,7 +2,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:worbbing/models/translate_language.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 
 part 'word_model.freezed.dart';
 part 'word_model.g.dart';

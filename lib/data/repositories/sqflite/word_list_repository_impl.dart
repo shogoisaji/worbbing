@@ -1,10 +1,18 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worbbing/core/exceptions/database_exception.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
-import 'package:worbbing/models/translate_language.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
+
+part 'word_list_repository_impl.g.dart';
+
+@riverpod
+WordListRepositoryImpl wordListRepositoryImpl(WordListRepositoryImplRef ref) {
+  throw UnimplementedError();
+}
 
 class WordListRepositoryImpl implements WordListRepository {
   static const _databaseName = "Words_Database.db";
@@ -116,7 +124,7 @@ class WordListRepositoryImpl implements WordListRepository {
   }
 
   @override
-  Future<List<WordModel>> fetchWordList(
+  Future<List<WordModel>> getWordList(
       {String? orderBy, bool isDesc = true, bool isFlag = false}) async {
     final db = await database;
     final dataList = await db.query(table,
@@ -127,7 +135,7 @@ class WordListRepositoryImpl implements WordListRepository {
   }
 
   @override
-  Future<WordModel> fetchWordById(String id) async {
+  Future<WordModel> getWordById(String id) async {
     Database db = await database;
     final data = await db.query(
       table,
@@ -176,7 +184,7 @@ class WordListRepositoryImpl implements WordListRepository {
   }
 
   @override
-  Future<int> fetchTotalWords() async {
+  Future<int> getTotalWords() async {
     Database db = await database;
     final List<Map<String, Object?>> result = await db.query(
       table,
@@ -200,7 +208,7 @@ class WordListRepositoryImpl implements WordListRepository {
   }
 
   @override
-  Future<WordModel> fetchRandomWord() async {
+  Future<WordModel> getRandomWord() async {
     final db = await database;
     String query = "SELECT * FROM $table ORDER BY RANDOM() LIMIT 1";
     Map<String, Object?> result =
