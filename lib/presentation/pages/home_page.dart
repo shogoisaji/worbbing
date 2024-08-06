@@ -4,10 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:worbbing/core/constants/ticket_constans.dart';
+import 'package:worbbing/core/constants/ticket_constants.dart';
 import 'package:worbbing/data/repositories/shared_preferences/ticket_repository_impl.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
 import 'package:worbbing/domain/usecases/ticket/earn_ticket_usecase.dart';
+import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
@@ -25,17 +26,24 @@ class HomePage extends HookConsumerWidget {
     final viewModel = ref.watch(homePageViewModelProvider);
     final isEnableSlideHint =
         ref.watch(settingPageViewModelProvider).enableSlideHint;
+    final ticketRepository = ref.watch(ticketRepositoryImplProvider);
 
     final appLifecycleState = useAppLifecycleState();
 
     final refresh = useState(false);
 
     final handleEarnTicket = useCallback(() {
-      final usecase = EarnTicketUsecase(ref.read(ticketRepositoryImplProvider));
+      final usecase = EarnTicketUsecase(ticketRepository);
       usecase.execute(TicketConstants.rewardEarnTicket);
     }, [ref]);
+
     final handleTapTag = useCallback((int index) {
       ref.read(homePageViewModelProvider.notifier).tagSelect(index);
+      ref.read(homePageViewModelProvider.notifier).getWordList();
+    }, [ref]);
+
+    final handleTapList = useCallback((WordModel word) async {
+      await context.push(PagePath.detail, extra: word);
       ref.read(homePageViewModelProvider.notifier).getWordList();
     }, [ref]);
 
@@ -183,7 +191,7 @@ class HomePage extends HookConsumerWidget {
                             wordModel: item,
                             onWordUpdate: () {},
                             onTapList: () async {
-                              await context.push(PagePath.detail, extra: item);
+                              handleTapList(item);
                             },
                             isEnableSlideHint: isEnableSlideHint,
                           ),

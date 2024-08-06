@@ -33,11 +33,13 @@ class RegistrationPage extends HookConsumerWidget {
     final w = MediaQuery.of(context).size.width;
     final ticket = ref.watch(ticketStateProvider);
     final ticketNotifier = ref.read(ticketStateProvider.notifier);
+
     final originalWordController =
         useTextEditingController(text: initialText ?? "");
     final translatedController = useTextEditingController();
     final exampleController = useTextEditingController();
     final exampleTranslatedController = useTextEditingController();
+
     final focusNode = useFocusNode();
 
     final originalLanguage = useState<TranslateLanguage>(

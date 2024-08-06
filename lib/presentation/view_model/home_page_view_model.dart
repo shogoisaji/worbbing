@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:worbbing/application/state/router_path_state.dart';
 import 'package:worbbing/application/state/share_text_state.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/entities/ticket_state.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/delete_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/get_word_list_usecase.dart';
@@ -24,7 +25,7 @@ class HomePageState {
   const HomePageState({
     this.tagState = 0,
     this.wordList = const [],
-    this.ticketCount = 0,
+    required this.ticketCount,
     this.sharedText = '',
   });
 
@@ -46,7 +47,9 @@ class HomePageState {
 class HomePageViewModel extends _$HomePageViewModel {
   @override
   HomePageState build() {
-    return const HomePageState();
+    return HomePageState(
+      ticketCount: ref.watch(ticketStateProvider),
+    );
   }
 
   Future<void> getWordList() async {
@@ -111,9 +114,7 @@ class HomePageViewModel extends _$HomePageViewModel {
         initialText: ref.watch(shareTextStateProvider),
       ),
     );
-    // if (!_disposed) {
-    //   refreshWordList();
-    // }
+    await getWordList();
   }
 }
 // final homePageViewModelProvider = ChangeNotifierProvider((ref) {

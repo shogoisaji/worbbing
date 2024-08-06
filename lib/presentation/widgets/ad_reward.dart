@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:worbbing/application/helper/ad_helper.dart';
 import 'package:worbbing/application/helper/ad_test_helper.dart';
-import 'package:worbbing/core/constants/ticket_constans.dart';
+import 'package:worbbing/core/constants/ticket_constants.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';

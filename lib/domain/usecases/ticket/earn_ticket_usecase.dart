@@ -6,6 +6,7 @@ class EarnTicketUsecase {
   EarnTicketUsecase(this.ticketRepository);
 
   Future<void> execute(int count) async {
+    print('EarnTicketUsecase');
     await ticketRepository.earnTicket(count);
   }
 }
