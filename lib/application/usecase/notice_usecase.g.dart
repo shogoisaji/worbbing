@@ -6,7 +6,7 @@ part of 'notice_usecase.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$noticeUsecaseHash() => r'6e3ded180c0dc71e473ab09da6dd8810503c2f3f';
+String _$noticeUsecaseHash() => r'596bec1d84b2cd675d873e4e59e36283fd817f91';
 
 /// See also [noticeUsecase].
 @ProviderFor(noticeUsecase)

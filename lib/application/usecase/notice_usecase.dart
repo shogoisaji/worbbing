@@ -9,7 +9,7 @@ import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.d
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/repository/sqflite/notification_repository.dart';
 import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
-import 'package:worbbing/pages/notice_page.dart';
+import 'package:worbbing/presentation/pages/notice_page.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';

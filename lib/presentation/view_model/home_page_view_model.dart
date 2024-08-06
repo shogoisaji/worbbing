@@ -9,7 +9,7 @@ import 'package:worbbing/application/state/ticket_state.dart';
 import 'package:worbbing/application/state/word_list_state.dart';
 import 'package:worbbing/application/usecase/word_list_usecase.dart';
 import 'package:worbbing/models/word_model.dart';
-import 'package:worbbing/pages/registration_page.dart';
+import 'package:worbbing/presentation/pages/registration_page.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
