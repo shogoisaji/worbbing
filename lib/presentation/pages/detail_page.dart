@@ -367,7 +367,7 @@ class DetailPage extends HookConsumerWidget {
                 Border.all(color: MyTheme.blue.withOpacity(0.7), width: 1.0),
           ),
           child: Text(
-            wordModel.originalLang.string,
+            wordModel.originalLang.upperString,
             style:
                 TextStyle(color: MyTheme.blue.withOpacity(0.7), fontSize: 18),
           ),
@@ -381,7 +381,7 @@ class DetailPage extends HookConsumerWidget {
                 Border.all(color: MyTheme.blue.withOpacity(0.7), width: 1.0),
           ),
           child: Text(
-            wordModel.translatedLang.string,
+            wordModel.translatedLang.upperString,
             style:
                 TextStyle(color: MyTheme.blue.withOpacity(0.7), fontSize: 18),
           ),

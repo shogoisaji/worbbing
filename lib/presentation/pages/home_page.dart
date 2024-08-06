@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:worbbing/application/state/ticket_state.dart';
+import 'package:worbbing/core/constants/ticket_constans.dart';
+import 'package:worbbing/data/repositories/shared_preferences/ticket_repository_impl.dart';
 import 'package:worbbing/application/usecase/notice_usecase.dart';
+import 'package:worbbing/domain/usecases/ticket/earn_ticket_usecase.dart';
 import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
@@ -28,20 +30,27 @@ class HomePage extends HookConsumerWidget {
 
     final refresh = useState(false);
 
-    final handleEarnTicket = useCallback((int earnTicketCount) {
-      ref.read(ticketStateProvider.notifier).earnTicket(earnTicketCount);
+    final handleEarnTicket = useCallback(() {
+      final usecase = EarnTicketUsecase(ref.read(ticketRepositoryImplProvider));
+      usecase.execute(TicketConstants.rewardEarnTicket);
+    }, [ref]);
+    final handleTapTag = useCallback((int index) {
+      ref.read(homePageViewModelProvider.notifier).tagSelect(index);
+      ref.read(homePageViewModelProvider.notifier).getWordList();
     }, [ref]);
 
     useEffect(() {
-      SchedulerBinding.instance
-          .addPostFrameCallback((_) => viewModel.setSlideHintState());
-
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(homePageViewModelProvider.notifier).getWordList();
+      });
       return null;
     }, []);
+
     useEffect(() {
       if (viewModel.sharedText != "") {
-        SchedulerBinding.instance
-            .addPostFrameCallback((_) => viewModel.getTextAction(context));
+        SchedulerBinding.instance.addPostFrameCallback((_) => ref
+            .read(homePageViewModelProvider.notifier)
+            .getTextAction(context));
       }
       return null;
     }, [viewModel.sharedText]);
@@ -112,8 +121,9 @@ class HomePage extends HookConsumerWidget {
             /// floating Action Button
             floatingActionButton: Padding(
                 padding: const EdgeInsets.only(bottom: 5, right: 10.0),
-                child: _customFloatingActionButton(
-                    () => viewModel.showRegistrationBottomSheet(context))),
+                child: _customFloatingActionButton(() => ref
+                    .read(homePageViewModelProvider.notifier)
+                    .showRegistrationBottomSheet(context))),
             body: Column(
               children: [
                 Container(
@@ -129,13 +139,13 @@ class HomePage extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           tagSelect('Notice', viewModel.tagState, 0, () {
-                            viewModel.tagSelect(0);
+                            handleTapTag(0);
                           }),
                           tagSelect('LatestAdd', viewModel.tagState, 1, () {
-                            viewModel.tagSelect(1);
+                            handleTapTag(1);
                           }),
                           tagSelect('Flag', viewModel.tagState, 2, () {
-                            viewModel.tagSelect(2);
+                            handleTapTag(2);
                           }),
                         ],
                       ),
@@ -171,10 +181,9 @@ class HomePage extends HookConsumerWidget {
                         children: [
                           WordListTile(
                             wordModel: item,
-                            onWordUpdate: () => viewModel.refreshWordList(),
+                            onWordUpdate: () {},
                             onTapList: () async {
                               await context.push(PagePath.detail, extra: item);
-                              viewModel.refreshWordList();
                             },
                             isEnableSlideHint: isEnableSlideHint,
                           ),

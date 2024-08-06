@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rive_animated_icon/rive_animated_icon.dart';
 import 'package:worbbing/application/api/translate_api.dart';
-import 'package:worbbing/application/state/ticket_state.dart';
+import 'package:worbbing/domain/entities/ticket_state.dart';
 import 'package:worbbing/application/state/translate_lang_state.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';

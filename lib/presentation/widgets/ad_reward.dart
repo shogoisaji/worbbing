@@ -4,13 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:worbbing/application/helper/ad_helper.dart';
 import 'package:worbbing/application/helper/ad_test_helper.dart';
+import 'package:worbbing/core/constants/ticket_constans.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 
 class AdReward extends StatefulWidget {
   final Widget child;
-  final Function(int) onEarnTicket;
+  final Function() onEarnTicket;
   const AdReward({
     super.key,
     required this.child,
@@ -22,7 +23,6 @@ class AdReward extends StatefulWidget {
 }
 
 class _AdRewardState extends State<AdReward> {
-  static const int earnTicketCount = 5;
   RewardedAd? _rewardedAd;
 
   void _loadRewardedAd() {
@@ -68,7 +68,7 @@ class _AdRewardState extends State<AdReward> {
             Padding(
               padding: const EdgeInsets.only(bottom: 1, left: 4),
               child: bodyText(
-                  '動画広告を最後まで視聴することで、チケットが $earnTicketCount 枚ゲットできます。\n\n※音声が流れる可能せがあります。',
+                  '動画広告を最後まで視聴することで、チケットが ${TicketConstants.rewardEarnTicket} 枚ゲットできます。\n\n※音声が流れる可能せがあります。',
                   Colors.white),
             ),
             const SizedBox(height: 12),
@@ -96,7 +96,7 @@ class _AdRewardState extends State<AdReward> {
 
       _rewardedAd?.show(
         onUserEarnedReward: (_, reward) {
-          widget.onEarnTicket(earnTicketCount);
+          widget.onEarnTicket();
         },
       );
     });

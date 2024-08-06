@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'setting_page_state.dart';
+part of 'app_settings.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$settingPageViewModelHash() =>
-    r'00c372482d16b2fc28ef9b175565dd6f70ae0f81';
+String _$appSettingsStateHash() => r'7de87544c900fde02fc4e87c568788889bb0d29d';
 
-/// See also [SettingPageViewModel].
-@ProviderFor(SettingPageViewModel)
-final settingPageViewModelProvider = AutoDisposeNotifierProvider<
-    SettingPageViewModel, SettingPageState>.internal(
-  SettingPageViewModel.new,
-  name: r'settingPageViewModelProvider',
+/// See also [AppSettingsState].
+@ProviderFor(AppSettingsState)
+final appSettingsStateProvider =
+    NotifierProvider<AppSettingsState, AppSettings>.internal(
+  AppSettingsState.new,
+  name: r'appSettingsStateProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$settingPageViewModelHash,
+      : _$appSettingsStateHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$SettingPageViewModel = AutoDisposeNotifier<SettingPageState>;
+typedef _$AppSettingsState = Notifier<AppSettings>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

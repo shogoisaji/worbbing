@@ -9,9 +9,9 @@ import 'package:worbbing/models/word_model.dart';
 
 part 'word_list_repository_impl.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 WordListRepositoryImpl wordListRepositoryImpl(WordListRepositoryImplRef ref) {
-  throw UnimplementedError();
+  return WordListRepositoryImpl();
 }
 
 class WordListRepositoryImpl implements WordListRepository {
@@ -130,7 +130,7 @@ class WordListRepositoryImpl implements WordListRepository {
     final dataList = await db.query(table,
         where: isFlag ? '$flag = ?' : null,
         whereArgs: isFlag ? [1] : null,
-        orderBy: '$orderBy ?? $registrationDate ${isDesc ? 'DESC' : 'ASC'}');
+        orderBy: '${orderBy ?? registrationDate} ${isDesc ? 'DESC' : 'ASC'}');
     return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 
