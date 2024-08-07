@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'package:worbbing/core/exceptions/permission_exception.dart';
 import 'package:worbbing/domain/entities/notice_data_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/notice_page_view_model.dart';
@@ -28,8 +30,26 @@ class NoticePage extends HookConsumerWidget {
     final viewModel = ref.watch(noticePageViewModelProvider);
     final viewModelNotifier = ref.read(noticePageViewModelProvider.notifier);
 
+    Future<void> showNoticePermissionDialog() async {
+      YesNoDialog.show(
+          context: context,
+          title:
+              'Notification permission is OFF.\nPlease turn ON notification permission.',
+          noText: 'Cancel',
+          yesText: 'Go Settings',
+          onNoPressed: () {},
+          onYesPressed: () {
+            AppSettings.openAppSettings();
+          },
+          type: YesNoDialogType.caution);
+    }
+
     Future<void> handleSwitchNotice() async {
-      await viewModelNotifier.handleSwitchNotice();
+      try {
+        await viewModelNotifier.switchNotice();
+      } on NotificationPermissionDeniedException catch (_) {
+        showNoticePermissionDialog();
+      }
     }
 
     Future<void> handleTapAdd() async {
@@ -84,7 +104,11 @@ class NoticePage extends HookConsumerWidget {
     }
 
     void handleTapSample() async {
-      await viewModelNotifier.showSampleNotice();
+      try {
+        await viewModelNotifier.showSampleNotice();
+      } on NotificationPermissionDeniedException catch (_) {
+        showNoticePermissionDialog();
+      }
     }
 
     useEffect(() {

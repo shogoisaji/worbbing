@@ -6,7 +6,7 @@ part of 'ticket_state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$ticketStateHash() => r'23dd9080901d72a13e0a8c8c578026ff76900e47';
+String _$ticketStateHash() => r'8836534d25ac28b5ae71a9fb190273176d6c8220';
 
 /// See also [TicketState].
 @ProviderFor(TicketState)

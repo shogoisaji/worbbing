@@ -1,6 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:worbbing/core/exceptions/permission_exception.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
+import 'package:worbbing/domain/usecases/permission/notification_permission.dart';
 import 'package:worbbing/domain/usecases/word/get_random_word_usecase.dart';
 
 class ShowSampleNotificationUsecase {
@@ -8,6 +10,10 @@ class ShowSampleNotificationUsecase {
   final WordListRepository wordListRepository;
 
   Future<void> execute() async {
+    final bool isPermitted =
+        await NotificationPermissionUsecase().checkNotificationPermissions();
+    if (!isPermitted) throw NotificationPermissionDeniedException();
+
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
     WordModel? word = await GetRandomWordUsecase(wordListRepository).execute();

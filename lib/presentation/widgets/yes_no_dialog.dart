@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
+enum YesNoDialogType { caution, warning }
+
 class YesNoDialog {
   static show({
     required BuildContext context,
@@ -10,6 +12,7 @@ class YesNoDialog {
     required String yesText,
     required Function() onNoPressed,
     required Function() onYesPressed,
+    YesNoDialogType type = YesNoDialogType.warning,
   }) {
     showDialog(
         context: context,
@@ -30,8 +33,11 @@ class YesNoDialog {
                     HapticFeedback.lightImpact();
                     Navigator.of(dialogContext).pop();
                   },
-                  child:
-                      Text(noText, style: const TextStyle(color: Colors.white)),
+                  child: Text(noText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      )),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -40,7 +46,10 @@ class YesNoDialog {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(3),
                     ),
-                    backgroundColor: MyTheme.red,
+                    backgroundColor: switch (type) {
+                      YesNoDialogType.caution => MyTheme.lemon,
+                      YesNoDialogType.warning => MyTheme.red,
+                    },
                   ),
                   onPressed: () async {
                     HapticFeedback.lightImpact();
@@ -49,8 +58,17 @@ class YesNoDialog {
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(yesText,
-                      style: const TextStyle(color: Colors.white)),
-                ),
+                      style: switch (type) {
+                        YesNoDialogType.caution => TextStyle(
+                            color: MyTheme.grey,
+                            fontSize: 20,
+                          ),
+                        YesNoDialogType.warning => const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                      }),
+                )
               ],
             ));
   }

@@ -77,7 +77,7 @@ class NoticePageViewModel extends _$NoticePageViewModel {
     getNoticeList();
   }
 
-  Future<void> handleSwitchNotice() async {
+  Future<void> switchNotice() async {
     await SwitchEnableNotificationUsecase(
       ref.read(sharedPreferencesRepositoryProvider),
       ref.read(notificationRepositoryProvider),

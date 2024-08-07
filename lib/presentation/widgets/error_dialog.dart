@@ -42,9 +42,9 @@ class ErrorDialog {
                   },
                   child: Text("OK",
                       style: TextStyle(
-                          color: MyTheme.grey,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600)),
+                        color: MyTheme.grey,
+                        fontSize: 22,
+                      )),
                 ),
               ],
             ));

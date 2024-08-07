@@ -1,10 +1,12 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:worbbing/core/exceptions/permission_exception.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/domain/entities/notice_data_model.dart';
 import 'package:worbbing/domain/repositories/notification_repository.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
 import 'package:worbbing/domain/usecases/notice/set_schedule_usecase.dart';
+import 'package:worbbing/domain/usecases/permission/notification_permission.dart';
 
 class SwitchEnableNotificationUsecase {
   final SharedPreferencesRepository sharedPreferencesRepository;
@@ -15,11 +17,16 @@ class SwitchEnableNotificationUsecase {
       this.notificationRepository, this.wordListRepository);
 
   Future<void> execute() async {
+    final bool isPermitted =
+        await NotificationPermissionUsecase().checkNotificationPermissions();
+    if (!isPermitted) throw NotificationPermissionDeniedException();
+
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     final currentIsEnabled = sharedPreferencesRepository
             .fetch<bool>(SharedPreferencesKey.noticedEnable) ??
         false;
+
     final switchedIsEnabled = !currentIsEnabled;
     await sharedPreferencesRepository.save<bool>(
         SharedPreferencesKey.noticedEnable, switchedIsEnabled);

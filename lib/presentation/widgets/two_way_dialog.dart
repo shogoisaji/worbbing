@@ -144,10 +144,7 @@ class TwoWayDialogWidget extends StatelessWidget {
                       child: Center(
                           child: AutoSizeText(leftButtonText,
                               style: TextStyle(
-                                color: Colors.grey.shade800,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ))),
+                                  color: Colors.grey.shade800, fontSize: 22))),
                     ),
                   )),
                   const SizedBox(width: 12),
@@ -175,9 +172,8 @@ class TwoWayDialogWidget extends StatelessWidget {
                           child: Center(
                               child: AutoSizeText(rightButtonText,
                                   style: TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 22,
                                     color: leftTextColor ?? MyTheme.grey,
-                                    fontWeight: FontWeight.bold,
                                   )))),
                     ),
                   ),

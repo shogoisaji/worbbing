@@ -1,22 +1,24 @@
 import 'dart:async';
 
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+
+import 'package:worbbing/domain/usecases/app/first_launch_usecase.dart';
 import 'package:worbbing/providers/router_path_provider.dart';
 import 'package:worbbing/application/utils/package_info_utils.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/routes/router.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -119,6 +121,12 @@ class MyApp extends HookConsumerWidget {
     useEffect(() {
       // 初期化時にリスナーへ追加
       router.routerDelegate.addListener(handleRouteChange);
+
+      /// 初回起動時
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(firstLaunchUsecaseProvider).checkFirstLaunch(context);
+      });
+
       return () {
         // dispose時にリスナーから削除
         router.routerDelegate.removeListener(handleRouteChange);
