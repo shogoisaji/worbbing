@@ -468,7 +468,7 @@ class DetailPage extends HookConsumerWidget {
       edgeLineColor: Colors.orange.shade300,
       edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
       child: Align(
-        alignment: const Alignment(0.8, 0.9),
+        alignment: const Alignment(0.75, 0.9),
         child: Transform(
           alignment: Alignment.center,
           transform: Matrix4.rotationX(0.5),
@@ -510,7 +510,7 @@ class DetailPage extends HookConsumerWidget {
       edgeLineColor: Colors.red.shade300,
       edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
       child: Align(
-        alignment: const Alignment(0.8, 0.9),
+        alignment: const Alignment(0.65, 0.9),
         child: Transform(
           alignment: Alignment.center,
           transform: Matrix4.rotationX(0.5),

@@ -347,7 +347,7 @@ class NoticePage extends HookConsumerWidget {
                   ),
                 ),
                 Align(
-                  alignment: const Alignment(0.8, 1.0),
+                  alignment: const Alignment(0.7, 1.0),
                   child: Text(
                     'Sample',
                     style: TextStyle(

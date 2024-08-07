@@ -75,8 +75,10 @@ class RegistrationPage extends HookConsumerWidget {
     Future<void> shakeAnimation(AnimationController controller,
         {int times = 2}) async {
       for (int i = 0; i < times; i++) {
+        originalColor.value = MyTheme.red;
         await controller.forward();
         await controller.reverse();
+        originalColor.value = MyTheme.lemon;
       }
     }
 
@@ -85,6 +87,7 @@ class RegistrationPage extends HookConsumerWidget {
         shakeAnimation(originalAnimationController);
         return;
       }
+      focusNode.unfocus();
       try {
         final res = await ref
             .read(registrationPageViewModelProvider.notifier)
@@ -122,180 +125,6 @@ class RegistrationPage extends HookConsumerWidget {
         ErrorDialog.show(context: context, text: 'Failed to translate!');
       }
     }
-
-    // Future<void> translateWord(int ticket) async {
-    //   if (ticket <= 0) {
-    //     if (!context.mounted) return;
-    //     MySimpleDialog.show(
-    //         context,
-    //         const Row(
-    //           children: [
-    //             Text('No Ticket ',
-    //                 style: TextStyle(
-    //                   color: Colors.white,
-    //                   fontSize: 24,
-    //                 )),
-    //             Icon(Icons.sentiment_very_dissatisfied_rounded, size: 36)
-    //           ],
-    //         ),
-    //         'OK', () {
-    //       //
-    //     });
-    //     return;
-    //   }
-    //   if (originalWordController.text == "") {
-    //     originalColor.value = MyTheme.red;
-    //     await shakeAnimation(originalAnimationController);
-    //     originalColor.value = MyTheme.lemon;
-    //     return;
-    //   }
-    //   isLoading.value = true;
-    //   animationController.forward();
-    //   translatedController.text = "";
-    //   exampleController.text = "";
-    //   exampleTranslatedController.text = "";
-
-    //   FocusScope.of(context).unfocus();
-    //   focusNode.unfocus();
-    //   try {
-    //     final res = await TranslateApi.postRequest(
-    //         originalWordController.text,
-    //         originalLanguage.value.lowerString,
-    //         translateLanguage.value.lowerString);
-    //     final translatedModel = TranslatedApiResponse.fromJson(res);
-
-    //     if (translatedModel.type == TranslatedResponseType.suggestion) {
-    //       if (!context.mounted) return;
-    //       await TwoWayDialog.show(
-    //           context,
-    //           'Maybe...this word?',
-    //           RiveAnimatedIcon(
-    //               riveIcon: RiveIcon.graduate,
-    //               width: 70,
-    //               height: 70,
-    //               color: Colors.white,
-    //               loopAnimation: true,
-    //               onTap: () {},
-    //               onHover: (value) {}),
-    //           Column(
-    //             mainAxisSize: MainAxisSize.min,
-    //             crossAxisAlignment: CrossAxisAlignment.start,
-    //             children: [
-    //               Padding(
-    //                 padding: const EdgeInsets.only(bottom: 1, left: 4),
-    //                 child: bodyText('Input Original', Colors.grey.shade400),
-    //               ),
-    //               Container(
-    //                 width: double.infinity,
-    //                 height: 50,
-    //                 decoration: BoxDecoration(
-    //                   borderRadius: BorderRadius.circular(2),
-    //                   border: Border.all(color: Colors.grey.shade400),
-    //                 ),
-    //                 padding:
-    //                     const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-    //                 child: Align(
-    //                   alignment: Alignment.centerLeft,
-    //                   child: AutoSizeText(
-    //                     originalWordController.text,
-    //                     style: TextStyle(
-    //                         fontSize: 30, color: Colors.grey.shade400),
-    //                     minFontSize: 16,
-    //                     maxLines: 1,
-    //                   ),
-    //                 ),
-    //               ),
-    //               const SizedBox(height: 12),
-    //               Padding(
-    //                 padding: const EdgeInsets.only(bottom: 1, left: 4),
-    //                 child: bodyText('Suggest Original', Colors.white),
-    //               ),
-    //               Container(
-    //                 width: double.infinity,
-    //                 height: 50,
-    //                 decoration: BoxDecoration(
-    //                   color: Colors.white,
-    //                   borderRadius: BorderRadius.circular(2),
-    //                 ),
-    //                 padding:
-    //                     const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-    //                 child: Align(
-    //                   alignment: Alignment.centerLeft,
-    //                   child: AutoSizeText(
-    //                     translatedModel.original,
-    //                     style:
-    //                         const TextStyle(fontSize: 30, color: Colors.black),
-    //                     minFontSize: 16,
-    //                     maxLines: 1,
-    //                   ),
-    //                 ),
-    //               ),
-    //               const SizedBox(height: 12),
-    //               Padding(
-    //                 padding: const EdgeInsets.only(bottom: 1, left: 4),
-    //                 child: bodyText('Translated', Colors.white),
-    //               ),
-    //               Container(
-    //                 width: double.infinity,
-    //                 height: 50,
-    //                 decoration: BoxDecoration(
-    //                   color: Colors.white,
-    //                   borderRadius: BorderRadius.circular(2),
-    //                 ),
-    //                 padding:
-    //                     const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-    //                 child: Align(
-    //                   alignment: Alignment.centerLeft,
-    //                   child: AutoSizeText(
-    //                     translatedModel.translated[0],
-    //                     style:
-    //                         const TextStyle(fontSize: 30, color: Colors.black),
-    //                     minFontSize: 16,
-    //                     maxLines: 1,
-    //                   ),
-    //                 ),
-    //               ),
-    //               const SizedBox(height: 8),
-    //             ],
-    //           ),
-    //           leftButtonText: 'No',
-    //           rightButtonText: 'Yes', onLeftButtonPressed: () {
-    //         //
-    //       }, onRightButtonPressed: () async {
-    //         await ticketNotifier.useTicket();
-
-    //         originalWordController.text = translatedModel.original;
-    //         translatedController.text =
-    //             "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
-    //         exampleController.text = translatedModel.example;
-    //         exampleTranslatedController.text =
-    //             translatedModel.exampleTranslated;
-    //       });
-    //     } else {
-    //       await ticketNotifier.useTicket();
-    //       originalWordController.text = translatedModel.original;
-    //       translatedController.text =
-    //           "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
-    //       exampleController.text = translatedModel.example;
-    //       exampleTranslatedController.text = translatedModel.exampleTranslated;
-    //     }
-    //   } catch (e) {
-    //     if (!context.mounted) return;
-    //     MySimpleDialog.show(
-    //         context,
-    //         const Text('Failed to translate!',
-    //             style: TextStyle(
-    //               color: Colors.white,
-    //               fontSize: 24,
-    //             )),
-    //         'OK', () {
-    //       //
-    //     });
-    //   } finally {
-    //     isLoading.value = false;
-    //     animationController.reverse();
-    //   }
-    // }
 
     Future<void> saveWord() async {
       bool isOriginalEmpty = originalWordController.text.isEmpty;
@@ -353,6 +182,7 @@ class RegistrationPage extends HookConsumerWidget {
             ignoring: viewModel.isLoading,
             child: Scaffold(
                 backgroundColor: Colors.transparent,
+                resizeToAvoidBottomInset: false,
                 body: Stack(children: [
                   viewModel.isLoading
                       ? buildLoading(h, w)
@@ -557,215 +387,13 @@ class RegistrationPage extends HookConsumerWidget {
                                                       ),
                                                     ),
                                                   ),
-                                                  Align(
-                                                      alignment: Alignment
-                                                          .bottomCenter,
-                                                      child: Container(
-                                                          width:
-                                                              double.infinity,
-                                                          height: 90 +
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .padding
-                                                                  .bottom,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .blueGrey
-                                                                .shade800,
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.3),
-                                                                offset:
-                                                                    const Offset(
-                                                                        0, -2),
-                                                                blurRadius: 7,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          child: SafeArea(
-                                                            child: Center(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        28),
-                                                                child: LayoutBuilder(
-                                                                    builder:
-                                                                        (context,
-                                                                            constraints) {
-                                                                  const widthRate =
-                                                                      [5, 1, 8];
-                                                                  final cancelWidth = constraints
-                                                                          .maxWidth *
-                                                                      widthRate[
-                                                                          0] /
-                                                                      widthRate.reduce(
-                                                                          (a, b) =>
-                                                                              a +
-                                                                              b);
-                                                                  final spaceWidth = constraints
-                                                                          .maxWidth *
-                                                                      widthRate[
-                                                                          1] /
-                                                                      widthRate.reduce(
-                                                                          (a, b) =>
-                                                                              a +
-                                                                              b);
-                                                                  final saveWidth = constraints
-                                                                          .maxWidth *
-                                                                      widthRate[
-                                                                          2] /
-                                                                      widthRate.reduce(
-                                                                          (a, b) =>
-                                                                              a +
-                                                                              b);
-                                                                  return Row(
-                                                                    children: [
-                                                                      KatiButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          HapticFeedback
-                                                                              .lightImpact();
-                                                                          context
-                                                                              .pop();
-                                                                        },
-                                                                        width:
-                                                                            cancelWidth,
-                                                                        height:
-                                                                            65,
-                                                                        elevation:
-                                                                            8,
-                                                                        buttonRadius:
-                                                                            12,
-                                                                        stageOffset:
-                                                                            5,
-                                                                        inclinationRate:
-                                                                            0.9,
-                                                                        buttonColor: Colors
-                                                                            .grey
-                                                                            .shade300,
-                                                                        stageColor: Colors
-                                                                            .blueGrey
-                                                                            .shade600,
-                                                                        stagePointColor: Colors
-                                                                            .blueGrey
-                                                                            .shade500,
-                                                                        edgeLineColor: Colors
-                                                                            .grey
-                                                                            .shade100,
-                                                                        edgeBorder: Border.all(
-                                                                            color:
-                                                                                Colors.white.withOpacity(0.5),
-                                                                            width: 0.8),
-                                                                        child:
-                                                                            Align(
-                                                                          alignment: const Alignment(
-                                                                              0.5,
-                                                                              0.85),
-                                                                          child:
-                                                                              Transform(
-                                                                            alignment:
-                                                                                Alignment.center,
-                                                                            transform:
-                                                                                Matrix4.rotationX(0.5),
-                                                                            child:
-                                                                                Text(
-                                                                              'Cancel',
-                                                                              style: TextStyle(
-                                                                                fontSize: 26,
-                                                                                color: MyTheme.greyForOrange,
-                                                                                fontWeight: FontWeight.bold,
-                                                                                shadows: [
-                                                                                  BoxShadow(
-                                                                                    color: Colors.grey.shade800,
-                                                                                    blurRadius: 1.0,
-                                                                                    offset: const Offset(0, -0.7),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                          width:
-                                                                              spaceWidth),
-                                                                      KatiButton(
-                                                                        onPressed:
-                                                                            () async {
-                                                                          HapticFeedback
-                                                                              .lightImpact();
-                                                                          await saveWord();
-                                                                        },
-                                                                        width:
-                                                                            saveWidth,
-                                                                        height:
-                                                                            65,
-                                                                        elevation:
-                                                                            8,
-                                                                        buttonRadius:
-                                                                            12,
-                                                                        stageOffset:
-                                                                            5,
-                                                                        inclinationRate:
-                                                                            0.9,
-                                                                        edgeLineColor: Colors
-                                                                            .orange
-                                                                            .shade300,
-                                                                        buttonColor:
-                                                                            MyTheme.orange,
-                                                                        stageColor: Colors
-                                                                            .blueGrey
-                                                                            .shade600,
-                                                                        stagePointColor: Colors
-                                                                            .blueGrey
-                                                                            .shade500,
-                                                                        edgeBorder: Border.all(
-                                                                            color:
-                                                                                Colors.white.withOpacity(0.5),
-                                                                            width: 0.8),
-                                                                        child:
-                                                                            Align(
-                                                                          alignment: const Alignment(
-                                                                              0.8,
-                                                                              0.8),
-                                                                          child:
-                                                                              Transform(
-                                                                            alignment:
-                                                                                Alignment.center,
-                                                                            transform:
-                                                                                Matrix4.rotationX(0.5),
-                                                                            child:
-                                                                                Text(
-                                                                              'Save',
-                                                                              style: TextStyle(
-                                                                                fontSize: 28,
-                                                                                color: MyTheme.greyForOrange,
-                                                                                fontWeight: FontWeight.bold,
-                                                                                shadows: [
-                                                                                  BoxShadow(
-                                                                                    color: Colors.grey.shade800,
-                                                                                    blurRadius: 1.0,
-                                                                                    offset: const Offset(0, -0.7),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                }),
-                                                              ),
-                                                            ),
-                                                          )))
-                                                ])))))
-                          ])))
+                                                ]))))),
+                          ]))),
+                  _buildUnderButtons(context, () {
+                    context.pop();
+                  }, () async {
+                    await saveWord();
+                  })
                 ]))));
   }
 
@@ -818,6 +446,129 @@ class RegistrationPage extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildUnderButtons(
+      BuildContext context, VoidCallback onCancel, VoidCallback onSave) {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+            width: double.infinity,
+            height: 90 + MediaQuery.of(context).padding.bottom,
+            decoration: BoxDecoration(
+              color: Colors.blueGrey.shade800,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  offset: const Offset(0, -2),
+                  blurRadius: 7,
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    const widthRate = [6, 1, 8];
+                    final cancelWidth = constraints.maxWidth *
+                        widthRate[0] /
+                        widthRate.reduce((a, b) => a + b);
+                    final spaceWidth = constraints.maxWidth *
+                        widthRate[1] /
+                        widthRate.reduce((a, b) => a + b);
+                    final saveWidth = constraints.maxWidth *
+                        widthRate[2] /
+                        widthRate.reduce((a, b) => a + b);
+                    return Row(
+                      children: [
+                        KatiButton(
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            onCancel();
+                          },
+                          width: cancelWidth,
+                          height: 65,
+                          elevation: 8,
+                          buttonRadius: 12,
+                          stageOffset: 5,
+                          inclinationRate: 0.9,
+                          buttonColor: Colors.grey.shade300,
+                          stageColor: Colors.blueGrey.shade600,
+                          stagePointColor: Colors.blueGrey.shade500,
+                          edgeLineColor: Colors.grey.shade100,
+                          edgeBorder: Border.all(
+                              color: Colors.white.withOpacity(0.5), width: 0.8),
+                          child: Align(
+                            alignment: const Alignment(0.4, 0.85),
+                            child: Transform(
+                              alignment: Alignment.center,
+                              transform: Matrix4.rotationX(0.5),
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  color: MyTheme.greyForOrange,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade800,
+                                      blurRadius: 1.0,
+                                      offset: const Offset(0, -0.7),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: spaceWidth),
+                        KatiButton(
+                          onPressed: () async {
+                            HapticFeedback.lightImpact();
+                            onSave();
+                          },
+                          width: saveWidth,
+                          height: 65,
+                          elevation: 8,
+                          buttonRadius: 12,
+                          stageOffset: 5,
+                          inclinationRate: 0.9,
+                          edgeLineColor: Colors.orange.shade300,
+                          buttonColor: MyTheme.orange,
+                          stageColor: Colors.blueGrey.shade600,
+                          stagePointColor: Colors.blueGrey.shade500,
+                          edgeBorder: Border.all(
+                              color: Colors.white.withOpacity(0.5), width: 0.8),
+                          child: Align(
+                            alignment: const Alignment(0.75, 0.8),
+                            child: Transform(
+                              alignment: Alignment.center,
+                              transform: Matrix4.rotationX(0.5),
+                              child: Text(
+                                'Save',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  color: MyTheme.greyForOrange,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade800,
+                                      blurRadius: 1.0,
+                                      offset: const Offset(0, -0.7),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+            )));
   }
 }
 
