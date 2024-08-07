@@ -12,39 +12,77 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:worbbing/application/state/router_path_state.dart';
 import 'package:worbbing/application/utils/package_info_utils.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/routes/router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   late final PackageInfo packageInfo;
-
-  /// shared_preferencesの初期化
   late final SharedPreferences sharedPreferences;
-  sharedPreferences = await SharedPreferences.getInstance();
 
-  /// 通知用のタイムゾーンの初期化
-  tz.initializeTimeZones();
-  tz.setLocalLocation(tz.getLocation("Asia/Tokyo"));
+  Future<void> initializeNotificationsAndATT() async {
+    /// 通知許可
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+    await flutterLocalNotificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      ),
 
-  /// 広告の初期化
-  MobileAds.instance.initialize();
+      /// 通知をタップした時の処理
+      ///
+      // onDidReceiveNotificationResponse: (NotificationResponse details) {
+      //   if (details.payload == 'notice_tap') {
+      //     print('notice id : ${details.id}');
+      //   }
+      // },
+    );
 
-  /// 画面の向きを固定
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+    /// ATTの許可
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status == TrackingStatus.notDetermined) {
+      /// milliseconds: 200 -> could not display ATT permission.
+      await Future.delayed(const Duration(milliseconds: 500));
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+  }
 
-  /// 上部にシステムUIを表示
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  await (
+    Future(() async {
+      packageInfo = await PackageInfo.fromPlatform();
+    }),
+    Future(() async {
+      sharedPreferences = await SharedPreferences.getInstance();
+    }),
+    Future(() async {
+      tz.initializeTimeZones();
+      final currentTimeZone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(currentTimeZone));
+      print(currentTimeZone);
+    }),
 
-  /// 通知&ATT許可
-  initializeNotificationsAndATT();
+    /// 縦固定
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]),
 
-  packageInfo = await PackageInfo.fromPlatform();
+    /// システムUIを上部に表示
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge),
+
+    /// admobを初期化
+    MobileAds.instance.initialize(),
+
+    /// 起動時の通知とATTのポップアップ
+    initializeNotificationsAndATT(),
+  ).wait;
 
   const app = MyApp();
   final scope = ProviderScope(
@@ -59,37 +97,6 @@ Future<void> main() async {
     home: scope,
     debugShowCheckedModeBanner: false,
   ));
-}
-
-Future<void> initializeNotificationsAndATT() async {
-  /// 通知許可
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.requestNotificationsPermission();
-  await flutterLocalNotificationsPlugin.initialize(
-    const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
-    ),
-
-    /// 通知をタップした時の処理
-    ///
-    // onDidReceiveNotificationResponse: (NotificationResponse details) {
-    //   if (details.payload == 'notice_tap') {
-    //     print('notice id : ${details.id}');
-    //   }
-    // },
-  );
-
-  /// ATTの許可
-  final status = await AppTrackingTransparency.trackingAuthorizationStatus;
-  if (status == TrackingStatus.notDetermined) {
-    /// milliseconds: 200 -> could not display ATT permission.
-    await Future.delayed(const Duration(milliseconds: 500));
-    await AppTrackingTransparency.requestTrackingAuthorization();
-  }
 }
 
 class MyApp extends HookConsumerWidget {
