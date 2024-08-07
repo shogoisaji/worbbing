@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:worbbing/application/api/translate_api.dart';
+
 import 'package:worbbing/core/exceptions/registration_page_exception.dart';
+import 'package:worbbing/data/datasources/api/translate_api.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
 
 part 'registration_page_view_model.g.dart';
@@ -91,9 +92,7 @@ class RegistrationPageViewModel extends _$RegistrationPageViewModel {
 
     try {
       final res = await TranslateApi.postRequest(
-          input,
-          state.originalLanguage.lowerString,
-          state.translateLanguage.lowerString);
+          input, state.originalLanguage.name, state.translateLanguage.name);
       final translatedModel = TranslatedApiResponse.fromJson(res);
 
       return translatedModel;

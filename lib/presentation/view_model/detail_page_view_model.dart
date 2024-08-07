@@ -1,8 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/word/delete_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/update_word_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
 
 part 'detail_page_view_model.g.dart';
 

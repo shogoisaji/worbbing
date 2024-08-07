@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'dart:async';
 import 'package:go_router/go_router.dart';
+
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/routes/router.dart';
 

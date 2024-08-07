@@ -10,7 +10,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:worbbing/application/state/router_path_state.dart';
+import 'package:worbbing/providers/router_path_provider.dart';
 import 'package:worbbing/application/utils/package_info_utils.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -112,7 +112,7 @@ class MyApp extends HookConsumerWidget {
 
         // RouteMatchListから各種情報を取得
         final path = config.last.matchedLocation; // stack最後=現在のパス
-        ref.read(routerPathStateProvider.notifier).setPathState(path);
+        ref.read(routerPathProvider.notifier).setPathState(path);
       });
     }
 

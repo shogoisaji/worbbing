@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+
 import 'package:worbbing/core/exceptions/database_exception.dart';
 import 'package:worbbing/core/exceptions/registration_page_exception.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';
-import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/registration_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -18,10 +23,6 @@ import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown_vertical.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/widgets/translate_suggest_dialog.dart';
-import 'package:lottie/lottie.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
 class RegistrationPage extends HookConsumerWidget {
   final String? initialText;

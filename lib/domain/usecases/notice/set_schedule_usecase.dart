@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:worbbing/domain/entities/notice_data_model.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
-import 'package:worbbing/models/word_model.dart';
 
 import 'package:timezone/timezone.dart' as tz;
 

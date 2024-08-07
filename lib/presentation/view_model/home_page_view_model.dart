@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:worbbing/application/state/router_path_state.dart';
-import 'package:worbbing/application/state/share_text_state.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'package:worbbing/providers/router_path_provider.dart';
+import 'package:worbbing/providers/share_text_provider.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/delete_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/get_word_list_usecase.dart';
 import 'package:worbbing/domain/usecases/word/update_word_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/pages/registration_page.dart';
 import 'package:worbbing/providers/tag_state_provider.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:worbbing/routes/router.dart';
 
 part 'home_page_view_model.g.dart';
@@ -49,7 +50,7 @@ class HomePageViewModel extends _$HomePageViewModel {
   HomePageState build() {
     return HomePageState(
       ticketCount: ref.watch(ticketStateProvider),
-      sharedText: ref.watch(shareTextStateProvider),
+      sharedText: ref.watch(shareTextProvider),
     );
   }
 
@@ -92,7 +93,7 @@ class HomePageViewModel extends _$HomePageViewModel {
   }
 
   Future<void> getTextAction(BuildContext context) async {
-    final pathState = ref.read(routerPathStateProvider);
+    final pathState = ref.read(routerPathProvider);
 
     /// PagePath.homeからcontext.go(PagePath.home)すると
     /// sharedTextがリセットされてしまうため、
@@ -101,7 +102,7 @@ class HomePageViewModel extends _$HomePageViewModel {
       context.go(PagePath.home);
     }
     await showRegistrationBottomSheet(context);
-    ref.read(shareTextStateProvider.notifier).reset();
+    ref.read(shareTextProvider.notifier).reset();
   }
 
   Future<void> showRegistrationBottomSheet(BuildContext context) async {
@@ -112,7 +113,7 @@ class HomePageViewModel extends _$HomePageViewModel {
       isScrollControlled: true,
       context: context,
       builder: (_) => RegistrationPage(
-        initialText: ref.watch(shareTextStateProvider),
+        initialText: ref.watch(shareTextProvider),
       ),
     );
   }

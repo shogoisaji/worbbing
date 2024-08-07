@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:worbbing/application/state/translate_lang_state.dart';
+
 import 'package:worbbing/application/utils/package_info_utils.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
@@ -67,9 +67,14 @@ class SettingPageViewModel extends _$SettingPageViewModel {
     try {
       state = state.copyWith(isLoading: true);
 
-      final originalLanguage = ref.read(translateLangStateProvider)['original'];
-      final translateLanguage =
-          ref.read(translateLangStateProvider)['translate'];
+      final originalLanguage = ref
+              .read(sharedPreferencesRepositoryProvider)
+              .fetch<String>(SharedPreferencesKey.originalLang) ??
+          TranslateLanguage.english.name;
+      final translateLanguage = ref
+              .read(sharedPreferencesRepositoryProvider)
+              .fetch<String>(SharedPreferencesKey.translateLang) ??
+          TranslateLanguage.japanese.name;
       final version = ref.read(packageInfoUtilsProvider).appVersion;
       final totalWords =
           await GetTotalWordsUsecase(ref.read(wordListRepositoryProvider))
@@ -81,8 +86,10 @@ class SettingPageViewModel extends _$SettingPageViewModel {
 
       state = state.copyWith(
         isLoading: false,
-        originalLanguage: originalLanguage,
-        translateLanguage: translateLanguage,
+        originalLanguage:
+            TranslateLanguageExtension.fromString(originalLanguage),
+        translateLanguage:
+            TranslateLanguageExtension.fromString(translateLanguage),
         version: version,
         totalWords: totalWords,
         noticeCount: noticeCount,
@@ -112,12 +119,18 @@ class SettingPageViewModel extends _$SettingPageViewModel {
   }
 
   void updateOriginalLanguage(TranslateLanguage value) async {
-    ref.read(translateLangStateProvider.notifier).changeOriginalLang(value);
+    ref.read(sharedPreferencesRepositoryProvider).save<String>(
+          SharedPreferencesKey.originalLang,
+          value.name,
+        );
     state = state.copyWith(originalLanguage: value);
   }
 
   void updateTranslateLanguage(TranslateLanguage value) async {
-    ref.read(translateLangStateProvider.notifier).changeTranslateLang(value);
+    ref.read(sharedPreferencesRepositoryProvider).save<String>(
+          SharedPreferencesKey.translateLang,
+          value.name,
+        );
     state = state.copyWith(translateLanguage: value);
   }
 }

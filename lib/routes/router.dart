@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/presentation/pages/detail_page.dart';
 import 'package:worbbing/presentation/pages/ebbinghaus_page.dart';
 import 'package:worbbing/presentation/pages/home_page.dart';

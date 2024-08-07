@@ -1,11 +1,11 @@
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/domain/entities/notice_data_model.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/repositories/notification_repository.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
 import 'package:worbbing/domain/usecases/notice/update_notification_usecase.dart';
 import 'package:worbbing/domain/usecases/word/get_random_word_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
 
 class ShuffleNotificationUsecase {
   ShuffleNotificationUsecase(this.wordListRepository,

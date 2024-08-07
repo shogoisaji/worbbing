@@ -3,9 +3,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worbbing/core/exceptions/database_exception.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
-import 'package:worbbing/models/word_model.dart';
 
 part 'word_list_repository_impl.g.dart';
 
@@ -169,8 +169,8 @@ class WordListRepositoryImpl implements WordListRepository {
         example: wordModel.example,
         exampleTranslated: wordModel.exampleTranslated,
         updateDate: wordModel.updateDate,
-        originalLang: wordModel.originalLang,
-        translatedLang: wordModel.translatedLang,
+        originalLang: wordModel.originalLang.name,
+        translatedLang: wordModel.translatedLang.name,
         updateCount: wordModel.updateCount,
         flag: wordModel.flag ? 1 : 0,
         noticeDuration: wordModel.noticeDuration,

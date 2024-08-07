@@ -44,9 +44,9 @@ class WordModel with _$WordModel {
         example: json['example'] as String?,
         exampleTranslated: json['example_translated'] as String?,
         originalLang: TranslateLanguage.values
-            .firstWhere((e) => e.lowerString == json['original_lang']),
+            .firstWhere((e) => e.name == json['original_lang']),
         translatedLang: TranslateLanguage.values
-            .firstWhere((e) => e.lowerString == json['translated_lang']),
+            .firstWhere((e) => e.name == json['translated_lang']),
       );
 
   factory WordModel.createNewWord({

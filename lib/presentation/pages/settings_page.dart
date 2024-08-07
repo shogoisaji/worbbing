@@ -3,17 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:worbbing/application/usecase/app_state_usecase.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:worbbing/domain/entities/translate_language.dart';
-import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown_horizontal.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
+import 'package:worbbing/providers/demo_manager_provider.dart';
 import 'package:worbbing/routes/router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SettingsPage extends HookConsumerWidget {
   const SettingsPage({super.key});
@@ -50,7 +51,7 @@ class SettingsPage extends HookConsumerWidget {
     }
 
     void handleTapDemo() {
-      ref.read(appStateUsecaseProvider.notifier).showDemo(context);
+      ref.read(demoManagerProvider.notifier).showDemo(context);
     }
 
     void handleTapForgettingCurve() {

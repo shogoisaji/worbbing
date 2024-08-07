@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:worbbing/core/constants/ticket_constants.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/data/repositories/sqflite/notification_repository_impl.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/notice/shuffle_notification_usecase.dart';
 import 'package:worbbing/domain/usecases/word/down_duration_usecase.dart';
 import 'package:worbbing/domain/usecases/word/up_duration_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_state.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
-import 'package:worbbing/presentation/widgets/ticket_widget.dart';
-import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
+import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/routes/router.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
 import 'package:worbbing/domain/usecases/word/get_random_word_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
 
 class ShowSampleNotificationUsecase {
   ShowSampleNotificationUsecase(this.wordListRepository);

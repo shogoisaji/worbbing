@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
-import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/presentation/widgets/demo.dart';
 
-part 'app_state_usecase.g.dart';
+part 'demo_manager_provider.g.dart';
 
 @riverpod
-class AppStateUsecase extends _$AppStateUsecase with WidgetsBindingObserver {
+class DemoManager extends _$DemoManager with WidgetsBindingObserver {
   @override
-  AppStateUsecase build() {
+  DemoManager build() {
     WidgetsBinding.instance.addObserver(this);
     return this;
   }
@@ -20,26 +18,6 @@ class AppStateUsecase extends _$AppStateUsecase with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused) {
       removeOverlay();
     }
-  }
-
-  bool isFirst() {
-    return ref
-            .read(sharedPreferencesRepositoryProvider)
-            .fetch<bool>(SharedPreferencesKey.isFirst) ??
-        true;
-  }
-
-  Future<void> doneFirst() async {
-    await ref
-        .read(sharedPreferencesRepositoryProvider)
-        .save<bool>(SharedPreferencesKey.isFirst, false);
-  }
-
-  bool isEnabledSlideHint() {
-    return ref
-            .read(sharedPreferencesRepositoryProvider)
-            .fetch<bool>(SharedPreferencesKey.isEnabledSlideHint) ??
-        true;
   }
 
   OverlayEntry? overlay;
@@ -56,7 +34,6 @@ class AppStateUsecase extends _$AppStateUsecase with WidgetsBindingObserver {
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    doneFirst();
                     removeOverlay();
                   },
                   child: Container(

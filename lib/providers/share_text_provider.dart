@@ -1,10 +1,10 @@
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'share_text_state.g.dart';
+part 'share_text_provider.g.dart';
 
 @Riverpod(keepAlive: true)
-class ShareTextState extends _$ShareTextState {
+class ShareText extends _$ShareText {
   @override
   String build() {
     _init();

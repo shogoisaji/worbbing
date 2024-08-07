@@ -1,4 +1,4 @@
-import 'package:worbbing/models/word_model.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 
 abstract class WordListRepository {
   Future<List<WordModel>> getWordList(
