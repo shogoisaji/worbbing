@@ -126,11 +126,16 @@ class WordListRepositoryImpl implements WordListRepository {
   @override
   Future<List<WordModel>> getWordList(
       {String? orderBy, bool isDesc = true, bool isFlag = false}) async {
+    String orderByClause = 'registration_date DESC';
+    if (orderBy != null) {
+      orderByClause += ', $orderBy ${isDesc ? 'DESC' : 'ASC'}';
+    }
+
     final db = await database;
     final dataList = await db.query(table,
         where: isFlag ? '$flag = ?' : null,
         whereArgs: isFlag ? [1] : null,
-        orderBy: '${orderBy ?? registrationDate} ${isDesc ? 'DESC' : 'ASC'}');
+        orderBy: orderByClause);
     return dataList.map((e) => WordModel.fromJson(e)).toList();
   }
 

@@ -29,6 +29,7 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(homePageViewModelProvider);
+    final viewModelNotifier = ref.read(homePageViewModelProvider.notifier);
     final isEnableSlideHint =
         ref.watch(settingPageViewModelProvider).enableSlideHint;
 
@@ -53,18 +54,23 @@ class HomePage extends HookConsumerWidget {
     }, [ref]);
 
     final handleUpdateWord = useCallback(() {
-      ref.read(homePageViewModelProvider.notifier).getWordList();
+      viewModelNotifier.getWordList();
     }, [ref]);
 
     final handleTapTag = useCallback((int index) {
-      ref.read(homePageViewModelProvider.notifier).tagSelect(index);
-      ref.read(homePageViewModelProvider.notifier).getWordList();
+      viewModelNotifier.tagSelect(index);
+      viewModelNotifier.getWordList();
     }, [ref]);
 
     final handleTapList = useCallback((WordModel word) async {
       await context.push(PagePath.detail, extra: word);
-      ref.read(homePageViewModelProvider.notifier).getWordList();
+      viewModelNotifier.getWordList();
     }, [ref]);
+
+    handleTapFAB() async {
+      await viewModelNotifier.showRegistrationBottomSheet(context);
+      viewModelNotifier.getWordList();
+    }
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -152,9 +158,7 @@ class HomePage extends HookConsumerWidget {
             /// floating Action Button
             floatingActionButton: Padding(
                 padding: const EdgeInsets.only(bottom: 5, right: 10.0),
-                child: _customFloatingActionButton(() => ref
-                    .read(homePageViewModelProvider.notifier)
-                    .showRegistrationBottomSheet(context))),
+                child: _customFloatingActionButton(handleTapFAB)),
             body: Column(
               children: [
                 Container(

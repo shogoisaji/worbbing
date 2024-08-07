@@ -102,6 +102,7 @@ class HomePageViewModel extends _$HomePageViewModel {
       context.go(PagePath.home);
     }
     await showRegistrationBottomSheet(context);
+    getWordList();
     ref.read(shareTextProvider.notifier).reset();
   }
 
@@ -113,7 +114,7 @@ class HomePageViewModel extends _$HomePageViewModel {
       isScrollControlled: true,
       context: context,
       builder: (_) => RegistrationPage(
-        initialText: ref.watch(shareTextProvider),
+        initialText: ref.read(shareTextProvider),
       ),
     );
   }
