@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
-import 'package:worbbing/application/usecase/app_state_usecase.dart';
-import 'package:worbbing/models/word_model.dart';
-import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:worbbing/routes/router.dart';
 
-const HEIGHT = 87.0;
+const _listTileHeight = 87.0;
 
 class WordListTile extends StatefulWidget {
   final WordModel wordModel;
-  final Function onWordUpdate;
+  final VoidCallback onWordUpdate;
+  final VoidCallback onTapList;
+  final bool isEnabledSlideHint;
+  final VoidCallback onUpDuration;
+  final VoidCallback onDownDuration;
 
   const WordListTile({
     super.key,
     required this.wordModel,
     required this.onWordUpdate,
+    required this.onTapList,
+    required this.isEnabledSlideHint,
+    required this.onUpDuration,
+    required this.onDownDuration,
   });
 
   @override
@@ -43,8 +47,6 @@ class _WordListTileState extends State<WordListTile>
   Widget _widget = const SizedBox.shrink();
   Color _color = MyTheme.lemon;
 
-  bool _isEnableSlideHint = true;
-
   onWordUpdate() {
     widget.onWordUpdate();
   }
@@ -60,11 +62,11 @@ class _WordListTileState extends State<WordListTile>
 
   OverlayEntry? overlay;
 
-  void showHint(
+  void _showHint(
     BuildContext context,
     Offset position,
   ) {
-    if (overlay != null || !_isEnableSlideHint) return;
+    if (overlay != null || !widget.isEnabledSlideHint) return;
     final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
     final offset = renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
     overlay = OverlayEntry(
@@ -91,7 +93,6 @@ class _WordListTileState extends State<WordListTile>
     _widget = _translatedWord();
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
-    _isEnableSlideHint = AppStateUsecase().isEnableSlideHint();
   }
 
   @override
@@ -102,10 +103,18 @@ class _WordListTileState extends State<WordListTile>
   }
 
   @override
+  void didUpdateWidget(covariant WordListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.wordModel.id != oldWidget.wordModel.id) {
+      _widget = _translatedWord();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       key: _key,
-      height: HEIGHT,
+      height: _listTileHeight,
       child: Stack(
         children: [
           Container(
@@ -113,7 +122,7 @@ class _WordListTileState extends State<WordListTile>
             alignment: Alignment.centerLeft,
             color: _color,
             width: double.infinity,
-            height: HEIGHT,
+            height: _listTileHeight,
             child: _widget,
           ),
           SlideTransition(
@@ -132,8 +141,7 @@ class _WordListTileState extends State<WordListTile>
             return GestureDetector(
               onTap: () async {
                 HapticFeedback.lightImpact();
-                await context.push(PagePath.detail, extra: widget.wordModel.id);
-                widget.onWordUpdate();
+                widget.onTapList();
               },
               onHorizontalDragStart: (DragStartDetails details) {
                 _dragReset();
@@ -157,7 +165,7 @@ class _WordListTileState extends State<WordListTile>
                 final diffY = newY - dragStartY;
 
                 if (diffX > _dragRangeX) {
-                  showHint(context, details.localPosition);
+                  _showHint(context, details.localPosition);
                 }
 
                 if (diffY > _dragRangeY && diffX > _dragRangeX) {
@@ -201,15 +209,11 @@ class _WordListTileState extends State<WordListTile>
 
                 /// I don't understand the word
                 if (_color == MyTheme.blue) {
-                  await SqfliteRepository.instance
-                      .downDuration(widget.wordModel.id);
-                  widget.onWordUpdate();
+                  widget.onDownDuration();
 
                   /// I understand the word
                 } else if (_color == MyTheme.orange) {
-                  await SqfliteRepository.instance
-                      .upDuration(widget.wordModel.id);
-                  widget.onWordUpdate();
+                  widget.onUpDuration();
                 }
                 setState(() {
                   _color = MyTheme.lemon;
@@ -249,12 +253,12 @@ class _SlideCard extends StatelessWidget {
         color: Colors.black,
       ),
       width: MediaQuery.of(context).size.width,
-      height: HEIGHT,
+      height: _listTileHeight,
       child: Stack(
         children: [
           Container(
               width: double.infinity,
-              height: HEIGHT,
+              height: _listTileHeight,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -363,7 +367,7 @@ class _HintWidgetState extends State<HintWidget>
                     height: 50,
                   ),
                   SizedBox(height: _spacerY),
-                  const SizedBox(height: HEIGHT),
+                  const SizedBox(height: _listTileHeight),
                   SizedBox(height: _spacerY),
                   SvgPicture.asset(
                     'assets/svg/bad.svg',

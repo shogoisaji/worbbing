@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:worbbing/models/translate_language.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 
 class LanguageDropdownHorizontal extends StatefulWidget {
   final TranslateLanguage translateLanguage;
@@ -92,7 +92,7 @@ class _LanguageDropdownHorizontalState
                   return DropdownMenuItem<TranslateLanguage>(
                     value: value,
                     child: Text(
-                      value.string,
+                      value.upperString,
                     ),
                   );
                 }).toList(),
@@ -139,7 +139,7 @@ class _LanguageDropdownHorizontalState
                   return DropdownMenuItem<TranslateLanguage>(
                     value: value,
                     child: Text(
-                      value.string,
+                      value.upperString,
                     ),
                   );
                 }).toList(),

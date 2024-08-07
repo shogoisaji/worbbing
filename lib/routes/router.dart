@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:worbbing/pages/detail_page.dart';
-import 'package:worbbing/pages/ebbinghaus_page.dart';
-import 'package:worbbing/pages/home_page.dart';
-import 'package:worbbing/pages/notice_page.dart';
-import 'package:worbbing/pages/settings_page.dart';
-import 'package:worbbing/pages/splash_page.dart';
+import 'package:worbbing/domain/entities/word_model.dart';
+import 'package:worbbing/presentation/pages/detail_page.dart';
+import 'package:worbbing/presentation/pages/ebbinghaus_page.dart';
+import 'package:worbbing/presentation/pages/home_page.dart';
+import 'package:worbbing/presentation/pages/notice_page.dart';
+import 'package:worbbing/presentation/pages/settings_page.dart';
+import 'package:worbbing/presentation/pages/splash_page.dart';
 
 class PagePath {
   static const home = '/';
@@ -15,6 +16,7 @@ class PagePath {
   static const detail = '/detail';
   static const ebbinghaus = '/ebbinghaus';
   static const license = '/license';
+  static const registration = 'registration';
 }
 
 GoRouter router = GoRouter(
@@ -55,7 +57,7 @@ GoRouter router = GoRouter(
     GoRoute(
       path: PagePath.detail,
       builder: (BuildContext context, GoRouterState state) {
-        return DetailPage(id: state.extra as String);
+        return DetailPage(wordModel: state.extra as WordModel);
       },
     ),
     GoRoute(
@@ -67,7 +69,7 @@ GoRouter router = GoRouter(
     GoRoute(
       path: PagePath.license,
       builder: (BuildContext context, GoRouterState state) {
-        return const LicensePage();
+        return const LicensePage(applicationName: "Worbbing");
       },
     ),
   ],

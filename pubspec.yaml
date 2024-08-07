@@ -36,6 +36,11 @@ dependencies:
   app_tracking_transparency:
   flutter_sharing_intent:
   go_router:
+  riverpod_annotation:
+  hooks_riverpod:
+  path:
+  flutter_hooks: ^0.20.5
+  flutter_timezone: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +50,7 @@ dev_dependencies:
   json_serializable:
   flutter_launcher_icons:
   envied_generator:
+  riverpod_generator:
 
   flutter_lints: ^2.0.0
 
