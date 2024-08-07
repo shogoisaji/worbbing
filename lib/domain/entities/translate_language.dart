@@ -20,27 +20,26 @@ extension TranslateLanguageExtension on TranslateLanguage {
   }
 
   String get upperString {
-    return name.toUpperCase();
-    // switch (this) {
-    //   case TranslateLanguage.english:
-    //     return 'English';
-    //   case TranslateLanguage.japanese:
-    //     return 'Japanese';
-    //   case TranslateLanguage.chinese:
-    //     return 'Chinese';
-    //   case TranslateLanguage.korean:
-    //     return 'Korean';
-    //   case TranslateLanguage.spanish:
-    //     return 'Spanish';
-    //   case TranslateLanguage.french:
-    //     return 'French';
-    //   case TranslateLanguage.german:
-    //     return 'German';
-    //   case TranslateLanguage.italian:
-    //     return 'Italian';
-    //   case TranslateLanguage.portuguese:
-    //     return 'Portuguese';
-    // }
+    switch (this) {
+      case TranslateLanguage.english:
+        return 'English';
+      case TranslateLanguage.japanese:
+        return 'Japanese';
+      case TranslateLanguage.chinese:
+        return 'Chinese';
+      case TranslateLanguage.korean:
+        return 'Korean';
+      case TranslateLanguage.spanish:
+        return 'Spanish';
+      case TranslateLanguage.french:
+        return 'French';
+      case TranslateLanguage.german:
+        return 'German';
+      case TranslateLanguage.italian:
+        return 'Italian';
+      case TranslateLanguage.portuguese:
+        return 'Portuguese';
+    }
   }
 
   String get lowerString {

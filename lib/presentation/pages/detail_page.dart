@@ -8,11 +8,13 @@ import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/view_model/detail_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
+import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:worbbing/presentation/widgets/yes_no_dialog.dart';
 import 'package:worbbing/strings.dart';
 
 enum ContentType {
@@ -45,6 +47,8 @@ class DetailPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(detailPageViewModelProvider(wordModel));
+    final viewModelNotifier =
+        ref.watch(detailPageViewModelProvider(wordModel).notifier);
 
     final originalController = useTextEditingController();
     final translatedController = useTextEditingController();
@@ -153,15 +157,15 @@ class DetailPage extends HookConsumerWidget {
                         ),
                         onPressed: () async {
                           HapticFeedback.lightImpact();
-                          await viewModel.updateWordModel(
-                              wordModel.copyWith(
-                                originalWord: originalController.text,
-                                translatedWord: translatedController.text,
-                                example: exampleController.text,
-                                exampleTranslated:
-                                    exampleTranslatedController.text,
-                              ),
-                              context);
+                          await viewModelNotifier.updateWord(
+                            wordModel.copyWith(
+                              originalWord: originalController.text,
+                              translatedWord: translatedController.text,
+                              example: exampleController.text,
+                              exampleTranslated:
+                                  exampleTranslatedController.text,
+                            ),
+                          );
 
                           if (!editContext.mounted) return;
                           Navigator.of(editContext).pop();
@@ -179,11 +183,26 @@ class DetailPage extends HookConsumerWidget {
     }
 
     Future<void> handleTapFlag() async {
-      viewModel.handleTapFlag(context);
+      await viewModelNotifier.changeFlag();
     }
 
     void handleTapDelete() {
-      viewModel.handleTapDelete(context);
+      YesNoDialog.show(
+          context: context,
+          title: 'Do you really want to delete it?',
+          noText: 'Cancel',
+          yesText: 'Delete',
+          onNoPressed: () {},
+          onYesPressed: () async {
+            try {
+              await viewModelNotifier.deleteWord();
+            } catch (e) {
+              ErrorDialog.show(
+                context: context,
+                text: 'Delete failed.',
+              );
+            }
+          });
     }
 
     return Stack(
@@ -213,7 +232,7 @@ class DetailPage extends HookConsumerWidget {
                   HapticFeedback.lightImpact();
                   context.pop();
                 }),
-            actions: [_buildFlag(handleTapFlag, viewModel.wordModel.flag)],
+            actions: [buildFlag(handleTapFlag, viewModel.wordModel.flag)],
             backgroundColor: Colors.transparent,
           ),
           body: Stack(
@@ -275,7 +294,7 @@ class DetailPage extends HookConsumerWidget {
                                 bottomRight: Radius.circular(8),
                               ),
                               color: Colors.white.withOpacity(0.15)),
-                          child: Center(child: _buildDurationLabel(wordModel)),
+                          child: Center(child: buildDurationLabel(wordModel)),
                         ),
                       ],
                     ),
@@ -286,13 +305,13 @@ class DetailPage extends HookConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 42.0),
                       child: Column(
                         children: [
-                          _detailWordContent(ContentType.original,
+                          detailWordContent(ContentType.original,
                               viewModel.wordModel.originalWord),
-                          _detailWordContent(ContentType.translated,
+                          detailWordContent(ContentType.translated,
                               viewModel.wordModel.translatedWord),
-                          _detailWordContent(ContentType.example,
+                          detailWordContent(ContentType.example,
                               viewModel.wordModel.example ?? ''),
-                          _detailWordContent(ContentType.exampleTranslated,
+                          detailWordContent(ContentType.exampleTranslated,
                               viewModel.wordModel.exampleTranslated ?? ''),
                           const SizedBox(height: 10),
                           Padding(
@@ -304,15 +323,15 @@ class DetailPage extends HookConsumerWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  _buildDeleteButton(
+                                  buildDeleteButton(
                                       width * 0.46, handleTapDelete),
-                                  _buildEditButton(width * 0.46, handleTapEdit),
+                                  buildEditButton(width * 0.46, handleTapEdit),
                                 ],
                               );
                             }),
                           ),
                           const SizedBox(height: 32),
-                          _buildRegistrationDate(),
+                          buildRegistrationDate(),
                           const SizedBox(
                             height: 70,
                           ),
@@ -329,7 +348,7 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget _detailWordContent(
+  Widget detailWordContent(
     ContentType type,
     String word,
   ) {
@@ -427,7 +446,7 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildEditButton(double width, VoidCallback handleTapEdit) {
+  Widget buildEditButton(double width, VoidCallback handleTapEdit) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
@@ -469,7 +488,7 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildDeleteButton(double width, VoidCallback handleTapDelete) {
+  Widget buildDeleteButton(double width, VoidCallback handleTapDelete) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
@@ -511,7 +530,7 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildFlag(VoidCallback handleTapFlag, bool flag) {
+  Widget buildFlag(VoidCallback handleTapFlag, bool flag) {
     return GestureDetector(
       onTap: () async {
         HapticFeedback.lightImpact();
@@ -527,7 +546,7 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRegistrationDate() {
+  Widget buildRegistrationDate() {
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -548,7 +567,7 @@ class DetailPage extends HookConsumerWidget {
         ));
   }
 
-  Widget _buildDurationLabel(WordModel wordModel) {
+  Widget buildDurationLabel(WordModel wordModel) {
     final DateTime updateDateTime =
         DateTime.parse(wordModel.updateDate.toIso8601String());
     final int forgettingDuration =

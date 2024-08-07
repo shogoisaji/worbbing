@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 
 part 'translate_lang_state.g.dart';
 

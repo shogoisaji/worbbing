@@ -6,22 +6,21 @@ part of 'word_list_repository_impl.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$wordListRepositoryImplHash() =>
-    r'b0dff633bfe538acb1b176a1cfbf51194e0035d3';
+String _$wordListRepositoryHash() =>
+    r'0692400cd00bd809f2f3b67132c5db5856a00d18';
 
-/// See also [wordListRepositoryImpl].
-@ProviderFor(wordListRepositoryImpl)
-final wordListRepositoryImplProvider =
-    Provider<WordListRepositoryImpl>.internal(
-  wordListRepositoryImpl,
-  name: r'wordListRepositoryImplProvider',
+/// See also [wordListRepository].
+@ProviderFor(wordListRepository)
+final wordListRepositoryProvider = Provider<WordListRepository>.internal(
+  wordListRepository,
+  name: r'wordListRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$wordListRepositoryImplHash,
+      : _$wordListRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef WordListRepositoryImplRef = ProviderRef<WordListRepositoryImpl>;
+typedef WordListRepositoryRef = ProviderRef<WordListRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:worbbing/models/word_model.dart';
-import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/notice_block.dart';
@@ -14,14 +13,18 @@ class WordListTile extends StatefulWidget {
   final WordModel wordModel;
   final VoidCallback onWordUpdate;
   final VoidCallback onTapList;
-  final bool isEnableSlideHint;
+  final bool isEnabledSlideHint;
+  final VoidCallback onUpDuration;
+  final VoidCallback onDownDuration;
 
   const WordListTile({
     super.key,
     required this.wordModel,
     required this.onWordUpdate,
     required this.onTapList,
-    required this.isEnableSlideHint,
+    required this.isEnabledSlideHint,
+    required this.onUpDuration,
+    required this.onDownDuration,
   });
 
   @override
@@ -63,7 +66,7 @@ class _WordListTileState extends State<WordListTile>
     BuildContext context,
     Offset position,
   ) {
-    if (overlay != null || !widget.isEnableSlideHint) return;
+    if (overlay != null || !widget.isEnabledSlideHint) return;
     final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
     final offset = renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
     overlay = OverlayEntry(
@@ -206,15 +209,11 @@ class _WordListTileState extends State<WordListTile>
 
                 /// I don't understand the word
                 if (_color == MyTheme.blue) {
-                  await SqfliteRepository.instance
-                      .downDuration(widget.wordModel.id);
-                  widget.onWordUpdate();
+                  widget.onDownDuration();
 
                   /// I understand the word
                 } else if (_color == MyTheme.orange) {
-                  await SqfliteRepository.instance
-                      .upDuration(widget.wordModel.id);
-                  widget.onWordUpdate();
+                  widget.onUpDuration();
                 }
                 setState(() {
                   _color = MyTheme.lemon;

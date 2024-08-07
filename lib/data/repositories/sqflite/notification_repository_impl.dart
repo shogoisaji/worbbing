@@ -1,15 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:worbbing/domain/entities/notice_data_model.dart';
 import 'package:worbbing/domain/repositories/notification_repository.dart';
-import 'package:worbbing/models/notice_data_model.dart';
 
 part 'notification_repository_impl.g.dart';
 
 @riverpod
-NotificationRepositoryImpl notificationRepositoryImpl(
-    NotificationRepositoryImplRef ref) {
-  throw UnimplementedError();
+NotificationRepository notificationRepository(NotificationRepositoryRef ref) {
+  return NotificationRepositoryImpl();
 }
 
 class NotificationRepositoryImpl implements NotificationRepository {
@@ -49,6 +48,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   /// insert database row
+  @override
   Future<int> addNotice(NoticeDataModel noticeDataModel) async {
     Database db = await database;
 
@@ -61,7 +61,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<List<NoticeDataModel>> getAllNotice({bool isDesc = true}) async {
+  Future<List<NoticeDataModel>> getAllNotices({bool isDesc = true}) async {
     Database db = await database;
     final dataList = await db
         .query(table, orderBy: '$noticeId ${isDesc ? 'DESC' : 'ASC'}')

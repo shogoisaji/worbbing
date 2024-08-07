@@ -6,7 +6,7 @@ import 'package:worbbing/application/helper/ad_helper.dart';
 import 'package:worbbing/application/helper/ad_test_helper.dart';
 import 'package:worbbing/core/constants/ticket_constants.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
-import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
+import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 
 class AdReward extends StatefulWidget {
@@ -78,17 +78,7 @@ class _AdRewardState extends State<AdReward> {
         rightButtonText: '広告を見る',
         onLeftButtonPressed: () {}, onRightButtonPressed: () async {
       if (_rewardedAd == null) {
-        MySimpleDialog.show(
-            context,
-            const Text(
-              '広告の取得に失敗しました。',
-              style: TextStyle(
-                  overflow: TextOverflow.clip,
-                  color: Colors.white,
-                  fontSize: 24),
-            ),
-            'OK',
-            () {});
+        ErrorDialog.show(context: context, text: '広告の取得に失敗しました。');
         return;
       }
 

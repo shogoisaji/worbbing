@@ -1,10 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:worbbing/application/state/translate_lang_state.dart';
 import 'package:worbbing/application/utils/package_info_utils.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
+import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
-import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
+import 'package:worbbing/domain/usecases/word/count_notices_usecase.dart';
+import 'package:worbbing/domain/usecases/word/get_total_words_usecase.dart';
 
 part 'setting_page_state.g.dart';
 
@@ -69,9 +71,12 @@ class SettingPageViewModel extends _$SettingPageViewModel {
       final translateLanguage =
           ref.read(translateLangStateProvider)['translate'];
       final version = ref.read(packageInfoUtilsProvider).appVersion;
-      final totalWords = await SqfliteRepository.instance.totalWords();
+      final totalWords =
+          await GetTotalWordsUsecase(ref.read(wordListRepositoryProvider))
+              .execute();
       final noticeCount =
-          await SqfliteRepository.instance.countNoticeDuration();
+          await CountNoticesUsecase(ref.read(wordListRepositoryProvider))
+              .execute();
       final enableSlideHint = _loadSlideHint();
 
       state = state.copyWith(
@@ -92,7 +97,7 @@ class SettingPageViewModel extends _$SettingPageViewModel {
 
   bool _loadSlideHint() {
     return ref.read(sharedPreferencesRepositoryProvider).fetch<bool>(
-              SharedPreferencesKey.isEnableSlideHint,
+              SharedPreferencesKey.isEnabledSlideHint,
             ) ??
         true;
   }
@@ -100,7 +105,7 @@ class SettingPageViewModel extends _$SettingPageViewModel {
   void switchSlideHint() {
     final enableSlideHint = !state.enableSlideHint;
     ref.read(sharedPreferencesRepositoryProvider).save<bool>(
-          SharedPreferencesKey.isEnableSlideHint,
+          SharedPreferencesKey.isEnabledSlideHint,
           enableSlideHint,
         );
     state = state.copyWith(enableSlideHint: enableSlideHint);

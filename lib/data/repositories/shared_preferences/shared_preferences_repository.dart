@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
 
 part 'shared_preferences_repository.g.dart';
 

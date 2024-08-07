@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:worbbing/application/state/router_path_state.dart';
 import 'package:worbbing/application/state/share_text_state.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
-import 'package:worbbing/domain/entities/ticket_state.dart';
+import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/delete_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/get_word_list_usecase.dart';
@@ -49,36 +49,37 @@ class HomePageViewModel extends _$HomePageViewModel {
   HomePageState build() {
     return HomePageState(
       ticketCount: ref.watch(ticketStateProvider),
+      sharedText: ref.watch(shareTextStateProvider),
     );
   }
 
   Future<void> getWordList() async {
     final tagState = ref.read(tagStateProvider);
-    final usecase =
-        GetWordListUsecase(ref.read(wordListRepositoryImplProvider));
+    final usecase = GetWordListUsecase(ref.read(wordListRepositoryProvider));
     final result = await usecase.execute(tagState);
     state = state.copyWith(wordList: result);
   }
 
   Future<void> addWord(WordModel newWord) async {
-    final usecase = AddWordUsecase(ref.read(wordListRepositoryImplProvider));
+    final usecase = AddWordUsecase(ref.read(wordListRepositoryProvider));
     try {
       await usecase.execute(newWord);
-      state = state.copyWith(wordList: [...state.wordList, newWord]);
+      // state = state.copyWith(wordList: [...state.wordList, newWord]);
+      await getWordList();
     } catch (e) {
       rethrow;
     }
   }
 
   Future<void> deleteWord(String id) async {
-    final usecase = DeleteWordUsecase(ref.read(wordListRepositoryImplProvider));
+    final usecase = DeleteWordUsecase(ref.read(wordListRepositoryProvider));
     await usecase.execute(id);
     state = state.copyWith(
         wordList: state.wordList.where((word) => word.id != id).toList());
   }
 
   Future<void> updateWord(WordModel word) async {
-    final usecase = UpdateWordUsecase(ref.read(wordListRepositoryImplProvider));
+    final usecase = UpdateWordUsecase(ref.read(wordListRepositoryProvider));
     await usecase.execute(word);
     state = state.copyWith(
         wordList:
@@ -114,76 +115,5 @@ class HomePageViewModel extends _$HomePageViewModel {
         initialText: ref.watch(shareTextStateProvider),
       ),
     );
-    await getWordList();
   }
 }
-// final homePageViewModelProvider = ChangeNotifierProvider((ref) {
-//   final usecase = ref.watch(wordListUsecaseProvider);
-//   return HomePageViewModel(ref, usecase);
-// });
-
-// class HomePageViewModel extends ChangeNotifier {
-//   final Ref _ref;
-//   final WordListUsecase _usecase;
-//   bool _disposed = false;
-
-//   HomePageViewModel(this._ref, this._usecase);
-
-//   @override
-//   void dispose() {
-//     _disposed = true;
-//     super.dispose();
-//   }
-
-//   List<WordModel> get wordList => _ref.watch(wordListNotifierProvider);
-//   int get tagState => _ref.watch(homeTagStateProvider);
-//   int get ticketCount => _ref.watch(ticketStateProvider);
-//   String get sharedText => _ref.watch(shareTextStateProvider);
-//   bool get isEnableSlideHint => _ref.watch(slideHintStateProvider);
-
-//   Future<void> addNewWordModel(WordModel newWord, BuildContext context) async {
-//     String? result = await _usecase.addWordList(newWord);
-//     if (result == 'exist') {
-//       if (!context.mounted) return;
-//       await showExistingWordDialog(context, newWord.originalWord);
-//     } else {
-//       if (!context.mounted) return;
-//       Navigator.pop(context);
-//     }
-//     notifyListeners();
-//   }
-
-//   Future<void> showExistingWordDialog(BuildContext context, String word) async {
-//     await MySimpleDialog.show(
-//       context,
-//       Text('"$word" is\nalready registered.',
-//           style: const TextStyle(
-//               overflow: TextOverflow.clip, color: Colors.white, fontSize: 24)),
-//       'OK',
-//       () {},
-//     );
-//   }
-
-//   void tagSelect(int tagState) {
-//     _ref.read(homeTagStateProvider.notifier).setTagState(tagState);
-//     notifyListeners();
-//   }
-
-
-//   void refreshWordList() {
-//     if (_disposed) return;
-//     _ref.read(refreshWordListProvider);
-//     notifyListeners();
-//   }
-
-//   void setSlideHintState() {
-//     final isEnableSlideHint = _ref
-//             .read(sharedPreferencesRepositoryProvider)
-//             .fetch<bool>(SharedPreferencesKey.isEnableSlideHint) ??
-//         true;
-//     _ref
-//         .read(slideHintStateProvider.notifier)
-//         .setSlideHintState(isEnableSlideHint);
-//     notifyListeners();
-//   }
-// }

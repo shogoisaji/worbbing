@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/presentation/widgets/demo.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_keys.dart';
-import 'package:worbbing/repository/shared_preferences/shared_preferences_repository.dart';
 
 part 'app_state_usecase.g.dart';
 
@@ -35,10 +35,10 @@ class AppStateUsecase extends _$AppStateUsecase with WidgetsBindingObserver {
         .save<bool>(SharedPreferencesKey.isFirst, false);
   }
 
-  bool isEnableSlideHint() {
+  bool isEnabledSlideHint() {
     return ref
             .read(sharedPreferencesRepositoryProvider)
-            .fetch<bool>(SharedPreferencesKey.isEnableSlideHint) ??
+            .fetch<bool>(SharedPreferencesKey.isEnabledSlideHint) ??
         true;
   }
 

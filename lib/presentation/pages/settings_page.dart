@@ -347,7 +347,7 @@ class SettingsPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSlideHintSwitch(bool isEnable, VoidCallback onTap) {
+  Widget _buildSlideHintSwitch(bool isEnabled, VoidCallback onTap) {
     return Row(
       children: [
         Padding(
@@ -364,7 +364,7 @@ class SettingsPage extends HookConsumerWidget {
                       fontWeight: FontWeight.w500)),
               const SizedBox(width: 16),
               Opacity(
-                opacity: isEnable ? 1 : 0.3,
+                opacity: isEnabled ? 1 : 0.3,
                 child: SizedBox(
                     width: 50,
                     height: 45,
@@ -405,7 +405,7 @@ class SettingsPage extends HookConsumerWidget {
           activeTrackColor: MyTheme.lemon,
           inactiveThumbColor: Colors.grey,
           inactiveTrackColor: Colors.white,
-          value: isEnable,
+          value: isEnabled,
           onChanged: (value) async {
             HapticFeedback.lightImpact();
             onTap();

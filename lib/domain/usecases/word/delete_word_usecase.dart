@@ -1,13 +1,13 @@
 import 'package:worbbing/domain/repositories/word_list_repository.dart';
 
 class DeleteWordUsecase {
-  final WordListRepository _wordListRepository;
+  final WordListRepository wordListRepository;
 
-  DeleteWordUsecase(this._wordListRepository);
+  DeleteWordUsecase(this.wordListRepository);
 
   Future<void> execute(String wordId) async {
     try {
-      await _wordListRepository.deleteWord(wordId);
+      await wordListRepository.deleteWord(wordId);
     } catch (e) {
       rethrow;
     }

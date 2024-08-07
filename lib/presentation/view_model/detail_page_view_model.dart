@@ -1,85 +1,52 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:worbbing/application/usecase/word_list_usecase.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/usecases/word/delete_word_usecase.dart';
+import 'package:worbbing/domain/usecases/word/update_word_usecase.dart';
 import 'package:worbbing/models/word_model.dart';
-import 'package:worbbing/presentation/theme/theme.dart';
-import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
-import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
 
-final detailPageViewModelProvider =
-    ChangeNotifierProvider.family<DetailPageViewModel, WordModel>((ref, word) {
-  final usecase = ref.watch(wordListUsecaseProvider);
-  return DetailPageViewModel(usecase, word);
-});
+part 'detail_page_view_model.g.dart';
 
-class DetailPageViewModel extends ChangeNotifier {
-  final WordListUsecase _usecase;
-  WordModel _wordModel;
+class DetailPageState {
+  final WordModel wordModel;
 
-  DetailPageViewModel(this._usecase, WordModel initialWord)
-      : _wordModel = initialWord;
+  DetailPageState({
+    required this.wordModel,
+  });
 
-  WordModel get wordModel => _wordModel;
+  DetailPageState copyWith({
+    WordModel? wordModel,
+  }) {
+    return DetailPageState(
+      wordModel: wordModel ?? this.wordModel,
+    );
+  }
+}
 
-  void handleTapDelete(BuildContext context) async {
-    try {
-      TwoWayDialog.show(context, 'Do you really want to delete it?',
-          const Icon(Icons.help_outline, size: 36), null,
-          leftButtonText: 'Cancel',
-          rightButtonText: 'Delete',
-          onLeftButtonPressed: () {}, onRightButtonPressed: () async {
-        await _usecase.deleteWord(_wordModel);
-        if (!context.mounted) return;
-        context.pop();
-      },
-          titleColor: Colors.white,
-          leftBgColor: MyTheme.red,
-          leftTextColor: Colors.white);
-    } catch (e) {
-      MySimpleDialog.show(
-          context,
-          const Text(
-            'Delete failed.',
-            style: TextStyle(
-                overflow: TextOverflow.clip, color: Colors.white, fontSize: 20),
-          ),
-          'OK',
-          () {});
-    }
+@riverpod
+class DetailPageViewModel extends _$DetailPageViewModel {
+  @override
+  DetailPageState build(WordModel initialWordModel) {
+    return DetailPageState(
+      wordModel: initialWordModel,
+    );
   }
 
-  Future<void> handleTapFlag(BuildContext context) async {
-    await _usecase.updateFlag(wordModel.id, !wordModel.flag).catchError((e) {
-      MySimpleDialog.show(
-          context,
-          const Text('Failed to update flag.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              )),
-          'OK', () {
-        //
-      });
-    });
-    _wordModel = _wordModel.copyWith(flag: !_wordModel.flag);
-    notifyListeners();
+  Future<void> deleteWord() async {
+    await DeleteWordUsecase(ref.read(wordListRepositoryProvider))
+        .execute(state.wordModel.id);
   }
 
-  Future<void> updateWordModel(
-      WordModel wordModel, BuildContext context) async {
-    await _usecase.updateWord(wordModel).catchError((e) {
-      MySimpleDialog.show(
-          context,
-          const Text(
-            'Update failed.',
-            style: TextStyle(
-                overflow: TextOverflow.clip, color: Colors.white, fontSize: 20),
-          ),
-          'OK',
-          () {});
-    });
-    _wordModel = wordModel;
-    notifyListeners();
+  Future<void> updateWord(WordModel wordModel) async {
+    await UpdateWordUsecase(ref.read(wordListRepositoryProvider))
+        .execute(wordModel);
+    state = state.copyWith(wordModel: wordModel);
+  }
+
+  Future<void> changeFlag() async {
+    final currentFlag = state.wordModel.flag;
+    final updatedWordModel = state.wordModel.copyWith(flag: !currentFlag);
+    await UpdateWordUsecase(ref.read(wordListRepositoryProvider))
+        .execute(updatedWordModel);
+    state = state.copyWith(wordModel: updatedWordModel);
   }
 }

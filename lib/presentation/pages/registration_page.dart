@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rive_animated_icon/rive_animated_icon.dart';
-import 'package:worbbing/application/api/translate_api.dart';
-import 'package:worbbing/domain/entities/ticket_state.dart';
-import 'package:worbbing/application/state/translate_lang_state.dart';
+import 'package:worbbing/core/exceptions/database_exception.dart';
+import 'package:worbbing/core/exceptions/registration_page_exception.dart';
+import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
+import 'package:worbbing/presentation/widgets/error_dialog.dart';
+import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
+import 'package:worbbing/presentation/view_model/registration_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/custom_text_field.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/language_dropdown_vertical.dart';
-import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
-import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
-import 'package:worbbing/repository/sqflite/sqflite_repository.dart';
+import 'package:worbbing/presentation/widgets/translate_suggest_dialog.dart';
 import 'package:lottie/lottie.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -32,7 +33,7 @@ class RegistrationPage extends HookConsumerWidget {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
     final ticket = ref.watch(ticketStateProvider);
-    final ticketNotifier = ref.read(ticketStateProvider.notifier);
+    final viewModel = ref.watch(registrationPageViewModelProvider);
 
     final originalWordController =
         useTextEditingController(text: initialText ?? "");
@@ -42,14 +43,8 @@ class RegistrationPage extends HookConsumerWidget {
 
     final focusNode = useFocusNode();
 
-    final originalLanguage = useState<TranslateLanguage>(
-        ref.read(translateLangStateProvider)['original']!);
-    final translateLanguage = useState<TranslateLanguage>(
-        ref.read(translateLangStateProvider)['translate']!);
-
     final originalColor = useState(MyTheme.lemon);
     final translateColor = useState(MyTheme.orange);
-    final isLoading = useState(false);
 
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 600));
@@ -67,6 +62,15 @@ class RegistrationPage extends HookConsumerWidget {
       return null;
     }, []);
 
+    useEffect(() {
+      if (viewModel.isLoading) {
+        animationController.forward();
+      } else {
+        animationController.reverse();
+      }
+      return null;
+    }, [viewModel.isLoading]);
+
     Future<void> shakeAnimation(AnimationController controller,
         {int times = 2}) async {
       for (int i = 0; i < times; i++) {
@@ -75,179 +79,222 @@ class RegistrationPage extends HookConsumerWidget {
       }
     }
 
-    Future<void> translateWord(int ticket) async {
-      if (ticket <= 0) {
-        if (!context.mounted) return;
-        MySimpleDialog.show(
-            context,
-            const Row(
-              children: [
-                Text('No Ticket ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    )),
-                Icon(Icons.sentiment_very_dissatisfied_rounded, size: 36)
-              ],
-            ),
-            'OK', () {
-          //
-        });
+    Future<void> handleTranslateAi() async {
+      if (originalWordController.text.isEmpty) {
+        shakeAnimation(originalAnimationController);
         return;
       }
-      if (originalWordController.text == "") {
-        originalColor.value = MyTheme.red;
-        await shakeAnimation(originalAnimationController);
-        originalColor.value = MyTheme.lemon;
-        return;
-      }
-      isLoading.value = true;
-      animationController.forward();
-      translatedController.text = "";
-      exampleController.text = "";
-      exampleTranslatedController.text = "";
-
-      FocusScope.of(context).unfocus();
-      focusNode.unfocus();
       try {
-        final res = await TranslateApi.postRequest(
-            originalWordController.text,
-            originalLanguage.value.lowerString,
-            translateLanguage.value.lowerString);
-        final translatedModel = TranslatedApiResponse.fromJson(res);
-
-        if (translatedModel.type == TranslatedResponseType.suggestion) {
-          if (!context.mounted) return;
-          await TwoWayDialog.show(
-              context,
-              'Maybe...this word?',
-              RiveAnimatedIcon(
-                  riveIcon: RiveIcon.graduate,
-                  width: 70,
-                  height: 70,
-                  color: Colors.white,
-                  loopAnimation: true,
-                  onTap: () {},
-                  onHover: (value) {}),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 1, left: 4),
-                    child: bodyText('Input Original', Colors.grey.shade400),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: Colors.grey.shade400),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: AutoSizeText(
-                        originalWordController.text,
-                        style: TextStyle(
-                            fontSize: 30, color: Colors.grey.shade400),
-                        minFontSize: 16,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 1, left: 4),
-                    child: bodyText('Suggest Original', Colors.white),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: AutoSizeText(
-                        translatedModel.original,
-                        style:
-                            const TextStyle(fontSize: 30, color: Colors.black),
-                        minFontSize: 16,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 1, left: 4),
-                    child: bodyText('Translated', Colors.white),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: AutoSizeText(
-                        translatedModel.translated[0],
-                        style:
-                            const TextStyle(fontSize: 30, color: Colors.black),
-                        minFontSize: 16,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
-              leftButtonText: 'No',
-              rightButtonText: 'Yes', onLeftButtonPressed: () {
-            //
-          }, onRightButtonPressed: () async {
-            await ticketNotifier.useTicket();
-
-            originalWordController.text = translatedModel.original;
-            translatedController.text =
-                "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
-            exampleController.text = translatedModel.example;
-            exampleTranslatedController.text =
-                translatedModel.exampleTranslated;
-          });
-        } else {
-          await ticketNotifier.useTicket();
-          originalWordController.text = translatedModel.original;
-          translatedController.text =
-              "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
-          exampleController.text = translatedModel.example;
-          exampleTranslatedController.text = translatedModel.exampleTranslated;
+        final res = await ref
+            .read(registrationPageViewModelProvider.notifier)
+            .translateOriginalWord(
+                context, ticket, originalWordController.text);
+        if (res == null) {
+          print("res is null");
+          return;
         }
-      } catch (e) {
+
+        /// 提案の場合
+        if (res.type == TranslatedResponseType.suggestion) {
+          if (!context.mounted) return;
+          TranslateSuggestDialog.execute(
+              context, originalWordController.text, res, () {
+            ref.read(ticketStateProvider.notifier).useTicket();
+            originalWordController.text = res.original;
+            translatedController.text =
+                "${res.translated[0]}, ${res.translated[1]}, ${res.translated[2]}";
+            exampleController.text = res.example;
+            exampleTranslatedController.text = res.exampleTranslated;
+          });
+
+          /// 正しく翻訳された場合
+        } else {
+          ref.read(ticketStateProvider.notifier).useTicket();
+          originalWordController.text = res.original;
+          translatedController.text =
+              "${res.translated[0]}, ${res.translated[1]}, ${res.translated[2]}";
+          exampleController.text = res.example;
+          exampleTranslatedController.text = res.exampleTranslated;
+        }
+      } on TranslateException catch (_) {
         if (!context.mounted) return;
-        MySimpleDialog.show(
-            context,
-            const Text('Failed to translate!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                )),
-            'OK', () {
-          //
-        });
-      } finally {
-        isLoading.value = false;
-        animationController.reverse();
+        ErrorDialog.show(context: context, text: 'Failed to translate!');
       }
     }
+
+    // Future<void> translateWord(int ticket) async {
+    //   if (ticket <= 0) {
+    //     if (!context.mounted) return;
+    //     MySimpleDialog.show(
+    //         context,
+    //         const Row(
+    //           children: [
+    //             Text('No Ticket ',
+    //                 style: TextStyle(
+    //                   color: Colors.white,
+    //                   fontSize: 24,
+    //                 )),
+    //             Icon(Icons.sentiment_very_dissatisfied_rounded, size: 36)
+    //           ],
+    //         ),
+    //         'OK', () {
+    //       //
+    //     });
+    //     return;
+    //   }
+    //   if (originalWordController.text == "") {
+    //     originalColor.value = MyTheme.red;
+    //     await shakeAnimation(originalAnimationController);
+    //     originalColor.value = MyTheme.lemon;
+    //     return;
+    //   }
+    //   isLoading.value = true;
+    //   animationController.forward();
+    //   translatedController.text = "";
+    //   exampleController.text = "";
+    //   exampleTranslatedController.text = "";
+
+    //   FocusScope.of(context).unfocus();
+    //   focusNode.unfocus();
+    //   try {
+    //     final res = await TranslateApi.postRequest(
+    //         originalWordController.text,
+    //         originalLanguage.value.lowerString,
+    //         translateLanguage.value.lowerString);
+    //     final translatedModel = TranslatedApiResponse.fromJson(res);
+
+    //     if (translatedModel.type == TranslatedResponseType.suggestion) {
+    //       if (!context.mounted) return;
+    //       await TwoWayDialog.show(
+    //           context,
+    //           'Maybe...this word?',
+    //           RiveAnimatedIcon(
+    //               riveIcon: RiveIcon.graduate,
+    //               width: 70,
+    //               height: 70,
+    //               color: Colors.white,
+    //               loopAnimation: true,
+    //               onTap: () {},
+    //               onHover: (value) {}),
+    //           Column(
+    //             mainAxisSize: MainAxisSize.min,
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               Padding(
+    //                 padding: const EdgeInsets.only(bottom: 1, left: 4),
+    //                 child: bodyText('Input Original', Colors.grey.shade400),
+    //               ),
+    //               Container(
+    //                 width: double.infinity,
+    //                 height: 50,
+    //                 decoration: BoxDecoration(
+    //                   borderRadius: BorderRadius.circular(2),
+    //                   border: Border.all(color: Colors.grey.shade400),
+    //                 ),
+    //                 padding:
+    //                     const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
+    //                 child: Align(
+    //                   alignment: Alignment.centerLeft,
+    //                   child: AutoSizeText(
+    //                     originalWordController.text,
+    //                     style: TextStyle(
+    //                         fontSize: 30, color: Colors.grey.shade400),
+    //                     minFontSize: 16,
+    //                     maxLines: 1,
+    //                   ),
+    //                 ),
+    //               ),
+    //               const SizedBox(height: 12),
+    //               Padding(
+    //                 padding: const EdgeInsets.only(bottom: 1, left: 4),
+    //                 child: bodyText('Suggest Original', Colors.white),
+    //               ),
+    //               Container(
+    //                 width: double.infinity,
+    //                 height: 50,
+    //                 decoration: BoxDecoration(
+    //                   color: Colors.white,
+    //                   borderRadius: BorderRadius.circular(2),
+    //                 ),
+    //                 padding:
+    //                     const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
+    //                 child: Align(
+    //                   alignment: Alignment.centerLeft,
+    //                   child: AutoSizeText(
+    //                     translatedModel.original,
+    //                     style:
+    //                         const TextStyle(fontSize: 30, color: Colors.black),
+    //                     minFontSize: 16,
+    //                     maxLines: 1,
+    //                   ),
+    //                 ),
+    //               ),
+    //               const SizedBox(height: 12),
+    //               Padding(
+    //                 padding: const EdgeInsets.only(bottom: 1, left: 4),
+    //                 child: bodyText('Translated', Colors.white),
+    //               ),
+    //               Container(
+    //                 width: double.infinity,
+    //                 height: 50,
+    //                 decoration: BoxDecoration(
+    //                   color: Colors.white,
+    //                   borderRadius: BorderRadius.circular(2),
+    //                 ),
+    //                 padding:
+    //                     const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+    //                 child: Align(
+    //                   alignment: Alignment.centerLeft,
+    //                   child: AutoSizeText(
+    //                     translatedModel.translated[0],
+    //                     style:
+    //                         const TextStyle(fontSize: 30, color: Colors.black),
+    //                     minFontSize: 16,
+    //                     maxLines: 1,
+    //                   ),
+    //                 ),
+    //               ),
+    //               const SizedBox(height: 8),
+    //             ],
+    //           ),
+    //           leftButtonText: 'No',
+    //           rightButtonText: 'Yes', onLeftButtonPressed: () {
+    //         //
+    //       }, onRightButtonPressed: () async {
+    //         await ticketNotifier.useTicket();
+
+    //         originalWordController.text = translatedModel.original;
+    //         translatedController.text =
+    //             "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
+    //         exampleController.text = translatedModel.example;
+    //         exampleTranslatedController.text =
+    //             translatedModel.exampleTranslated;
+    //       });
+    //     } else {
+    //       await ticketNotifier.useTicket();
+    //       originalWordController.text = translatedModel.original;
+    //       translatedController.text =
+    //           "${translatedModel.translated[0]}, ${translatedModel.translated[1]}, ${translatedModel.translated[2]}";
+    //       exampleController.text = translatedModel.example;
+    //       exampleTranslatedController.text = translatedModel.exampleTranslated;
+    //     }
+    //   } catch (e) {
+    //     if (!context.mounted) return;
+    //     MySimpleDialog.show(
+    //         context,
+    //         const Text('Failed to translate!',
+    //             style: TextStyle(
+    //               color: Colors.white,
+    //               fontSize: 24,
+    //             )),
+    //         'OK', () {
+    //       //
+    //     });
+    //   } finally {
+    //     isLoading.value = false;
+    //     animationController.reverse();
+    //   }
+    // }
 
     Future<void> saveWord() async {
       bool isOriginalEmpty = originalWordController.text.isEmpty;
@@ -278,39 +325,36 @@ class RegistrationPage extends HookConsumerWidget {
         translatedWord: translatedController.text,
         example: exampleController.text,
         exampleTranslated: exampleTranslatedController.text,
-        originalLang: originalLanguage.value,
-        translatedLang: translateLanguage.value,
+        originalLang: viewModel.originalLanguage,
+        translatedLang: viewModel.translateLanguage,
       );
+      try {
+        await AddWordUsecase(
+          ref.read(wordListRepositoryProvider),
+        ).execute(newWord);
 
-      String? result = await SqfliteRepository.instance.insertData(newWord);
-      if (result == 'exist') {
         if (!context.mounted) return;
-        await MySimpleDialog.show(
-            context,
-            Text('"${originalWordController.text}" is\nalready registered.',
-                style: const TextStyle(
-                    overflow: TextOverflow.clip,
-                    color: Colors.white,
-                    fontSize: 24)),
-            'OK', () {
-          //
-        });
-      } else {
-        if (context.mounted) {
-          context.pop();
-        }
+        context.pop();
+      } on DuplicateItemException catch (_) {
+        if (!context.mounted) return;
+        ErrorDialog.show(
+            context: context,
+            text: '"${originalWordController.text}" is\nalready registered.');
+      } catch (e) {
+        if (!context.mounted) return;
+        ErrorDialog.show(context: context, text: 'Failed to save word!');
       }
     }
 
     return AnimatedBuilder(
         animation: animation,
         builder: (context, child) => IgnorePointer(
-            ignoring: isLoading.value,
+            ignoring: viewModel.isLoading,
             child: Scaffold(
                 backgroundColor: Colors.transparent,
                 body: Stack(children: [
-                  isLoading.value
-                      ? _buildLoading(h, w)
+                  viewModel.isLoading
+                      ? buildLoading(h, w)
                       : const SizedBox.shrink(),
                   Align(
                       alignment: Alignment.bottomCenter,
@@ -367,7 +411,7 @@ class RegistrationPage extends HookConsumerWidget {
                                                           mainAxisSize:
                                                               MainAxisSize.min,
                                                           children: [
-                                                            _buildTopTitle(
+                                                            buildTopTitle(
                                                                 context,
                                                                 ticket),
                                                             Padding(
@@ -419,28 +463,26 @@ class RegistrationPage extends HookConsumerWidget {
                                                                       children: [
                                                                         LanguageDropdownVertical(
                                                                           originalLanguage:
-                                                                              originalLanguage.value,
+                                                                              viewModel.originalLanguage,
                                                                           translateLanguage:
-                                                                              translateLanguage.value,
+                                                                              viewModel.translateLanguage,
                                                                           onOriginalSelected:
                                                                               (TranslateLanguage value) {
-                                                                            originalLanguage.value =
-                                                                                value;
+                                                                            ref.read(registrationPageViewModelProvider.notifier).setOriginalLanguage(value);
                                                                           },
                                                                           onTranslateSelected:
                                                                               (TranslateLanguage value) {
-                                                                            translateLanguage.value =
-                                                                                value;
+                                                                            ref.read(registrationPageViewModelProvider.notifier).setTranslateLanguage(value);
                                                                           },
                                                                         ),
                                                                         TranslateButton(
                                                                             width: rowWidth -
                                                                                 185, // 185: 左からの距離
-                                                                            isEnable:
+                                                                            isEnabled:
                                                                                 ticket != 0 && originalWordController.text != "",
                                                                             onPressed: () {
                                                                               HapticFeedback.lightImpact();
-                                                                              translateWord(ticket);
+                                                                              handleTranslateAi();
                                                                             }),
                                                                       ],
                                                                     );
@@ -726,7 +768,7 @@ class RegistrationPage extends HookConsumerWidget {
                 ]))));
   }
 
-  Widget _buildLoading(double h, double w) {
+  Widget buildLoading(double h, double w) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -742,7 +784,7 @@ class RegistrationPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTopTitle(BuildContext context, int ticket) {
+  Widget buildTopTitle(BuildContext context, int ticket) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -751,7 +793,7 @@ class RegistrationPage extends HookConsumerWidget {
           TicketWidget(
             count: ticket,
             size: 65,
-            isEnableUseAnimation: true,
+            isEnabledUseAnimation: true,
             bgColor: MyTheme.grey,
           ),
           const Expanded(
@@ -780,13 +822,13 @@ class RegistrationPage extends HookConsumerWidget {
 
 class TranslateButton extends StatefulWidget {
   final double width;
-  final bool isEnable;
+  final bool isEnabled;
   final Function onPressed;
 
   const TranslateButton(
       {Key? key,
       required this.onPressed,
-      required this.isEnable,
+      required this.isEnabled,
       required this.width})
       : super(key: key);
 
@@ -873,7 +915,7 @@ class _TranslateButtonState extends State<TranslateButton>
       key: key,
       onPressed: () async {
         widget.onPressed();
-        if (!widget.isEnable) return;
+        if (!widget.isEnabled) return;
         await animationController.forward();
         animationController.reset();
       },
@@ -883,7 +925,7 @@ class _TranslateButtonState extends State<TranslateButton>
       buttonRadius: 16,
       stageOffset: 6,
       inclinationRate: 0.8,
-      pushedElevationLevel: widget.isEnable ? 0.7 : 0.2,
+      pushedElevationLevel: widget.isEnabled ? 0.7 : 0.2,
       stageColor: Colors.blueGrey.shade700,
       buttonColor: Colors.grey.shade400,
       stagePointColor: Colors.blueGrey.shade400,

@@ -10,7 +10,7 @@ import 'package:worbbing/models/word_model.dart';
 part 'word_list_repository_impl.g.dart';
 
 @Riverpod(keepAlive: true)
-WordListRepositoryImpl wordListRepositoryImpl(WordListRepositoryImplRef ref) {
+WordListRepository wordListRepository(WordListRepositoryRef ref) {
   return WordListRepositoryImpl();
 }
 
@@ -208,11 +208,14 @@ class WordListRepositoryImpl implements WordListRepository {
   }
 
   @override
-  Future<WordModel> getRandomWord() async {
+  Future<WordModel?> getRandomWord() async {
     final db = await database;
     String query = "SELECT * FROM $table ORDER BY RANDOM() LIMIT 1";
     Map<String, Object?> result =
         await db.rawQuery(query).then((value) => value.first);
+    if (result.isEmpty) {
+      return null;
+    }
     return WordModel.fromJson(result);
   }
 }

@@ -39,6 +39,8 @@ dependencies:
   riverpod_annotation:
   hooks_riverpod:
   path:
+  flutter_hooks: ^0.20.5
+  flutter_timezone: ^2.1.0
 
 dev_dependencies:
   flutter_test:

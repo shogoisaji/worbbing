@@ -5,9 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:worbbing/core/constants/ticket_constants.dart';
-import 'package:worbbing/data/repositories/shared_preferences/ticket_repository_impl.dart';
-import 'package:worbbing/application/usecase/notice_usecase.dart';
-import 'package:worbbing/domain/usecases/ticket/earn_ticket_usecase.dart';
+import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
+import 'package:worbbing/data/repositories/sqflite/notification_repository_impl.dart';
+import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
+import 'package:worbbing/domain/usecases/notice/shuffle_notification_usecase.dart';
+import 'package:worbbing/domain/usecases/word/down_duration_usecase.dart';
+import 'package:worbbing/domain/usecases/word/up_duration_usecase.dart';
 import 'package:worbbing/models/word_model.dart';
 import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_state.dart';
@@ -16,6 +19,7 @@ import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
+import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/routes/router.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -26,15 +30,29 @@ class HomePage extends HookConsumerWidget {
     final viewModel = ref.watch(homePageViewModelProvider);
     final isEnableSlideHint =
         ref.watch(settingPageViewModelProvider).enableSlideHint;
-    final ticketRepository = ref.watch(ticketRepositoryImplProvider);
 
     final appLifecycleState = useAppLifecycleState();
 
     final refresh = useState(false);
 
+    final handleUpDuration = useCallback((WordModel wordModel) {
+      UpDurationUsecase(ref.read(wordListRepositoryProvider))
+          .execute(wordModel);
+    }, [ref]);
+
+    final handleDownDuration = useCallback((WordModel wordModel) {
+      DownDurationUsecase(ref.read(wordListRepositoryProvider))
+          .execute(wordModel);
+    }, [ref]);
+
     final handleEarnTicket = useCallback(() {
-      final usecase = EarnTicketUsecase(ticketRepository);
-      usecase.execute(TicketConstants.rewardEarnTicket);
+      ref
+          .read(ticketStateProvider.notifier)
+          .earnTicket(TicketConstants.rewardEarnTicket);
+    }, [ref]);
+
+    final handleUpdateWord = useCallback(() {
+      ref.read(homePageViewModelProvider.notifier).getWordList();
     }, [ref]);
 
     final handleTapTag = useCallback((int index) {
@@ -65,7 +83,11 @@ class HomePage extends HookConsumerWidget {
 
     useEffect(() {
       if (appLifecycleState == AppLifecycleState.resumed) {
-        ref.read(noticeUsecaseProvider).shuffleNotifications();
+        ShuffleNotificationUsecase(
+          ref.read(wordListRepositoryProvider),
+          ref.read(notificationRepositoryProvider),
+          ref.read(sharedPreferencesRepositoryProvider),
+        ).execute();
       }
       return () {};
     }, [appLifecycleState]);
@@ -104,7 +126,7 @@ class HomePage extends HookConsumerWidget {
                   child: TicketWidget(
                     count: viewModel.ticketCount,
                     size: 50,
-                    isEnableUseAnimation: true,
+                    isEnabledUseAnimation: true,
                     bgColor: MyTheme.appBarGrey,
                   ),
                 ),
@@ -189,11 +211,15 @@ class HomePage extends HookConsumerWidget {
                         children: [
                           WordListTile(
                             wordModel: item,
-                            onWordUpdate: () {},
+                            onWordUpdate: () {
+                              handleUpdateWord();
+                            },
                             onTapList: () async {
                               handleTapList(item);
                             },
-                            isEnableSlideHint: isEnableSlideHint,
+                            isEnabledSlideHint: isEnableSlideHint,
+                            onUpDuration: () => handleUpDuration(item),
+                            onDownDuration: () => handleDownDuration(item),
                           ),
                           // under space
                           if (index == viewModel.wordList.length - 1)

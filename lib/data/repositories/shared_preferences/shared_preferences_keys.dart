@@ -4,8 +4,8 @@ enum SharedPreferencesKey {
   translateLang('translate_lang'),
   ticket('ticket'),
   ticketGetDate('ticketGetDate'),
-  noticeEnable('notice_enable'),
-  isEnableSlideHint('is_enable_slide_hint'),
+  noticedEnable('notice_enabled'),
+  isEnabledSlideHint('is_enabled_slide_hint'),
   shuffledDate('shuffled_date'),
   ;
 

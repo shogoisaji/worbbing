@@ -7,13 +7,13 @@ import 'package:lottie/lottie.dart';
 class TicketWidget extends StatefulWidget {
   final int count;
   final double size;
-  final bool isEnableUseAnimation;
+  final bool isEnabledUseAnimation;
   final Color bgColor;
   const TicketWidget(
       {super.key,
       required this.count,
       required this.size,
-      this.isEnableUseAnimation = false,
+      this.isEnabledUseAnimation = false,
       required this.bgColor});
 
   @override
@@ -26,7 +26,7 @@ class _TicketWidgetState extends State<TicketWidget> {
   @override
   void didUpdateWidget(covariant TicketWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.isEnableUseAnimation) return;
+    if (!widget.isEnabledUseAnimation) return;
     if (widget.count != oldWidget.count) {
       if (widget.count < oldWidget.count) {
         setState(() {
