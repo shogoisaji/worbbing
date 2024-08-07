@@ -128,7 +128,8 @@ class WordListRepositoryImpl implements WordListRepository {
       {String? orderBy, bool isDesc = true, bool isFlag = false}) async {
     String orderByClause = 'registration_date DESC';
     if (orderBy != null) {
-      orderByClause += ', $orderBy ${isDesc ? 'DESC' : 'ASC'}';
+      orderByClause =
+          '$orderBy ${isDesc ? 'DESC' : 'ASC'} , registration_date DESC';
     }
 
     final db = await database;
@@ -173,7 +174,7 @@ class WordListRepositoryImpl implements WordListRepository {
         translatedWord: wordModel.translatedWord,
         example: wordModel.example,
         exampleTranslated: wordModel.exampleTranslated,
-        updateDate: wordModel.updateDate,
+        updateDate: wordModel.updateDate.toIso8601String(),
         originalLang: wordModel.originalLang.name,
         translatedLang: wordModel.translatedLang.name,
         updateCount: wordModel.updateCount,

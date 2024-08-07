@@ -20,6 +20,7 @@ import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
+import 'package:worbbing/providers/share_text_provider.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/routes/router.dart';
 
@@ -30,6 +31,9 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(homePageViewModelProvider);
     final viewModelNotifier = ref.read(homePageViewModelProvider.notifier);
+    final ticketCount = ref.watch(ticketStateProvider);
+    final sharedText = ref.watch(shareTextProvider);
+
     final isEnableSlideHint =
         ref.watch(settingPageViewModelProvider).enableSlideHint;
 
@@ -37,14 +41,16 @@ class HomePage extends HookConsumerWidget {
 
     final refresh = useState(false);
 
-    final handleUpDuration = useCallback((WordModel wordModel) {
-      UpDurationUsecase(ref.read(wordListRepositoryProvider))
+    final handleUpDuration = useCallback((WordModel wordModel) async {
+      await UpDurationUsecase(ref.read(wordListRepositoryProvider))
           .execute(wordModel);
+      viewModelNotifier.getWordList();
     }, [ref]);
 
-    final handleDownDuration = useCallback((WordModel wordModel) {
-      DownDurationUsecase(ref.read(wordListRepositoryProvider))
+    final handleDownDuration = useCallback((WordModel wordModel) async {
+      await DownDurationUsecase(ref.read(wordListRepositoryProvider))
           .execute(wordModel);
+      viewModelNotifier.getWordList();
     }, [ref]);
 
     final handleEarnTicket = useCallback(() {
@@ -69,7 +75,7 @@ class HomePage extends HookConsumerWidget {
 
     handleTapFAB() async {
       await viewModelNotifier.showRegistrationBottomSheet(context);
-      viewModelNotifier.getWordList();
+      // viewModelNotifier.getWordList();
     }
 
     useEffect(() {
@@ -80,13 +86,13 @@ class HomePage extends HookConsumerWidget {
     }, []);
 
     useEffect(() {
-      if (viewModel.sharedText != "") {
+      if (sharedText != "") {
         SchedulerBinding.instance.addPostFrameCallback((_) => ref
             .read(homePageViewModelProvider.notifier)
-            .getTextAction(context));
+            .getTextAction(context, sharedText: sharedText));
       }
       return null;
-    }, [viewModel.sharedText]);
+    }, [sharedText]);
 
     useEffect(() {
       if (appLifecycleState == AppLifecycleState.resumed) {
@@ -131,7 +137,7 @@ class HomePage extends HookConsumerWidget {
                 AdReward(
                   onEarnTicket: handleEarnTicket,
                   child: TicketWidget(
-                    count: viewModel.ticketCount,
+                    count: ticketCount,
                     size: 50,
                     isEnabledUseAnimation: true,
                     bgColor: MyTheme.appBarGrey,

@@ -16,10 +16,6 @@ class TicketState extends _$TicketState {
         0;
   }
 
-  void setTicketState(int ticketState) {
-    state = ticketState;
-  }
-
   Future<void> addInitialTicket() async {
     await ref
         .read(sharedPreferencesRepositoryProvider)
