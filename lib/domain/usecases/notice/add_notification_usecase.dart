@@ -14,9 +14,9 @@ class AddNotificationUsecase {
   AddNotificationUsecase(this.notificationRepository, this.wordListRepository,
       this.sharedPreferencesRepository);
 
-  Future<void> execute(TimeOfDay time) async {
+  Future<NoticeDataModel?> execute(TimeOfDay time) async {
     final word = await wordListRepository.getRandomWord();
-    if (word == null) return;
+    if (word == null) return null;
     final NoticeDataModel notice = NoticeDataModel(
       noticeId: null,
       wordId: word.id,
@@ -28,8 +28,10 @@ class AddNotificationUsecase {
     final isEnabled = sharedPreferencesRepository
             .fetch<bool>(SharedPreferencesKey.noticedEnable) ??
         false;
-    if (!isEnabled) return;
-    await SetScheduleUsecase(wordListRepository)
-        .execute(notice.copyWith(noticeId: id));
+    if (isEnabled) {
+      await SetScheduleUsecase(wordListRepository)
+          .execute(notice.copyWith(noticeId: id));
+    }
+    return notice.copyWith(noticeId: id);
   }
 }

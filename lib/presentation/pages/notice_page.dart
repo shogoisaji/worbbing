@@ -1,17 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
-import 'package:worbbing/data/repositories/sqflite/notification_repository_impl.dart';
-import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/notice_data_model.dart';
-import 'package:worbbing/domain/usecases/notice/show_sample_notification_usecase.dart';
-import 'package:worbbing/domain/usecases/notice/update_notification_usecase.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/notice_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
@@ -29,16 +25,11 @@ class NoticePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncValue = ref.watch(noticePageViewModelProvider);
-    final viewModel = switch (asyncValue) {
-      AsyncError() => const NoticePageState(),
-      AsyncLoading() => const NoticePageState(),
-      AsyncData(:final value) => value,
-      _ => const NoticePageState(),
-    };
+    final viewModel = ref.watch(noticePageViewModelProvider);
+    final viewModelNotifier = ref.read(noticePageViewModelProvider.notifier);
 
     Future<void> handleSwitchNotice() async {
-      await ref.read(noticePageViewModelProvider.notifier).handleSwitchNotice();
+      await viewModelNotifier.handleSwitchNotice();
     }
 
     Future<void> handleTapAdd() async {
@@ -48,10 +39,7 @@ class NoticePage extends HookConsumerWidget {
         initialEntryMode: TimePickerEntryMode.dialOnly,
       );
       if (pickedTime != null) {
-        await ref
-            .read(noticePageViewModelProvider.notifier)
-            .addNotice(pickedTime)
-            .catchError((e) {
+        await viewModelNotifier.addNotice(pickedTime).catchError((e) {
           if (!context.mounted) return null;
           ErrorDialog.show(context: context, text: 'Failed to add Notice');
         });
@@ -60,10 +48,7 @@ class NoticePage extends HookConsumerWidget {
     }
 
     Future<void> removeTime(int noticeId) async {
-      await ref
-          .read(noticePageViewModelProvider.notifier)
-          .removeNotice(noticeId)
-          .catchError((e) {
+      await viewModelNotifier.removeNotice(noticeId).catchError((e) {
         if (!context.mounted) return null;
         ErrorDialog.show(context: context, text: 'Failed to delete Notice');
       });
@@ -82,8 +67,6 @@ class NoticePage extends HookConsumerWidget {
           onYesPressed: () async {
             HapticFeedback.lightImpact();
             await removeTime(notice.noticeId!);
-            if (!context.mounted) return;
-            Navigator.of(context).pop();
           });
     }
 
@@ -95,19 +78,19 @@ class NoticePage extends HookConsumerWidget {
       );
       if (pickedTime != null) {
         final newNotice = notice.copyWith(time: pickedTime);
-        await UpdateNotificationUsecase(
-                ref.read(notificationRepositoryProvider),
-                ref.read(wordListRepositoryProvider),
-                ref.read(sharedPreferencesRepositoryProvider))
-            .execute(newNotice);
+        await viewModelNotifier.updateNotice(newNotice);
       }
       HapticFeedback.lightImpact();
     }
 
     void handleTapSample() async {
-      await ShowSampleNotificationUsecase(ref.read(wordListRepositoryProvider))
-          .execute();
+      await viewModelNotifier.showSampleNotice();
     }
+
+    useEffect(() {
+      viewModelNotifier.getNoticeList();
+      return null;
+    }, []);
 
     return Stack(
       children: [

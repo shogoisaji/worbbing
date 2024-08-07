@@ -14,9 +14,11 @@ class ErrorDialog {
                   borderRadius: BorderRadius.circular(3)),
               backgroundColor: MyTheme.grey,
               content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.sentiment_very_dissatisfied_rounded,
                       size: 36),
+                  const SizedBox(height: 12),
                   Text(text,
                       style: const TextStyle(
                         color: Colors.white,
