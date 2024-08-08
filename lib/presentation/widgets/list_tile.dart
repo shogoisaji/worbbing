@@ -40,7 +40,7 @@ class _WordListTileState extends State<WordListTile>
   static const double _dragRangeX = 80.0;
   static const double _dragRangeY = 85.0;
 
-  bool _isEnd = false;
+  bool _isDragEnd = false;
 
   double? _dragStartX;
   double? _dragStartY;
@@ -73,7 +73,7 @@ class _WordListTileState extends State<WordListTile>
       builder: (context) {
         return Stack(
           children: [
-            HintWidget(position: offset, isEnd: _isEnd),
+            HintWidget(position: offset, isDragEnd: _isDragEnd),
           ],
         );
       },
@@ -105,8 +105,10 @@ class _WordListTileState extends State<WordListTile>
   @override
   void didUpdateWidget(covariant WordListTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.wordModel.id != oldWidget.wordModel.id) {
-      _widget = _translatedWord();
+    if (widget.wordModel != oldWidget.wordModel) {
+      setState(() {
+        _widget = _translatedWord();
+      });
     }
   }
 
@@ -152,7 +154,7 @@ class _WordListTileState extends State<WordListTile>
                   _dragStartX = startX;
                   _dragStartY = startY;
                 }
-                _isEnd = false;
+                _isDragEnd = false;
               },
               onHorizontalDragUpdate: (DragUpdateDetails details) {
                 final dragStartX = _dragStartX;
@@ -218,7 +220,7 @@ class _WordListTileState extends State<WordListTile>
                 setState(() {
                   _color = MyTheme.lemon;
                   _widget = _translatedWord();
-                  _isEnd = true;
+                  _isDragEnd = true;
                 });
                 overlay?.markNeedsBuild();
                 Future.delayed(const Duration(milliseconds: 400), () {
@@ -306,8 +308,9 @@ class _SlideCard extends StatelessWidget {
 
 class HintWidget extends StatefulWidget {
   final Offset position;
-  final bool isEnd;
-  const HintWidget({super.key, required this.position, required this.isEnd});
+  final bool isDragEnd;
+  const HintWidget(
+      {super.key, required this.position, required this.isDragEnd});
 
   @override
   State<HintWidget> createState() => _HintWidgetState();
@@ -342,8 +345,8 @@ class _HintWidgetState extends State<HintWidget>
   @override
   void didUpdateWidget(covariant HintWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isEnd != oldWidget.isEnd) {
-      if (widget.isEnd) {
+    if (widget.isDragEnd != oldWidget.isDragEnd) {
+      if (widget.isDragEnd) {
         _animationController.reverse();
       }
     }
