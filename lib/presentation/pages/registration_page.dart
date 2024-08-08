@@ -677,18 +677,37 @@ class _LanguageSelectorState extends State<LanguageSelector> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18),
+        padding: const EdgeInsets.only(top: 0, bottom: 8, left: 18, right: 18),
         child: Container(
           padding:
-              const EdgeInsets.only(top: 18, bottom: 0, left: 18, right: 18),
+              const EdgeInsets.only(top: 12, bottom: 0, left: 18, right: 18),
           decoration: BoxDecoration(
             color: Colors.blueGrey.shade800.withOpacity(0.9),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             children: [
-              Text(widget.title,
-                  style: TextStyle(fontSize: 28, color: widget.color)),
+              Container(
+                width: 100,
+                height: 3,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade600,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade700,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Text(widget.title,
+                    style: TextStyle(fontSize: 28, color: widget.color)),
+              ),
               const SizedBox(height: 12),
               Expanded(
                 child: SingleChildScrollView(
@@ -697,6 +716,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                         .map((lang) => Center(
                               child: InkWell(
                                 onTap: () {
+                                  HapticFeedback.lightImpact();
                                   setState(() {
                                     selectLang = lang;
                                   });
@@ -709,14 +729,15 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                                     ),
                                     width: double.infinity,
                                     margin:
-                                        const EdgeInsets.symmetric(vertical: 4),
+                                        const EdgeInsets.symmetric(vertical: 2),
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
+                                        vertical: 6, horizontal: 16),
                                     decoration: BoxDecoration(
-                                      border: selectLang == lang
-                                          ? Border.all(
-                                              color: widget.color, width: 2)
-                                          : null,
+                                      border: Border.all(
+                                          color: selectLang == lang
+                                              ? widget.color
+                                              : Colors.transparent,
+                                          width: 2),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     alignment: Alignment.center,
