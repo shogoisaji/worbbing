@@ -37,6 +37,15 @@ class SettingsPage extends HookConsumerWidget {
       }
     }
 
+    Future<void> termsOfUseURL() async {
+      final Uri url = Uri.parse('https://worbbing.vercel.app/terms-of-use');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        return;
+      }
+    }
+
     Future<void> inquiryURL() async {
       final Uri url = Uri.parse('https://worbbing.vercel.app/inquiry');
       if (await canLaunchUrl(url)) {
@@ -269,7 +278,11 @@ class SettingsPage extends HookConsumerWidget {
                                     horizontal: 16, vertical: 24),
                                 child: Column(
                                   children: [
-                                    _buildPrivacyPolicy(privacyURL),
+                                    _buildUrlLauncher(
+                                        privacyURL, 'Privacy Policy'),
+                                    contentSpacer,
+                                    _buildUrlLauncher(
+                                        termsOfUseURL, 'Terms of Use'),
                                     contentSpacer,
                                     _buildInquiry(inquiryURL),
                                     contentSpacer,
@@ -417,7 +430,7 @@ class SettingsPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPrivacyPolicy(VoidCallback onTap) {
+  Widget _buildUrlLauncher(VoidCallback onTap, String text) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -429,9 +442,9 @@ class SettingsPage extends HookConsumerWidget {
             padding: const EdgeInsets.all(8.0),
             child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
           ),
-          const Expanded(
-            child: Text('Privacy Policy',
-                style: TextStyle(
+          Expanded(
+            child: Text(text,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.w500)),
@@ -455,7 +468,7 @@ class SettingsPage extends HookConsumerWidget {
             child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
           ),
           const Expanded(
-            child: Text('Contact',
+            child: Text('Contact Us',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
