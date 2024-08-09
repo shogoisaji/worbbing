@@ -8,7 +8,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:worbbing/core/utils/strings.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
+import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/view_model/detail_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
@@ -51,6 +53,8 @@ class DetailPage extends HookConsumerWidget {
     final viewModelNotifier =
         ref.watch(detailPageViewModelProvider(wordModel).notifier);
 
+    final l10n = L10n.of(context)!;
+
     final originalController = useTextEditingController();
     final translatedController = useTextEditingController();
     final exampleController = useTextEditingController();
@@ -76,7 +80,8 @@ class DetailPage extends HookConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          bodyText('Original', MyTheme.lemon.withOpacity(0.9)),
+                          bodyText(
+                              l10n.original, MyTheme.lemon.withOpacity(0.9)),
                           TextField(
                             keyboardType: TextInputType.visiblePassword,
                             style: const TextStyle(
@@ -91,7 +96,7 @@ class DetailPage extends HookConsumerWidget {
                           const SizedBox(
                             height: 10,
                           ),
-                          bodyText('Translated',
+                          bodyText(l10n.translated,
                               Colors.orangeAccent.withOpacity(0.9)),
                           TextField(
                             style: const TextStyle(
@@ -106,7 +111,8 @@ class DetailPage extends HookConsumerWidget {
                           const SizedBox(
                             height: 10,
                           ),
-                          bodyText('Example', MyTheme.lemon.withOpacity(0.9)),
+                          bodyText(
+                              l10n.example, MyTheme.lemon.withOpacity(0.9)),
                           TextField(
                             style: const TextStyle(
                                 fontSize: 20, color: Colors.black),
@@ -122,7 +128,7 @@ class DetailPage extends HookConsumerWidget {
                           const SizedBox(
                             height: 10,
                           ),
-                          bodyText('Translated Example',
+                          bodyText(l10n.translated_example,
                               Colors.orangeAccent.withOpacity(0.9)),
                           TextField(
                             style: const TextStyle(
@@ -145,7 +151,7 @@ class DetailPage extends HookConsumerWidget {
                           HapticFeedback.lightImpact();
                           Navigator.of(editContext).pop();
                         },
-                        child: Text('Cancel',
+                        child: Text(l10n.cancel,
                             style:
                                 TextStyle(color: MyTheme.orange, fontSize: 22)),
                       ),
@@ -173,7 +179,7 @@ class DetailPage extends HookConsumerWidget {
                           if (!editContext.mounted) return;
                           Navigator.of(editContext).pop();
                         },
-                        child: Text('Update',
+                        child: Text(l10n.update,
                             style: TextStyle(
                                 color: MyTheme.grey,
                                 // fontWeight: FontWeight.bold,
@@ -192,9 +198,9 @@ class DetailPage extends HookConsumerWidget {
     void handleTapDelete() {
       YesNoDialog.show(
           context: context,
-          title: 'Do you really want to delete it?',
-          noText: 'Cancel',
-          yesText: 'Delete',
+          title: l10n.delete_check,
+          noText: l10n.cancel,
+          yesText: l10n.delete,
           onNoPressed: () {},
           onYesPressed: () async {
             try {
@@ -205,7 +211,7 @@ class DetailPage extends HookConsumerWidget {
               if (!context.mounted) return;
               await ErrorDialog.show(
                 context: context,
-                text: 'Delete failed.',
+                text: l10n.failed_delete,
               );
             }
           });
@@ -273,7 +279,7 @@ class DetailPage extends HookConsumerWidget {
                               children: [
                                 Center(
                                   child: noticeBlock(
-                                      54,
+                                      60,
                                       viewModel.wordModel.noticeDuration,
                                       (forgettingDuration <
                                                   viewModel.wordModel
@@ -302,7 +308,10 @@ class DetailPage extends HookConsumerWidget {
                                   bottomRight: Radius.circular(8),
                                 ),
                                 color: Colors.white.withOpacity(0.15)),
-                            child: Center(child: buildDurationLabel(wordModel)),
+                            child: Center(
+                              child: buildDurationLabel(
+                                  wordModel, l10n.last_update, l10n.today),
+                            ),
                           ),
                         ],
                       ),
@@ -313,13 +322,15 @@ class DetailPage extends HookConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 42.0),
                         child: Column(
                           children: [
-                            detailWordContent(ContentType.original,
+                            detailWordContent(l10n, ContentType.original,
                                 viewModel.wordModel.originalWord),
-                            detailWordContent(ContentType.translated,
+                            detailWordContent(l10n, ContentType.translated,
                                 viewModel.wordModel.translatedWord),
-                            detailWordContent(ContentType.example,
+                            detailWordContent(l10n, ContentType.example,
                                 viewModel.wordModel.example ?? ''),
-                            detailWordContent(ContentType.exampleTranslated,
+                            detailWordContent(
+                                l10n,
+                                ContentType.exampleTranslated,
                                 viewModel.wordModel.exampleTranslated ?? ''),
                             const SizedBox(height: 10),
                             Padding(
@@ -332,16 +343,16 @@ class DetailPage extends HookConsumerWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    buildDeleteButton(
-                                        width * 0.46, handleTapDelete),
+                                    buildDeleteButton(width * 0.46,
+                                        handleTapDelete, l10n.delete),
                                     buildEditButton(
-                                        width * 0.46, handleTapEdit),
+                                        width * 0.46, handleTapEdit, l10n.edit),
                                   ],
                                 );
                               }),
                             ),
                             const SizedBox(height: 32),
-                            buildRegistrationDate(),
+                            buildRegistrationDate(l10n.registration_date),
                             const SizedBox(
                               height: 70,
                             ),
@@ -360,9 +371,16 @@ class DetailPage extends HookConsumerWidget {
   }
 
   Widget detailWordContent(
+    L10n l10n,
     ContentType type,
     String word,
   ) {
+    final title = switch (type) {
+      ContentType.original => l10n.original,
+      ContentType.translated => l10n.translated,
+      ContentType.example => l10n.example,
+      ContentType.exampleTranslated => l10n.translated_example,
+    };
     final maxLines = switch (type) {
       ContentType.original => 1,
       ContentType.translated => 1,
@@ -397,7 +415,7 @@ class DetailPage extends HookConsumerWidget {
                 Border.all(color: MyTheme.blue.withOpacity(0.7), width: 1.0),
           ),
           child: Text(
-            wordModel.originalLang.name,
+            wordModel.originalLang.upperString,
             style:
                 TextStyle(color: MyTheme.blue.withOpacity(0.7), fontSize: 18),
           ),
@@ -411,7 +429,7 @@ class DetailPage extends HookConsumerWidget {
                 Border.all(color: MyTheme.blue.withOpacity(0.7), width: 1.0),
           ),
           child: Text(
-            wordModel.translatedLang.name,
+            wordModel.translatedLang.upperString,
             style:
                 TextStyle(color: MyTheme.blue.withOpacity(0.7), fontSize: 18),
           ),
@@ -428,7 +446,7 @@ class DetailPage extends HookConsumerWidget {
               child: Container(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  type.string,
+                  title,
                   style: TextStyle(color: titleColor, fontSize: 18),
                 ),
               ),
@@ -457,7 +475,8 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildEditButton(double width, VoidCallback handleTapEdit) {
+  Widget buildEditButton(
+      double width, VoidCallback handleTapEdit, String text) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
@@ -480,7 +499,7 @@ class DetailPage extends HookConsumerWidget {
           alignment: Alignment.center,
           transform: Matrix4.rotationX(0.5),
           child: Text(
-            'Edit',
+            text,
             style: TextStyle(
               fontSize: 27,
               color: MyTheme.greyForOrange,
@@ -499,7 +518,8 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildDeleteButton(double width, VoidCallback handleTapDelete) {
+  Widget buildDeleteButton(
+      double width, VoidCallback handleTapDelete, String text) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
@@ -522,7 +542,7 @@ class DetailPage extends HookConsumerWidget {
           alignment: Alignment.center,
           transform: Matrix4.rotationX(0.5),
           child: Text(
-            'Delete',
+            text,
             style: TextStyle(
               fontSize: 27,
               color: Colors.grey.shade100,
@@ -557,7 +577,7 @@ class DetailPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildRegistrationDate() {
+  Widget buildRegistrationDate(String text) {
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -567,7 +587,7 @@ class DetailPage extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // change registration data
-            Text('Registration Date',
+            Text(text,
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
             const SizedBox(
               width: 12,
@@ -578,37 +598,45 @@ class DetailPage extends HookConsumerWidget {
         ));
   }
 
-  Widget buildDurationLabel(WordModel wordModel) {
+  Widget buildDurationLabel(
+      WordModel wordModel, String lastUpdate, String today) {
     final DateTime updateDateTime =
         DateTime.parse(wordModel.updateDate.toIso8601String());
     final int forgettingDuration =
         (updateDateTime.difference(DateTime.now()).inDays).abs();
     return SizedBox(
       width: 85,
-      height: 75,
       child: Stack(
+        fit: StackFit.expand,
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text("Last Update",
-                // child: Text(updateDateTime.toIso8601String().toYMDString(),
-                softWrap: false,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(lastUpdate,
+                  softWrap: false,
+                  style: TextStyle(
+                    height: 1.0,
+                    color: Colors.grey.shade300,
+                    fontSize: 13,
+                    overflow: TextOverflow.fade,
+                  )),
+              Text(
+                updateDateTime.toIso8601String().toYMDString(),
                 style: TextStyle(
-                  height: 1.0,
                   color: Colors.grey.shade300,
-                  fontSize: 13,
-                  overflow: TextOverflow.fade,
-                )),
+                  fontSize: 12,
+                ),
+              ),
+              CustomPaint(
+                size: const Size(80, 55),
+                painter: DurationArrowPainter(today),
+              )
+            ],
           ),
           Align(
-            alignment: const Alignment(0.0, 1.0),
-            child: CustomPaint(
-              size: const Size(80, 55),
-              painter: DurationArrowPainter(),
-            ),
-          ),
-          Align(
-            alignment: const Alignment(0.0, -0.1),
+            alignment: const Alignment(0.0, 0.15),
             child: Text(forgettingDuration.toString(),
                 style: TextStyle(
                     height: 1.0,
@@ -623,12 +651,14 @@ class DetailPage extends HookConsumerWidget {
 }
 
 class DurationArrowPainter extends CustomPainter {
+  final String today;
+  DurationArrowPainter(this.today);
   @override
   void paint(Canvas canvas, Size size) {
     const double offset = 8.0;
 
     final text = TextSpan(
-      text: 'Today',
+      text: today,
       style: TextStyle(color: Colors.grey.shade300, fontSize: 15),
     );
     final textPainter = TextPainter(

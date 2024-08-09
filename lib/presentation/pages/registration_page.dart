@@ -11,7 +11,9 @@ import 'package:worbbing/core/exceptions/registration_page_exception.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
+import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
+import 'package:worbbing/presentation/widgets/language_selector.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';
@@ -35,6 +37,8 @@ class RegistrationPage extends HookConsumerWidget {
     final w = MediaQuery.of(context).size.width;
     final ticket = ref.watch(ticketStateProvider);
     final viewModel = ref.watch(registrationPageViewModelProvider);
+
+    final l10n = L10n.of(context)!;
 
     final originalWordController =
         useTextEditingController(text: initialText ?? "");
@@ -61,41 +65,44 @@ class RegistrationPage extends HookConsumerWidget {
 
     void handleTapOriginalLang() {
       final color = MyTheme.lemon;
-      TranslateLanguage selectLang = viewModel.originalLanguage;
       showModalBottomSheet(
           backgroundColor: Colors.transparent,
           context: context,
           builder: (context) {
-            return LanguageSelector(
-              title: 'Original Language',
-              initialLanguage: selectLang,
+            return LanguageSelector<TranslateLanguage>(
+              title: l10n.original_language,
+              initialLanguage: viewModel.originalLanguage,
               color: color,
-              onSelect: (lang) {
+              onSelect: (dynamic lang) {
                 ref
                     .read(registrationPageViewModelProvider.notifier)
-                    .setOriginalLanguage(lang);
+                    .setOriginalLanguage(lang as TranslateLanguage);
               },
+              languages: TranslateLanguage.values,
+              languageToString: (dynamic lang) =>
+                  (lang as TranslateLanguage).upperString,
             );
           });
     }
 
     void handleTapTranslateLang(TranslateLanguage lang) {
       final color = MyTheme.orange;
-      TranslateLanguage selectLang = lang;
       showModalBottomSheet(
           backgroundColor: Colors.transparent,
           context: context,
           builder: (context) {
-            return LanguageSelector(
-              title: 'Translate Language',
-              initialLanguage: selectLang,
-              color: color,
-              onSelect: (lang) {
-                ref
-                    .read(registrationPageViewModelProvider.notifier)
-                    .setTranslateLanguage(lang);
-              },
-            );
+            return LanguageSelector<TranslateLanguage>(
+                title: l10n.translate_language,
+                initialLanguage: viewModel.translateLanguage,
+                color: color,
+                onSelect: (dynamic lang) {
+                  ref
+                      .read(registrationPageViewModelProvider.notifier)
+                      .setTranslateLanguage(lang as TranslateLanguage);
+                },
+                languages: TranslateLanguage.values,
+                languageToString: (dynamic lang) =>
+                    (lang as TranslateLanguage).upperString);
           });
     }
 
@@ -174,7 +181,7 @@ class RegistrationPage extends HookConsumerWidget {
         }
       } on TranslateException catch (_) {
         if (!context.mounted) return;
-        ErrorDialog.show(context: context, text: 'Failed to translate!');
+        ErrorDialog.show(context: context, text: l10n.failed_to_translate);
       }
     }
 
@@ -221,10 +228,10 @@ class RegistrationPage extends HookConsumerWidget {
         if (!context.mounted) return;
         ErrorDialog.show(
             context: context,
-            text: '"${originalWordController.text}" is\nalready registered.');
+            text: l10n.exist_word(originalWordController.text));
       } catch (e) {
         if (!context.mounted) return;
-        ErrorDialog.show(context: context, text: 'Failed to save word!');
+        ErrorDialog.show(context: context, text: l10n.save_failed);
       }
     }
 
@@ -296,7 +303,8 @@ class RegistrationPage extends HookConsumerWidget {
                                                           children: [
                                                             buildTopTitle(
                                                                 context,
-                                                                ticket),
+                                                                ticket,
+                                                                l10n.registration),
                                                             Padding(
                                                               padding:
                                                                   const EdgeInsets
@@ -313,7 +321,8 @@ class RegistrationPage extends HookConsumerWidget {
                                                                           -0.95,
                                                                           0.0),
                                                                       child: bodyText(
-                                                                          'Original',
+                                                                          l10n
+                                                                              .original,
                                                                           MyTheme
                                                                               .lightGrey)),
                                                                   CustomTextField(
@@ -402,7 +411,8 @@ class RegistrationPage extends HookConsumerWidget {
                                                                           -0.95,
                                                                           0.0),
                                                                       child: bodyText(
-                                                                          'Translated',
+                                                                          l10n
+                                                                              .translated,
                                                                           MyTheme
                                                                               .lightGrey)),
                                                                   CustomTextField(
@@ -422,7 +432,8 @@ class RegistrationPage extends HookConsumerWidget {
                                                                           -0.95,
                                                                           0.0),
                                                                       child: bodyText(
-                                                                          'Example',
+                                                                          l10n
+                                                                              .example,
                                                                           MyTheme
                                                                               .lightGrey)),
                                                                   CustomTextField(
@@ -441,7 +452,8 @@ class RegistrationPage extends HookConsumerWidget {
                                                                           -0.95,
                                                                           0.0),
                                                                       child: bodyText(
-                                                                          'Translated Example',
+                                                                          l10n
+                                                                              .translated_example,
                                                                           MyTheme
                                                                               .lightGrey)),
                                                                   CustomTextField(
@@ -465,11 +477,17 @@ class RegistrationPage extends HookConsumerWidget {
                                                   ),
                                                 ]))))),
                           ]))),
-                  _buildUnderButtons(context, () {
-                    context.pop();
-                  }, () async {
-                    await saveWord();
-                  })
+                  _buildUnderButtons(
+                    context,
+                    () {
+                      context.pop();
+                    },
+                    () async {
+                      await saveWord();
+                    },
+                    l10n.cancel,
+                    l10n.save,
+                  )
                 ]))));
   }
 
@@ -489,7 +507,7 @@ class RegistrationPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildTopTitle(BuildContext context, int ticket) {
+  Widget buildTopTitle(BuildContext context, int ticket, String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -501,12 +519,12 @@ class RegistrationPage extends HookConsumerWidget {
             isEnabledUseAnimation: true,
             bgColor: MyTheme.grey,
           ),
-          const Expanded(
+          Expanded(
             child: AutoSizeText(
-              'Registration',
+              title,
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 32,
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
@@ -524,8 +542,8 @@ class RegistrationPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUnderButtons(
-      BuildContext context, VoidCallback onCancel, VoidCallback onSave) {
+  Widget _buildUnderButtons(BuildContext context, VoidCallback onCancel,
+      VoidCallback onSave, String cancel, String save) {
     return Align(
         alignment: Alignment.bottomCenter,
         child: Container(
@@ -581,7 +599,7 @@ class RegistrationPage extends HookConsumerWidget {
                               alignment: Alignment.center,
                               transform: Matrix4.rotationX(0.5),
                               child: Text(
-                                'Cancel',
+                                cancel,
                                 style: TextStyle(
                                   fontSize: 26,
                                   color: MyTheme.greyForOrange,
@@ -622,7 +640,7 @@ class RegistrationPage extends HookConsumerWidget {
                               alignment: Alignment.center,
                               transform: Matrix4.rotationX(0.5),
                               child: Text(
-                                'Save',
+                                save,
                                 style: TextStyle(
                                   fontSize: 28,
                                   color: MyTheme.greyForOrange,
@@ -648,117 +666,117 @@ class RegistrationPage extends HookConsumerWidget {
   }
 }
 
-class LanguageSelector extends StatefulWidget {
-  final String title;
-  final TranslateLanguage initialLanguage;
-  final Color color;
-  final Function(TranslateLanguage) onSelect;
-  const LanguageSelector(
-      {super.key,
-      required this.title,
-      required this.initialLanguage,
-      required this.color,
-      required this.onSelect});
+// class LanguageSelector extends StatefulWidget {
+//   final String title;
+//   final TranslateLanguage initialLanguage;
+//   final Color color;
+//   final Function(T) onSelect;
+//   const LanguageSelector(
+//       {super.key,
+//       required this.title,
+//       required this.initialLanguage,
+//       required this.color,
+//       required this.onSelect});
 
-  @override
-  State<LanguageSelector> createState() => _LanguageSelectorState();
-}
+//   @override
+//   State<LanguageSelector> createState() => _LanguageSelectorState();
+// }
 
-class _LanguageSelectorState extends State<LanguageSelector> {
-  late TranslateLanguage selectLang;
+// class _LanguageSelectorState extends State<LanguageSelector> {
+//   late TranslateLanguage selectLang;
 
-  @override
-  void initState() {
-    super.initState();
-    selectLang = widget.initialLanguage;
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     selectLang = widget.initialLanguage;
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 0, bottom: 8, left: 18, right: 18),
-        child: Container(
-          padding:
-              const EdgeInsets.only(top: 12, bottom: 0, left: 18, right: 18),
-          decoration: BoxDecoration(
-            color: Colors.blueGrey.shade800.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: 100,
-                height: 3,
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey.shade600,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey.shade700,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: Text(widget.title,
-                    style: TextStyle(fontSize: 28, color: widget.color)),
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: TranslateLanguage.values
-                        .map((lang) => Center(
-                              child: InkWell(
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  setState(() {
-                                    selectLang = lang;
-                                  });
-                                  widget.onSelect(lang);
-                                },
-                                child: Center(
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 200,
-                                    ),
-                                    width: double.infinity,
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 2),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 16),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: selectLang == lang
-                                              ? widget.color
-                                              : Colors.transparent,
-                                          width: 2),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(lang.upperString,
-                                        style: const TextStyle(
-                                            fontSize: 24, color: Colors.white)),
-                                  ),
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SafeArea(
+//       child: Padding(
+//         padding: const EdgeInsets.only(top: 0, bottom: 8, left: 18, right: 18),
+//         child: Container(
+//           padding:
+//               const EdgeInsets.only(top: 12, bottom: 0, left: 18, right: 18),
+//           decoration: BoxDecoration(
+//             color: Colors.blueGrey.shade800.withOpacity(0.9),
+//             borderRadius: BorderRadius.circular(16),
+//           ),
+//           child: Column(
+//             children: [
+//               Container(
+//                 width: 100,
+//                 height: 3,
+//                 margin: const EdgeInsets.only(bottom: 12),
+//                 padding: const EdgeInsets.symmetric(vertical: 4),
+//                 decoration: BoxDecoration(
+//                   color: Colors.blueGrey.shade600,
+//                   borderRadius: BorderRadius.circular(12),
+//                 ),
+//               ),
+//               Container(
+//                 width: double.infinity,
+//                 padding: const EdgeInsets.symmetric(vertical: 4),
+//                 decoration: BoxDecoration(
+//                   color: Colors.blueGrey.shade700,
+//                   borderRadius: BorderRadius.circular(12),
+//                 ),
+//                 alignment: Alignment.center,
+//                 child: Text(widget.title,
+//                     style: TextStyle(fontSize: 28, color: widget.color)),
+//               ),
+//               const SizedBox(height: 12),
+//               Expanded(
+//                 child: SingleChildScrollView(
+//                   child: Column(
+//                     children: TranslateLanguage.values
+//                         .map((lang) => Center(
+//                               child: InkWell(
+//                                 onTap: () {
+//                                   HapticFeedback.lightImpact();
+//                                   setState(() {
+//                                     selectLang = lang;
+//                                   });
+//                                   widget.onSelect(lang);
+//                                 },
+//                                 child: Center(
+//                                   child: Container(
+//                                     constraints: const BoxConstraints(
+//                                       maxWidth: 200,
+//                                     ),
+//                                     width: double.infinity,
+//                                     margin:
+//                                         const EdgeInsets.symmetric(vertical: 2),
+//                                     padding: const EdgeInsets.symmetric(
+//                                         vertical: 6, horizontal: 16),
+//                                     decoration: BoxDecoration(
+//                                       border: Border.all(
+//                                           color: selectLang == lang
+//                                               ? widget.color
+//                                               : Colors.transparent,
+//                                           width: 2),
+//                                       borderRadius: BorderRadius.circular(8),
+//                                     ),
+//                                     alignment: Alignment.center,
+//                                     child: Text(lang.upperString,
+//                                         style: const TextStyle(
+//                                             fontSize: 24, color: Colors.white)),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ))
+//                         .toList(),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class TranslateButton extends StatefulWidget {
   final double width;

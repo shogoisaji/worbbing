@@ -17,11 +17,11 @@ class LanguageDropdownHorizontal extends StatefulWidget {
   });
 
   @override
-  _LanguageDropdownHorizontalState createState() =>
-      _LanguageDropdownHorizontalState();
+  LanguageDropdownHorizontalState createState() =>
+      LanguageDropdownHorizontalState();
 }
 
-class _LanguageDropdownHorizontalState
+class LanguageDropdownHorizontalState
     extends State<LanguageDropdownHorizontal> {
   late TranslateLanguage originalValue;
   late TranslateLanguage translateValue;

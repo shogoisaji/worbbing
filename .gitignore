@@ -50,3 +50,5 @@ secret.properties
 .fvm/
 
 env.g.dart
+
+**/l10n/*.dart

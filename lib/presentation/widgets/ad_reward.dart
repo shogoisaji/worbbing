@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:worbbing/application/helper/ad_helper.dart';
 import 'package:worbbing/application/helper/ad_test_helper.dart';
 import 'package:worbbing/core/constants/ticket_constants.dart';
+import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/presentation/widgets/two_way_dialog.dart';
@@ -54,12 +55,12 @@ class _AdRewardState extends State<AdReward> {
     );
   }
 
-  void _handleTap() {
+  void _handleTap(L10n l10n) {
     HapticFeedback.lightImpact();
 
     TwoWayDialog.show(
         context,
-        '広告を見て\nチケットを獲得',
+        l10n.ticket_reward_title,
         const Icon(Icons.help_outline, size: 36),
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -68,17 +69,18 @@ class _AdRewardState extends State<AdReward> {
             Padding(
               padding: const EdgeInsets.only(bottom: 1, left: 4),
               child: bodyText(
-                  '動画広告を最後まで視聴することで、チケットが ${TicketConstants.rewardEarnTicket} 枚獲得できます。\n\n※音声が流れる可能せがあります。',
+                  l10n.ticket_reward_description(
+                      TicketConstants.rewardEarnTicket),
                   Colors.white),
             ),
             const SizedBox(height: 12),
           ],
         ),
-        leftButtonText: 'キャンセル',
-        rightButtonText: '広告を見る',
+        leftButtonText: l10n.cancel,
+        rightButtonText: l10n.watch_ads,
         onLeftButtonPressed: () {}, onRightButtonPressed: () async {
       if (_rewardedAd == null) {
-        ErrorDialog.show(context: context, text: '広告の取得に失敗しました。');
+        ErrorDialog.show(context: context, text: l10n.failed_get_ads);
         return;
       }
 
@@ -106,9 +108,10 @@ class _AdRewardState extends State<AdReward> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = L10n.of(context)!;
     return GestureDetector(
         onTap: () {
-          _handleTap();
+          _handleTap(l10n);
         },
         child: widget.child);
   }

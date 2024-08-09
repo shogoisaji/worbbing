@@ -14,11 +14,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:worbbing/domain/usecases/app/first_launch_usecase.dart';
+import 'package:worbbing/providers/app_language_state_provider.dart';
 import 'package:worbbing/providers/router_path_provider.dart';
 import 'package:worbbing/application/utils/package_info_utils.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/routes/router.dart';
+import 'package:worbbing/l10n/l10n.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,6 +108,8 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appLanguage = ref.watch(appLanguageStateProvider);
+
     void handleRouteChange() {
       // UI描画中だとエラーになるので、描画後に処理
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -146,6 +150,9 @@ class MyApp extends HookConsumerWidget {
         useMaterial3: true,
       ),
       routerConfig: router,
+      localizationsDelegates: L10n.localizationsDelegates,
+      supportedLocales: L10n.supportedLocales,
+      locale: appLanguage.locale,
     );
   }
 }
