@@ -6,9 +6,11 @@ import 'package:worbbing/application/helper/ad_test_helper.dart';
 
 class AdBanner extends StatefulWidget {
   final double width;
+  final bool shadow;
   const AdBanner({
     super.key,
     required this.width,
+    this.shadow = false,
   });
 
   @override
@@ -53,14 +55,16 @@ class _AdBannerState extends State<AdBanner> {
         width: widget.width,
         height: height,
         decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              blurRadius: 7,
-              offset: const Offset(0, -3),
-            ),
-          ],
-          color: Colors.grey.withOpacity(0.15),
+          boxShadow: widget.shadow
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 7,
+                    offset: const Offset(0, -3),
+                  ),
+                ]
+              : null,
+          color: Colors.grey.shade900,
         ),
         child: _bannerAd == null
             ? const SizedBox.shrink()

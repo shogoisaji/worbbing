@@ -31,7 +31,7 @@ class MySimpleDialog {
                   onPressed: () async {
                     HapticFeedback.lightImpact();
                     onTap();
-                    Navigator.pop(dialogContext);
+                    Navigator.of(dialogContext).pop();
                   },
                   child: Text(buttonLabel,
                       style: TextStyle(

@@ -47,11 +47,12 @@ class AppTextStyles {
 
 Widget titleText(String text, Color? color, double? fontSize) {
   return Text(text,
+      softWrap: false,
       style: AppTextStyles.titleStyle.copyWith(
           color: color,
           decoration: TextDecoration.none,
           fontSize: fontSize,
-          overflow: TextOverflow.ellipsis));
+          overflow: TextOverflow.fade));
 }
 
 Widget bigText(String text, Color? color) {

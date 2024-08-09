@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 class CustomDialog {
@@ -101,7 +102,7 @@ class CustomDialogWidget extends StatelessWidget {
                       child: InkWell(
                     onTap: () {
                       HapticFeedback.lightImpact();
-                      Navigator.pop(context);
+                      context.pop();
                       onLeftButtonPressed();
                     },
                     child: Container(
@@ -136,7 +137,7 @@ class CustomDialogWidget extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         HapticFeedback.lightImpact();
-                        Navigator.pop(context);
+                        context.pop();
                         onRightButtonPressed();
                       },
                       child: Container(

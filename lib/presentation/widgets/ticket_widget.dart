@@ -3,17 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:worbbing/presentation/theme/theme.dart';
 
 class TicketWidget extends StatefulWidget {
   final int count;
   final double size;
-  final bool isEnableUseAnimation;
+  final bool isEnabledUseAnimation;
+  final Color bgColor;
   const TicketWidget(
       {super.key,
       required this.count,
       required this.size,
-      this.isEnableUseAnimation = false});
+      this.isEnabledUseAnimation = false,
+      required this.bgColor});
 
   @override
   State<TicketWidget> createState() => _TicketWidgetState();
@@ -25,7 +26,7 @@ class _TicketWidgetState extends State<TicketWidget> {
   @override
   void didUpdateWidget(covariant TicketWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.isEnableUseAnimation) return;
+    if (!widget.isEnabledUseAnimation) return;
     if (widget.count != oldWidget.count) {
       if (widget.count < oldWidget.count) {
         setState(() {
@@ -64,7 +65,7 @@ class _TicketWidgetState extends State<TicketWidget> {
                         height: widget.size / 2,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: MyTheme.grey,
+                          color: widget.bgColor,
                           border: Border.all(color: Colors.white, width: 1),
                           shape: BoxShape.circle,
                         ),

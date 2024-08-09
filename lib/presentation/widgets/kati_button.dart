@@ -33,7 +33,7 @@ class KatiButton extends StatefulWidget {
     this.pushedElevationLevel = 0.7,
     this.edgeBorder,
     this.buttonRadius = 10,
-    this.duration = const Duration(milliseconds: 200),
+    this.duration = const Duration(milliseconds: 250),
     this.stageOffset = 10.0,
     this.isStageShadow = true,
     this.stagePointColor,
@@ -55,7 +55,8 @@ class _KatiButtonState extends State<KatiButton>
 
   void _onTap() {
     if (_controller.isAnimating) return;
-    Future.delayed(Duration(milliseconds: widget.duration.inMilliseconds), () {
+    Future.delayed(Duration(milliseconds: widget.duration.inMilliseconds ~/ 2),
+        () {
       widget.onPressed();
     });
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:worbbing/models/translate_language.dart';
+import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 
 class LanguageDropdownVertical extends StatefulWidget {
@@ -68,7 +68,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 120,
+                    width: 110,
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
@@ -83,7 +83,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                         },
                         dropdownColor: Colors.grey.shade800,
                         alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.only(left: 24),
                         underline: const SizedBox.shrink(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
@@ -102,7 +102,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                           return DropdownMenuItem<TranslateLanguage>(
                             value: value,
                             child: Text(
-                              value.string,
+                              value.upperString,
                             ),
                           );
                         }).toList(),
@@ -111,7 +111,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                   ),
                   const SizedBox(height: 10),
                   Container(
-                    width: 120,
+                    width: 110,
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
@@ -126,7 +126,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                         },
                         dropdownColor: Colors.grey.shade600,
                         alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.only(left: 24),
                         underline: const SizedBox.shrink(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
@@ -145,7 +145,7 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical> {
                           return DropdownMenuItem<TranslateLanguage>(
                             value: value,
                             child: Text(
-                              value.string,
+                              value.upperString,
                             ),
                           );
                         }).toList(),
