@@ -17,15 +17,16 @@ class YesNoDialog {
     showDialog(
         context: context,
         builder: (BuildContext dialogContext) => AlertDialog(
-              shape:
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              actionsPadding: const EdgeInsets.only(bottom: 12, right: 16),
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(3))),
               backgroundColor: MyTheme.grey,
               title: Text(
                 title,
                 style: const TextStyle(
                     overflow: TextOverflow.clip,
                     color: Colors.white,
-                    fontSize: 20),
+                    fontSize: 22),
               ),
               actions: [
                 TextButton(
@@ -34,10 +35,8 @@ class YesNoDialog {
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(noText,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      )),
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 22)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -61,11 +60,11 @@ class YesNoDialog {
                       style: switch (type) {
                         YesNoDialogType.caution => TextStyle(
                             color: MyTheme.grey,
-                            fontSize: 20,
+                            fontSize: 24,
                           ),
                         YesNoDialogType.warning => const TextStyle(
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: 24,
                           ),
                       }),
                 )

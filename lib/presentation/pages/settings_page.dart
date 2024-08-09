@@ -317,8 +317,9 @@ class SettingsPage extends HookConsumerWidget {
               child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
             ),
             const Expanded(
-              child: Text('Default Language',
+              child: Text('Default Translation Language',
                   style: TextStyle(
+                      height: 1.1,
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.w500)),

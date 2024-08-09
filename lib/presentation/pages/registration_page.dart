@@ -46,6 +46,7 @@ class RegistrationPage extends HookConsumerWidget {
 
     final originalColor = useState(MyTheme.lemon);
     final translateColor = useState(MyTheme.orange);
+    final isTranslateLangError = useState(false);
 
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 600));
@@ -57,6 +58,46 @@ class RegistrationPage extends HookConsumerWidget {
           parent: animationController,
           curve: Curves.easeInOut,
         ));
+
+    void handleTapOriginalLang() {
+      final color = MyTheme.lemon;
+      TranslateLanguage selectLang = viewModel.originalLanguage;
+      showModalBottomSheet(
+          backgroundColor: Colors.transparent,
+          context: context,
+          builder: (context) {
+            return LanguageSelector(
+              title: 'Original Language',
+              initialLanguage: selectLang,
+              color: color,
+              onSelect: (lang) {
+                ref
+                    .read(registrationPageViewModelProvider.notifier)
+                    .setOriginalLanguage(lang);
+              },
+            );
+          });
+    }
+
+    void handleTapTranslateLang(TranslateLanguage lang) {
+      final color = MyTheme.orange;
+      TranslateLanguage selectLang = lang;
+      showModalBottomSheet(
+          backgroundColor: Colors.transparent,
+          context: context,
+          builder: (context) {
+            return LanguageSelector(
+              title: 'Translate Language',
+              initialLanguage: selectLang,
+              color: color,
+              onSelect: (lang) {
+                ref
+                    .read(registrationPageViewModelProvider.notifier)
+                    .setTranslateLanguage(lang);
+              },
+            );
+          });
+    }
 
     useEffect(() {
       focusNode.requestFocus();
@@ -83,8 +124,19 @@ class RegistrationPage extends HookConsumerWidget {
     }
 
     Future<void> handleTranslateAi() async {
+      bool hasError = false;
       if (originalWordController.text.isEmpty) {
         shakeAnimation(originalAnimationController);
+        hasError = true;
+      }
+      if (viewModel.originalLanguage == viewModel.translateLanguage) {
+        isTranslateLangError.value = true;
+        Future.delayed(const Duration(milliseconds: 100), () {
+          isTranslateLangError.value = false;
+        });
+        hasError = true;
+      }
+      if (hasError) {
         return;
       }
       focusNode.unfocus();
@@ -284,9 +336,29 @@ class RegistrationPage extends HookConsumerWidget {
                                                                       builder:
                                                                           (context,
                                                                               constraints) {
+                                                                    const spaceRate =
+                                                                        [
+                                                                      6,
+                                                                      1,
+                                                                      7
+                                                                    ];
                                                                     final rowWidth =
                                                                         constraints
                                                                             .maxWidth;
+                                                                    final langSelectWidth = rowWidth *
+                                                                        spaceRate[
+                                                                            0] /
+                                                                        spaceRate.reduce((a,
+                                                                                b) =>
+                                                                            a +
+                                                                            b);
+                                                                    final buttonWidth = rowWidth *
+                                                                        spaceRate[
+                                                                            2] /
+                                                                        spaceRate.reduce((a,
+                                                                                b) =>
+                                                                            a +
+                                                                            b);
                                                                     return Row(
                                                                       mainAxisAlignment:
                                                                           MainAxisAlignment
@@ -297,18 +369,22 @@ class RegistrationPage extends HookConsumerWidget {
                                                                               viewModel.originalLanguage,
                                                                           translateLanguage:
                                                                               viewModel.translateLanguage,
-                                                                          onOriginalSelected:
-                                                                              (TranslateLanguage value) {
-                                                                            ref.read(registrationPageViewModelProvider.notifier).setOriginalLanguage(value);
+                                                                          onTapOriginal:
+                                                                              () {
+                                                                            handleTapOriginalLang();
                                                                           },
-                                                                          onTranslateSelected:
-                                                                              (TranslateLanguage value) {
-                                                                            ref.read(registrationPageViewModelProvider.notifier).setTranslateLanguage(value);
+                                                                          onTapTranslate:
+                                                                              () {
+                                                                            handleTapTranslateLang(viewModel.translateLanguage);
                                                                           },
+                                                                          isError:
+                                                                              isTranslateLangError.value,
+                                                                          width:
+                                                                              langSelectWidth,
                                                                         ),
                                                                         TranslateButton(
-                                                                            width: rowWidth -
-                                                                                185, // 185: 左からの距離
+                                                                            width:
+                                                                                buttonWidth,
                                                                             isEnabled:
                                                                                 ticket != 0 && originalWordController.text != "",
                                                                             onPressed: () {
@@ -572,6 +648,118 @@ class RegistrationPage extends HookConsumerWidget {
   }
 }
 
+class LanguageSelector extends StatefulWidget {
+  final String title;
+  final TranslateLanguage initialLanguage;
+  final Color color;
+  final Function(TranslateLanguage) onSelect;
+  const LanguageSelector(
+      {super.key,
+      required this.title,
+      required this.initialLanguage,
+      required this.color,
+      required this.onSelect});
+
+  @override
+  State<LanguageSelector> createState() => _LanguageSelectorState();
+}
+
+class _LanguageSelectorState extends State<LanguageSelector> {
+  late TranslateLanguage selectLang;
+
+  @override
+  void initState() {
+    super.initState();
+    selectLang = widget.initialLanguage;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 0, bottom: 8, left: 18, right: 18),
+        child: Container(
+          padding:
+              const EdgeInsets.only(top: 12, bottom: 0, left: 18, right: 18),
+          decoration: BoxDecoration(
+            color: Colors.blueGrey.shade800.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: 100,
+                height: 3,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade600,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade700,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Text(widget.title,
+                    style: TextStyle(fontSize: 28, color: widget.color)),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: TranslateLanguage.values
+                        .map((lang) => Center(
+                              child: InkWell(
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  setState(() {
+                                    selectLang = lang;
+                                  });
+                                  widget.onSelect(lang);
+                                },
+                                child: Center(
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 200,
+                                    ),
+                                    width: double.infinity,
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 16),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: selectLang == lang
+                                              ? widget.color
+                                              : Colors.transparent,
+                                          width: 2),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(lang.upperString,
+                                        style: const TextStyle(
+                                            fontSize: 24, color: Colors.white)),
+                                  ),
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class TranslateButton extends StatefulWidget {
   final double width;
   final bool isEnabled;
@@ -671,7 +859,7 @@ class _TranslateButtonState extends State<TranslateButton>
         await animationController.forward();
         animationController.reset();
       },
-      width: widget.width.clamp(50, 200),
+      width: widget.width.clamp(50, 300),
       height: 85,
       elevation: 9,
       buttonRadius: 16,

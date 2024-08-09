@@ -145,7 +145,9 @@ class DetailPage extends HookConsumerWidget {
                           HapticFeedback.lightImpact();
                           Navigator.of(editContext).pop();
                         },
-                        child: subText('Cancel', MyTheme.orange),
+                        child: Text('Cancel',
+                            style:
+                                TextStyle(color: MyTheme.orange, fontSize: 22)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -173,8 +175,8 @@ class DetailPage extends HookConsumerWidget {
                         },
                         child: Text('Update',
                             style: TextStyle(
-                                color: MyTheme.greyForOrange,
-                                fontWeight: FontWeight.bold,
+                                color: MyTheme.grey,
+                                // fontWeight: FontWeight.bold,
                                 fontSize: 24)),
                       ),
                     ],
@@ -241,110 +243,115 @@ class DetailPage extends HookConsumerWidget {
           ),
           body: Stack(
             children: [
-              SingleChildScrollView(
-                  child: Container(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(
-                      height: 18,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: 100,
-                          width: 135,
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                            color: Colors.white.withOpacity(0.15),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: noticeBlock(
-                                    54,
-                                    viewModel.wordModel.noticeDuration,
-                                    (forgettingDuration <
-                                                viewModel.wordModel
-                                                    .noticeDuration) ||
-                                            (viewModel
-                                                    .wordModel.noticeDuration ==
-                                                99)
-                                        ? MyTheme.lemon
-                                        : MyTheme.orange,
-                                    false),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: 3,
-                          height: 100,
-                          color: Colors.black,
-                        ),
-                        Container(
-                          height: 100,
-                          width: 135,
-                          decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(8),
-                                bottomRight: Radius.circular(8),
-                              ),
-                              color: Colors.white.withOpacity(0.15)),
-                          child: Center(child: buildDurationLabel(wordModel)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 22),
-                    AdBanner(width: MediaQuery.of(context).size.width),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 42.0),
-                      child: Column(
+              Align(
+                alignment: Alignment.topCenter,
+                child: SingleChildScrollView(
+                    child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          detailWordContent(ContentType.original,
-                              viewModel.wordModel.originalWord),
-                          detailWordContent(ContentType.translated,
-                              viewModel.wordModel.translatedWord),
-                          detailWordContent(ContentType.example,
-                              viewModel.wordModel.example ?? ''),
-                          detailWordContent(ContentType.exampleTranslated,
-                              viewModel.wordModel.exampleTranslated ?? ''),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child:
-                                LayoutBuilder(builder: (context, constraints) {
-                              final width = constraints.maxWidth;
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  buildDeleteButton(
-                                      width * 0.46, handleTapDelete),
-                                  buildEditButton(width * 0.46, handleTapEdit),
-                                ],
-                              );
-                            }),
+                          Container(
+                            height: 100,
+                            width: 135,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                              ),
+                              color: Colors.white.withOpacity(0.15),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: noticeBlock(
+                                      54,
+                                      viewModel.wordModel.noticeDuration,
+                                      (forgettingDuration <
+                                                  viewModel.wordModel
+                                                      .noticeDuration) ||
+                                              (viewModel.wordModel
+                                                      .noticeDuration ==
+                                                  99)
+                                          ? MyTheme.lemon
+                                          : MyTheme.orange,
+                                      false),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 32),
-                          buildRegistrationDate(),
-                          const SizedBox(
-                            height: 70,
+                          Container(
+                            width: 3,
+                            height: 100,
+                            color: Colors.black,
+                          ),
+                          Container(
+                            height: 100,
+                            width: 135,
+                            decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
+                                color: Colors.white.withOpacity(0.15)),
+                            child: Center(child: buildDurationLabel(wordModel)),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              )),
+                      const SizedBox(height: 22),
+                      AdBanner(width: MediaQuery.of(context).size.width),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 42.0),
+                        child: Column(
+                          children: [
+                            detailWordContent(ContentType.original,
+                                viewModel.wordModel.originalWord),
+                            detailWordContent(ContentType.translated,
+                                viewModel.wordModel.translatedWord),
+                            detailWordContent(ContentType.example,
+                                viewModel.wordModel.example ?? ''),
+                            detailWordContent(ContentType.exampleTranslated,
+                                viewModel.wordModel.exampleTranslated ?? ''),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                final width = constraints.maxWidth;
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    buildDeleteButton(
+                                        width * 0.46, handleTapDelete),
+                                    buildEditButton(
+                                        width * 0.46, handleTapEdit),
+                                  ],
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: 32),
+                            buildRegistrationDate(),
+                            const SizedBox(
+                              height: 70,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ),
             ],
           ),
         ),

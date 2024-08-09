@@ -59,7 +59,7 @@ class _AdRewardState extends State<AdReward> {
 
     TwoWayDialog.show(
         context,
-        '広告を見て\nチケットをゲット',
+        '広告を見て\nチケットを獲得',
         const Icon(Icons.help_outline, size: 36),
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -68,7 +68,7 @@ class _AdRewardState extends State<AdReward> {
             Padding(
               padding: const EdgeInsets.only(bottom: 1, left: 4),
               child: bodyText(
-                  '動画広告を最後まで視聴することで、チケットが ${TicketConstants.rewardEarnTicket} 枚ゲットできます。\n\n※音声が流れる可能せがあります。',
+                  '動画広告を最後まで視聴することで、チケットが ${TicketConstants.rewardEarnTicket} 枚獲得できます。\n\n※音声が流れる可能せがあります。',
                   Colors.white),
             ),
             const SizedBox(height: 12),
