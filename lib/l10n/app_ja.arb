@@ -1,0 +1,62 @@
+{
+  "@@locale": "ja",
+  "notice": "通知",
+  "latest_add": "登録順",
+  "flag": "フラグ",
+  "registration": "登録",
+  "original_language": "オリジナル言語",
+  "translate_language": "翻訳言語",
+  "original": "単語",
+  "translated": "翻訳",
+  "example": "例文",
+  "translated_example": "翻訳例文",
+  "save": "保存",
+  "cancel": "戻る",
+  "update": "更新",
+  "delete": "削除",
+  "edit": "編集",
+  "language": "言語",
+  "registration_date": "登録日",
+  "total_words": "総単語数",
+  "default_original_language": "デフォルト\nオリジナル言語",
+  "default_translate_language": "デフォルト\n翻訳言語",
+  "slide_hint": "スライドのヒント",
+  "privacy_policy": "プライバシーポリシー",
+  "terms_of_use": "利用規約",
+  "contact_us": "お問い合わせ",
+  "show_demo": "デモを表示",
+  "license": "ライセンス",
+  "forgetting_curve": "忘却曲線について",
+  "version": "バージョン",
+  "random_word_notifications": "単語のランダム通知",
+  "sample": "サンプル",
+  "ticket_reward_title": "広告を視聴して\nチケットを獲得",
+  "failed_get_ads": "広告の取得に失敗しました",
+  "ticket_reward_description": "動画広告を最後まで視聴すると、{rewardEarnTicket}枚のチケットを獲得できます。\n\n注意：音声が再生される場合があります。",
+  "@ticket_reward_description": {
+    "placeholders": {
+      "rewardEarnTicket": {
+        "type": "int"
+      }
+    }
+  },
+  "watch_ads": "広告を視聴",
+  "exist_word": "「${existWord}」は\nすでに登録されています。",
+  "@exist_word": {
+    "placeholders": {
+      "existWord": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_translate": "翻訳に失敗しました！",
+  "save_failed": "単語の保存に失敗しました！",
+  "delete_check": "本当に削除しますか？",
+  "failed_delete": "削除に失敗しました！",
+  "notice_permission": "通知の許可がOFFになっています。\n通知の許可をONにしてください。",
+  "failed_add_notice": "お知らせの追加に失敗しました",
+  "failed_delete_notice": "お知らせの削除に失敗しました",
+  "today": "今日",
+  "last_update": "最終更新",
+  "go_settings": "設定へ移動"
+}

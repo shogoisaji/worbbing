@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
@@ -158,7 +159,10 @@ class _LanguageDropdownVerticalState extends State<LanguageDropdownVertical>
 
   Widget _buildTextContainer(String text, Function() onTap, Color color) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       child: Container(
           height: 30,
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),

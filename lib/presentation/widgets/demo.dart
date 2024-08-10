@@ -79,8 +79,9 @@ class _DemoPageState extends State<DemoPage> with TickerProviderStateMixin {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final w = MediaQuery.of(context).size.width;
-      final adjust = w > 500 ? 0.1 : 0;
-      final viewPortRate = 0.4 + w / 6000 + adjust;
+      final h = MediaQuery.of(context).size.height;
+      final adjust = w > 500 ? 0.1 : 0.2;
+      final viewPortRate = 0.25 + h / 6500 + adjust;
       _updatePageController(viewPortRate);
       Future.delayed(const Duration(milliseconds: 100), () {
         _pageController.addListener(() {

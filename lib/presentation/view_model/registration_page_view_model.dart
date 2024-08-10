@@ -11,6 +11,7 @@ import 'package:worbbing/domain/entities/translated_api_response.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
+import 'package:worbbing/providers/app_language_state_provider.dart';
 
 part 'registration_page_view_model.g.dart';
 
@@ -90,9 +91,11 @@ class RegistrationPageViewModel extends _$RegistrationPageViewModel {
     }
     state = state.copyWith(isLoading: true);
 
+    final appLang = ref.read(appLanguageStateProvider).name;
+
     try {
-      final res = await TranslateApi.postRequest(
-          input, state.originalLanguage.name, state.translateLanguage.name);
+      final res = await TranslateApi.postRequest(input,
+          state.originalLanguage.name, state.translateLanguage.name, appLang);
       final translatedModel = TranslatedApiResponse.fromJson(res);
 
       return translatedModel;

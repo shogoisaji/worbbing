@@ -7,8 +7,9 @@ import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dar
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/usecases/word/count_notices_usecase.dart';
 import 'package:worbbing/domain/usecases/word/get_total_words_usecase.dart';
+import 'package:worbbing/providers/app_language_state_provider.dart';
 
-part 'setting_page_state.g.dart';
+part 'setting_page_view_model.g.dart';
 
 class SettingPageState {
   final bool isLoading;
@@ -132,5 +133,13 @@ class SettingPageViewModel extends _$SettingPageViewModel {
           value.name,
         );
     state = state.copyWith(translateLanguage: value);
+  }
+
+  void updateAppLanguage(AppLanguage value) async {
+    ref.read(sharedPreferencesRepositoryProvider).save<String>(
+          SharedPreferencesKey.appLanguage,
+          value.name,
+        );
+    ref.read(appLanguageStateProvider.notifier).setLang(value);
   }
 }

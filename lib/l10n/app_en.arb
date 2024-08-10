@@ -1,0 +1,62 @@
+{
+  "@@locale": "en",
+  "notice": "Notice",
+  "latest_add": "LatestAdd",
+  "flag": "Flag",
+  "registration": "Registration",
+  "original_language": "Original Language",
+  "translate_language": "Translate Language",
+  "original": "Original",
+  "translated": "Translated",
+  "example": "Example",
+  "translated_example": "Translated Example",
+  "save": "Save",
+  "cancel": "Cancel",
+  "update": "Update",
+  "delete": "Delete",
+  "edit": "Edit",
+  "language": "Language",
+  "registration_date": "Registration Date",
+  "total_words": "Total Words",
+  "default_original_language": "Default Original Language",
+  "default_translate_language": "Default Translate Language",
+  "slide_hint": "Slide hint",
+  "privacy_policy": "Privacy Policy",
+  "terms_of_use": "Terms of Use",
+  "contact_us": "Contact Us",
+  "show_demo": "Show Demo",
+  "license": "License",
+  "forgetting_curve": "Forgetting Curve",
+  "version": "Version",
+  "random_word_notifications": "Random Word\nNotifications",
+  "sample": "Sample",
+  "ticket_reward_title": "Watch Ads\nGet Tickets",
+  "failed_get_ads": "Failed to get ads!",
+  "ticket_reward_description": "By watching the video ad to the end, you can earn {rewardEarnTicket} tickets.\n\nNote: Audio may play.",
+  "@ticket_reward_description": {
+    "placeholders": {
+      "rewardEarnTicket": {
+        "type": "int"
+      }
+    }
+  },
+  "watch_ads": "Watch Ads",
+  "exist_word": "\"${existWord}\" is\nalready registered.",
+  "@exist_word": {
+    "placeholders": {
+      "existWord": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_translate": "Failed to translate!",
+  "save_failed": "Failed to save word!",
+  "delete_check": "Do you really want to delete it?",
+  "failed_delete": "Failed to delete!",
+  "notice_permission": "Notification permission is OFF.\nPlease turn ON notification permission.",
+  "failed_add_notice": "Failed to add Notice",
+  "failed_delete_notice": "Failed to delete Notice",
+  "today": "Today",
+  "last_update": "Last Update",
+  "go_settings": "Go Settings"
+}

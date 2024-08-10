@@ -2,6 +2,7 @@ enum SharedPreferencesKey {
   isFirst('isFirst'),
   originalLang('original_lang'),
   translateLang('translate_lang'),
+  appLanguage('app_language'),
   ticket('ticket'),
   ticketGetDate('ticketGetDate'),
   noticedEnable('notice_enabled'),
