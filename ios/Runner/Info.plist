@@ -267,5 +267,10 @@
         </array>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>To share photos, please allow permission to access your photo library.</string>
+		<key>Localizations</key>
+		<array>
+			<string>English</string>
+			<string>Japanese</string>
+		</array>
 	</dict>
 </plist>

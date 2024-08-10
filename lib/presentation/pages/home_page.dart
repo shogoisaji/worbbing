@@ -13,9 +13,10 @@ import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/domain/usecases/notice/shuffle_notification_usecase.dart';
 import 'package:worbbing/domain/usecases/word/down_duration_usecase.dart';
 import 'package:worbbing/domain/usecases/word/up_duration_usecase.dart';
+import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
-import 'package:worbbing/presentation/view_model/setting_page_state.dart';
+import 'package:worbbing/presentation/view_model/setting_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
@@ -33,9 +34,10 @@ class HomePage extends HookConsumerWidget {
     final viewModelNotifier = ref.read(homePageViewModelProvider.notifier);
     final ticketCount = ref.watch(ticketStateProvider);
     final sharedText = ref.watch(shareTextProvider);
-
     final isEnableSlideHint =
         ref.watch(settingPageViewModelProvider).enableSlideHint;
+
+    final l10n = L10n.of(context)!;
 
     final appLifecycleState = useAppLifecycleState();
 
@@ -179,13 +181,13 @@ class HomePage extends HookConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          tagSelect('Notice', viewModel.tagState, 0, () {
+                          tagSelect(l10n.notice, viewModel.tagState, 0, () {
                             handleTapTag(0);
                           }),
-                          tagSelect('LatestAdd', viewModel.tagState, 1, () {
+                          tagSelect(l10n.latest_add, viewModel.tagState, 1, () {
                             handleTapTag(1);
                           }),
-                          tagSelect('Flag', viewModel.tagState, 2, () {
+                          tagSelect(l10n.flag, viewModel.tagState, 2, () {
                             handleTapTag(2);
                           }),
                         ],
@@ -315,9 +317,9 @@ class HomePage extends HookConsumerWidget {
                   },
                   child: Transform.rotate(
                     angle: -buttonAngle,
-                    child: const Icon(
+                    child: Icon(
                       Icons.add_rounded,
-                      color: Colors.black,
+                      color: MyTheme.darkGrey,
                       size: 46,
                     ),
                   ))),

@@ -10,6 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:worbbing/core/exceptions/permission_exception.dart';
 import 'package:worbbing/domain/entities/notice_data_model.dart';
+import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/notice_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
@@ -30,13 +31,14 @@ class NoticePage extends HookConsumerWidget {
     final viewModel = ref.watch(noticePageViewModelProvider);
     final viewModelNotifier = ref.read(noticePageViewModelProvider.notifier);
 
+    final l10n = L10n.of(context)!;
+
     Future<void> showNoticePermissionDialog() async {
       YesNoDialog.show(
           context: context,
-          title:
-              'Notification permission is OFF.\nPlease turn ON notification permission.',
-          noText: 'Cancel',
-          yesText: 'Go Settings',
+          title: l10n.notice_permission,
+          noText: l10n.cancel,
+          yesText: l10n.go_settings,
           onNoPressed: () {},
           onYesPressed: () {
             AppSettings.openAppSettings();
@@ -61,7 +63,7 @@ class NoticePage extends HookConsumerWidget {
       if (pickedTime != null) {
         await viewModelNotifier.addNotice(pickedTime).catchError((e) {
           if (!context.mounted) return null;
-          ErrorDialog.show(context: context, text: 'Failed to add Notice');
+          ErrorDialog.show(context: context, text: l10n.failed_add_notice);
         });
       }
       HapticFeedback.lightImpact();
@@ -70,16 +72,16 @@ class NoticePage extends HookConsumerWidget {
     Future<void> removeTime(int noticeId) async {
       await viewModelNotifier.removeNotice(noticeId).catchError((e) {
         if (!context.mounted) return null;
-        ErrorDialog.show(context: context, text: 'Failed to delete Notice');
+        ErrorDialog.show(context: context, text: l10n.failed_delete_notice);
       });
     }
 
     void handleTapRemove(NoticeDataModel notice) {
       YesNoDialog.show(
           context: context,
-          title: 'Do you want to delete this data?',
-          noText: 'Cancel',
-          yesText: 'Delete',
+          title: l10n.delete_check,
+          noText: l10n.cancel,
+          yesText: l10n.delete,
           onNoPressed: () {
             HapticFeedback.lightImpact();
             Navigator.of(context).pop();
@@ -158,8 +160,8 @@ class NoticePage extends HookConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Random word \nNotifications',
-                                  style: TextStyle(
+                              Text(l10n.random_word_notifications,
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 24,
                                       fontWeight: FontWeight.w500)),
@@ -247,7 +249,8 @@ class NoticePage extends HookConsumerWidget {
                               children: [
                                 _buildSampleButton(
                                     (constraints.maxWidth - space) * 0.5,
-                                    handleTapSample),
+                                    handleTapSample,
+                                    l10n.sample),
                                 _buildAddButton(
                                     (constraints.maxWidth - space) * 0.5,
                                     handleTapAdd),
@@ -314,7 +317,7 @@ class NoticePage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSampleButton(double width, Function() onTap) {
+  Widget _buildSampleButton(double width, Function() onTap, String text) {
     return KatiButton(
       onPressed: () {
         HapticFeedback.lightImpact();
@@ -349,9 +352,9 @@ class NoticePage extends HookConsumerWidget {
                 Align(
                   alignment: const Alignment(0.7, 1.0),
                   child: Text(
-                    'Sample',
+                    text,
                     style: TextStyle(
-                      fontSize: 27,
+                      fontSize: 25,
                       color: MyTheme.greyForOrange,
                       fontWeight: FontWeight.bold,
                       shadows: [
@@ -387,17 +390,14 @@ class NoticePage extends HookConsumerWidget {
       stagePointColor: Colors.blueGrey.shade700,
       edgeLineColor: Colors.orange.shade300,
       edgeBorder: Border.all(color: Colors.white.withOpacity(0.5), width: 0.8),
-      child: Align(
-        alignment: const Alignment(0.7, 0.9),
-        child: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.rotationX(0.5),
-            child: Align(
-              alignment: const Alignment(0.93, 1.0),
-              child: Icon(Icons.add_rounded,
-                  color: MyTheme.greyForOrange, size: 48),
-            )),
-      ),
+      child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.rotationX(0.5),
+          child: Align(
+            alignment: const Alignment(0.93, 1.0),
+            child:
+                Icon(Icons.add_rounded, color: MyTheme.greyForOrange, size: 48),
+          )),
     );
   }
 }

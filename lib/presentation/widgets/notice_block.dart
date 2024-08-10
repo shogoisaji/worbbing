@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:worbbing/presentation/theme/theme.dart';
 
 const double offsetX = 5.0;
 const double offsetY = 4.0;
@@ -15,9 +16,9 @@ Widget noticeBlock(double size, int number, Color color, bool isShake) {
   Random random = Random();
   final fontSize = size * 0.60;
   final textStyle = GoogleFonts.notoSans(
-      color: Colors.black, fontSize: fontSize, fontWeight: FontWeight.w500);
+      color: MyTheme.darkGrey, fontSize: fontSize, fontWeight: FontWeight.w500);
   final infinityTextStyle = GoogleFonts.roboto(
-      color: Colors.black, fontSize: fontSize, fontWeight: FontWeight.w400);
+      color: MyTheme.darkGrey, fontSize: fontSize, fontWeight: FontWeight.w400);
 
   return Stack(
     children: [
