@@ -14,6 +14,7 @@ import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/presentation/widgets/language_selector.dart';
+import 'package:worbbing/presentation/widgets/upper_snack_bar.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';
@@ -178,6 +179,8 @@ class RegistrationPage extends HookConsumerWidget {
               "${res.translated[0]}, ${res.translated[1]}, ${res.translated[2]}";
           exampleController.text = res.example;
           exampleTranslatedController.text = res.exampleTranslated;
+          if (!context.mounted) return;
+          UpperSnackBar.showTopSnackBar(context, "完了");
         }
       } on TranslateException catch (_) {
         if (!context.mounted) return;
