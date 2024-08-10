@@ -14,7 +14,6 @@ import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/presentation/widgets/language_selector.dart';
-import 'package:worbbing/presentation/widgets/upper_snack_bar.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/translated_api_response.dart';
@@ -52,6 +51,7 @@ class RegistrationPage extends HookConsumerWidget {
     final originalColor = useState(MyTheme.lemon);
     final translateColor = useState(MyTheme.orange);
     final isTranslateLangError = useState(false);
+    final translateComment = useState("");
 
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 600));
@@ -132,6 +132,7 @@ class RegistrationPage extends HookConsumerWidget {
     }
 
     Future<void> handleTranslateAi() async {
+      translateComment.value = "";
       bool hasError = false;
       if (originalWordController.text.isEmpty) {
         shakeAnimation(originalAnimationController);
@@ -157,6 +158,9 @@ class RegistrationPage extends HookConsumerWidget {
           print("res is null");
           return;
         }
+        if (res.comment != null) {
+          translateComment.value = res.comment!;
+        }
 
         /// 提案の場合
         if (res.type == TranslatedResponseType.suggestion) {
@@ -180,7 +184,6 @@ class RegistrationPage extends HookConsumerWidget {
           exampleController.text = res.example;
           exampleTranslatedController.text = res.exampleTranslated;
           if (!context.mounted) return;
-          UpperSnackBar.showTopSnackBar(context, "完了");
         }
       } on TranslateException catch (_) {
         if (!context.mounted) return;
@@ -329,21 +332,46 @@ class RegistrationPage extends HookConsumerWidget {
                                                                           MyTheme
                                                                               .lightGrey)),
                                                                   CustomTextField(
-                                                                      textController:
-                                                                          originalWordController,
-                                                                      animationController:
-                                                                          originalAnimationController,
-                                                                      color: originalColor
-                                                                          .value,
-                                                                      focusNode:
-                                                                          focusNode,
-                                                                      isOriginalInput:
-                                                                          true,
-                                                                      isEnglish:
-                                                                          true),
+                                                                    textController:
+                                                                        originalWordController,
+                                                                    animationController:
+                                                                        originalAnimationController,
+                                                                    color: originalColor
+                                                                        .value,
+                                                                    focusNode:
+                                                                        focusNode,
+                                                                    isOriginalInput:
+                                                                        true,
+                                                                    isEnglish:
+                                                                        true,
+                                                                    onChange:
+                                                                        () {
+                                                                      translateComment
+                                                                          .value = "";
+                                                                    },
+                                                                  ),
                                                                   const SizedBox(
                                                                       height:
-                                                                          24),
+                                                                          12),
+                                                                  translateComment
+                                                                          .value
+                                                                          .isNotEmpty
+                                                                      ? Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                              horizontal: 8.0),
+                                                                          child:
+                                                                              Text(
+                                                                            translateComment.value,
+                                                                            style:
+                                                                                TextStyle(fontSize: 16, color: MyTheme.lemon.withOpacity(0.7)),
+                                                                          ),
+                                                                        )
+                                                                      : const SizedBox
+                                                                          .shrink(),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          12),
                                                                   LayoutBuilder(
                                                                       builder:
                                                                           (context,

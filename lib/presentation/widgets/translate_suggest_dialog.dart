@@ -146,6 +146,16 @@ class TwoWayDialogWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                  response.comment != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                              top: 2.0, left: 4, right: 4),
+                          child: Text(response.comment!,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white.withOpacity(0.6))),
+                        )
+                      : const SizedBox.shrink(),
                   const SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 1, left: 4),
