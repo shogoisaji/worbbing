@@ -19,6 +19,7 @@ import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
+import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
 import 'package:worbbing/presentation/widgets/update_particle_widget.dart';
@@ -65,10 +66,42 @@ class HomePage extends HookConsumerWidget {
       });
     }
 
-    final handleEarnTicket = useCallback(() {
-      ref
-          .read(ticketStateProvider.notifier)
-          .earnTicket(TicketConstants.rewardEarnTicket);
+    final handleEarnTicket = useCallback(() async {
+      /// reward ads
+      // ref
+      //     .read(ticketStateProvider.notifier)
+      //     .earnTicket(TicketConstants.rewardEarnTicket);
+
+      /// daily ticket
+      final earnedTicket =
+          await ref.read(ticketStateProvider.notifier).checkDailyTicket();
+      if (!context.mounted) return;
+      MySimpleDialog.show(
+          context,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("3 tickets daily",
+                  style: TextStyle(
+                    color: MyTheme.lemon,
+                    fontSize: 28,
+                  )),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                  earnedTicket != null
+                      ? "You get $earnedTicket tickets"
+                      : "Already get today's ticket.",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  )),
+            ],
+          ),
+          "OK",
+          () {});
     }, [ref]);
 
     final handleUpdateWord = useCallback(() {
@@ -146,8 +179,8 @@ class HomePage extends HookConsumerWidget {
                     size: 30,
                   )),
               actions: [
-                AdReward(
-                  onEarnTicket: handleEarnTicket,
+                GestureDetector(
+                  onTap: handleEarnTicket,
                   child: TicketWidget(
                     count: ticketCount,
                     size: 50,
@@ -155,6 +188,15 @@ class HomePage extends HookConsumerWidget {
                     bgColor: MyTheme.appBarGrey,
                   ),
                 ),
+                // AdReward(
+                //   onEarnTicket: handleEarnTicket,
+                //   child: TicketWidget(
+                //     count: ticketCount,
+                //     size: 50,
+                //     isEnabledUseAnimation: true,
+                //     bgColor: MyTheme.appBarGrey,
+                //   ),
+                // ),
                 const SizedBox(
                   width: 4,
                 ),

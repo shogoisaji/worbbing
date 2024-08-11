@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:worbbing/core/exceptions/registration_page_exception.dart';
 import 'package:worbbing/data/datasources/api/translate_api.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_keys.dart';
 import 'package:worbbing/data/repositories/shared_preferences/shared_preferences_repository.dart';
@@ -100,7 +99,7 @@ class RegistrationPageViewModel extends _$RegistrationPageViewModel {
 
       return translatedModel;
     } catch (e) {
-      throw TranslateException();
+      rethrow;
     } finally {
       state = state.copyWith(isLoading: false);
     }

@@ -4,10 +4,11 @@ enum SharedPreferencesKey {
   translateLang('translate_lang'),
   appLanguage('app_language'),
   ticket('ticket'),
-  ticketGetDate('ticketGetDate'),
+  ticketGetDate('ticket_get_date'),
   noticedEnable('notice_enabled'),
   isEnabledSlideHint('is_enabled_slide_hint'),
   shuffledDate('shuffled_date'),
+  speakVolume('speak_volume'),
   ;
 
   const SharedPreferencesKey(this.value);

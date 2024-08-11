@@ -5,7 +5,8 @@ class AdHelper {
     if (Platform.isAndroid) {
       return '<YOUR_ANDROID_BANNER_AD_UNIT_ID>';
     } else if (Platform.isIOS) {
-      return 'ca-app-pub-9902729215705615/2288263437';
+      return 'ca-app-pub-2407387645719776/4373750159';
+      // return 'ca-app-pub-9902729215705615/2288263437';
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -25,7 +26,8 @@ class AdHelper {
     if (Platform.isAndroid) {
       return '<YOUR_ANDROID_REWARDED_AD_UNIT_ID>';
     } else if (Platform.isIOS) {
-      return 'ca-app-pub-9902729215705615/7541290810';
+      return 'ca-app-pub-2407387645719776/3677376462';
+      // return 'ca-app-pub-9902729215705615/7541290810';
     } else {
       throw UnsupportedError('Unsupported platform');
     }

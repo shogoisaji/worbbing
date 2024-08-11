@@ -15,7 +15,7 @@
   "update": "更新",
   "delete": "削除",
   "edit": "編集",
-  "language": "言語",
+  "app_language": "アプリ言語",
   "registration_date": "登録日",
   "total_words": "総単語数",
   "default_original_language": "デフォルト\nオリジナル言語",
@@ -58,5 +58,6 @@
   "failed_delete_notice": "お知らせの削除に失敗しました",
   "today": "今日",
   "last_update": "最終更新",
-  "go_settings": "設定へ移動"
+  "go_settings": "設定へ移動",
+  "speak_volume": "発音音量"
 }

@@ -13,6 +13,10 @@ class InputNullException extends RegistrationPageException {
   List<String> nullTypes() => input;
 }
 
-class TranslateException extends RegistrationPageException {
-  TranslateException() : super('Translate failed');
+class TranslateException implements Exception {
+  final String? message;
+  TranslateException(this.message);
+
+  @override
+  String toString() => 'TranslateException: $message';
 }
