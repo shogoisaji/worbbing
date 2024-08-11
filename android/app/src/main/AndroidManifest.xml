@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>  
     <application
         android:label="worbbing"
         android:name="${applicationName}"
@@ -42,7 +47,7 @@
         <!-- use release -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9902729215705615~2353894386"/>
+            android:value="ca-app-pub-2407387645719776~6095021780"/>
 
         <!-- use test -->
         <!-- <meta-data

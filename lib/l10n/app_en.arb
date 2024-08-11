@@ -15,7 +15,7 @@
   "update": "Update",
   "delete": "Delete",
   "edit": "Edit",
-  "language": "Language",
+  "app_language": "App Language",
   "registration_date": "Registration Date",
   "total_words": "Total Words",
   "default_original_language": "Default Original Language",
@@ -58,5 +58,6 @@
   "failed_delete_notice": "Failed to delete Notice",
   "today": "Today",
   "last_update": "Last Update",
-  "go_settings": "Go Settings"
+  "go_settings": "Go Settings",
+  "speak_volume": "Speak Volume"
 }

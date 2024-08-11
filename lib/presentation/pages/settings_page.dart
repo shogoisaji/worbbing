@@ -285,11 +285,20 @@ class SettingsPage extends HookConsumerWidget {
                                         onTap: notifier.switchSlideHint,
                                         title: l10n.slide_hint),
                                     contentSpacer,
+                                    _buildVolumeSelect(
+                                      l10n,
+                                      viewModel.speakVolume,
+                                      (value) {
+                                        HapticFeedback.lightImpact();
+                                        notifier.updateSpeakVolume(value);
+                                      },
+                                    ),
+                                    contentSpacer,
                                     _buildLanguageSelect(
                                       l10n,
                                       context,
                                       handleSelectAppLang,
-                                      l10n.language,
+                                      l10n.app_language,
                                       appLanguageState,
                                     ),
                                   ],
@@ -505,24 +514,66 @@ class SettingsPage extends HookConsumerWidget {
     );
   }
 
+  Widget _buildVolumeSelect(
+      L10n l10n, double volume, Function(double) onChange) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
+              ),
+              Expanded(
+                child: AutoSizeText(l10n.speak_volume,
+                    maxLines: 1,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500)),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: langContainerWidth + 10,
+          child: Slider(
+            value: volume,
+            divisions: 10,
+            onChanged: onChange,
+            activeColor: MyTheme.lemon,
+          ),
+        )
+      ],
+    );
+  }
+
   Widget _buildLanguageSelect(L10n l10n, BuildContext context,
       Function(AppLanguage) onTap, String title, AppLanguage currentLang) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
-            ),
-            Text(title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500)),
-          ],
+        Expanded(
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Icon(Icons.circle, color: MyTheme.lemon, size: 12),
+              ),
+              Expanded(
+                child: AutoSizeText(title,
+                    maxLines: 1,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500)),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 8),
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
@@ -530,7 +581,7 @@ class SettingsPage extends HookConsumerWidget {
               backgroundColor: Colors.transparent,
               context: context,
               builder: (context) => LanguageSelector<AppLanguage>(
-                title: l10n.language,
+                title: l10n.app_language,
                 color: Colors.white,
                 initialLanguage: currentLang,
                 onSelect: (dynamic lang) {
@@ -730,10 +781,10 @@ class SlideHintSwitch extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SlideHintSwitchState createState() => _SlideHintSwitchState();
+  SlideHintSwitchState createState() => SlideHintSwitchState();
 }
 
-class _SlideHintSwitchState extends State<SlideHintSwitch>
+class SlideHintSwitchState extends State<SlideHintSwitch>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

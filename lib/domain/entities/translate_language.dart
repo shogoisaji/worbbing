@@ -19,9 +19,16 @@ extension TranslateLanguageExtension on TranslateLanguage {
     );
   }
 
-  // String get lowerString {
-  //   return name.toLowerCase();
-  // }
+  String get tts {
+    switch (this) {
+      case TranslateLanguage.english:
+        return 'en-US';
+      case TranslateLanguage.japanese:
+        return 'ja-JP';
+      default:
+        return 'en-US';
+    }
+  }
 
   String get upperString {
     switch (this) {

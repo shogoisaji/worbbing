@@ -20,6 +20,7 @@ class SettingPageState {
   final bool enableSlideHint;
   final TranslateLanguage originalLanguage;
   final TranslateLanguage translateLanguage;
+  final double speakVolume;
 
   SettingPageState({
     this.isLoading = false,
@@ -30,6 +31,7 @@ class SettingPageState {
     this.enableSlideHint = true,
     this.originalLanguage = TranslateLanguage.english,
     this.translateLanguage = TranslateLanguage.japanese,
+    this.speakVolume = 0.0,
   });
 
   SettingPageState copyWith({
@@ -41,6 +43,7 @@ class SettingPageState {
     bool? enableSlideHint,
     TranslateLanguage? originalLanguage,
     TranslateLanguage? translateLanguage,
+    double? speakVolume,
   }) {
     return SettingPageState(
       isLoading: isLoading ?? this.isLoading,
@@ -51,6 +54,7 @@ class SettingPageState {
       enableSlideHint: enableSlideHint ?? this.enableSlideHint,
       originalLanguage: originalLanguage ?? this.originalLanguage,
       translateLanguage: translateLanguage ?? this.translateLanguage,
+      speakVolume: speakVolume ?? this.speakVolume,
     );
   }
 }
@@ -84,6 +88,10 @@ class SettingPageViewModel extends _$SettingPageViewModel {
           await CountNoticesUsecase(ref.read(wordListRepositoryProvider))
               .execute();
       final enableSlideHint = _loadSlideHint();
+      final speakVolume = ref
+              .read(sharedPreferencesRepositoryProvider)
+              .fetch<double>(SharedPreferencesKey.speakVolume) ??
+          0.0;
 
       state = state.copyWith(
         isLoading: false,
@@ -95,6 +103,7 @@ class SettingPageViewModel extends _$SettingPageViewModel {
         totalWords: totalWords,
         noticeCount: noticeCount,
         enableSlideHint: enableSlideHint,
+        speakVolume: speakVolume,
       );
     } catch (e) {
       state = state.copyWith(
@@ -141,5 +150,13 @@ class SettingPageViewModel extends _$SettingPageViewModel {
           value.name,
         );
     ref.read(appLanguageStateProvider.notifier).setLang(value);
+  }
+
+  void updateSpeakVolume(double value) {
+    ref.read(sharedPreferencesRepositoryProvider).save<double>(
+          SharedPreferencesKey.speakVolume,
+          value,
+        );
+    state = state.copyWith(speakVolume: value);
   }
 }
