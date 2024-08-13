@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -51,10 +52,26 @@ class _DemoPageState extends State<DemoPage> with TickerProviderStateMixin {
   int _currentIndex = 0;
   double _opacity = 0.0;
 
+  double contentWidth = 0.0;
+
+  final List<Color> gradientColors1 = [
+    const Color.fromARGB(255, 116, 20, 105),
+    const Color.fromARGB(255, 42, 50, 95),
+    const Color.fromARGB(255, 38, 103, 82),
+  ];
+  final List<Color> gradientColors2 = [
+    const Color.fromARGB(255, 95, 9, 105),
+    const Color.fromARGB(255, 73, 42, 95),
+    const Color.fromARGB(255, 21, 75, 92),
+  ];
+
   final demo = [
-    const Demo(title: 'Vocabulary Check', lottie: 'assets/lottie/demo1.json'),
-    const Demo(title: 'Registration', lottie: 'assets/lottie/demo2.json'),
-    const Demo(title: 'Notification', lottie: 'assets/lottie/demo3.json'),
+    const Demo(title: 'Vocabulary Check', lottie: 'assets/lottie/home.json'),
+    const Demo(
+        title: 'Registration', lottie: 'assets/lottie/registration.json'),
+    const Demo(
+        title: 'Notification', lottie: 'assets/lottie/notification.json'),
+    const Demo(title: 'Sharing Text', lottie: 'assets/lottie/share.json'),
   ];
 
   void _updateLottieDuration(int index, int milliseconds) {
@@ -80,8 +97,8 @@ class _DemoPageState extends State<DemoPage> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final w = MediaQuery.of(context).size.width;
       final h = MediaQuery.of(context).size.height;
-      final adjust = w > 500 ? 0.1 : 0.2;
-      final viewPortRate = 0.25 + h / 6500 + adjust;
+      contentWidth = w.clamp(100, 700);
+      final viewPortRate = (contentWidth * 1.2) / h;
       _updatePageController(viewPortRate);
       Future.delayed(const Duration(milliseconds: 100), () {
         _pageController.addListener(() {
@@ -119,43 +136,58 @@ class _DemoPageState extends State<DemoPage> with TickerProviderStateMixin {
             scrollDirection: Axis.vertical,
             controller: _pageController,
             itemBuilder: (context, index) {
-              const angleList = [-0.04, 0.04, -0.03];
-              const offsetList = [
-                Offset(-2, -100.0),
-                Offset(12, -80.0),
-                Offset(12, -60.0)
-              ];
-              return Align(
-                alignment: Alignment.bottomCenter,
-                child: OverflowBox(
-                  alignment: Alignment.bottomCenter,
-                  maxHeight: double.infinity,
-                  child: Transform.rotate(
-                    angle: angleList[index],
-                    child: Transform.translate(
-                      offset: offsetList[index],
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            demo[index].title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
+              return Transform.translate(
+                offset: const Offset(0, -50),
+                child: Align(
+                  child: SizedBox(
+                    width: contentWidth,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: contentWidth * 0.13,
+                          width: contentWidth,
+                          child: Center(
+                            child: AutoSizeText(
+                              demo[index].title,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          Lottie.asset(
-                            demo[index].lottie,
-                            controller:
-                                _animationControllerManager.controllers[index],
-                            onLoaded: (composition) {
-                              _updateLottieDuration(
-                                  index, composition.duration.inMilliseconds);
-                            },
+                        ),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                                top: 16, bottom: 8, left: 16, right: 16),
+                            decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: Colors.white24, width: 1.5),
+                              gradient: LinearGradient(
+                                begin: const Alignment(-0.2, -1.0),
+                                end: const Alignment(1.5, 0.2),
+                                colors: index % 2 == 0
+                                    ? gradientColors1
+                                    : gradientColors2,
+                              ),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Lottie.asset(
+                              demo[index].lottie,
+                              controller: _animationControllerManager
+                                  .controllers[index],
+                              onLoaded: (composition) {
+                                _updateLottieDuration(
+                                    index, composition.duration.inMilliseconds);
+                              },
+                              fit: BoxFit.contain,
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: contentWidth * 0.04),
+                      ],
                     ),
                   ),
                 ),

@@ -334,10 +334,10 @@ class SettingsPage extends HookConsumerWidget {
                                     contentSpacer,
                                     _buildLicense(
                                         handleTapLicense, l10n.license),
-                                    contentSpacer,
-                                    _buildForgettingCurve(
-                                        handleTapForgettingCurve,
-                                        l10n.forgetting_curve),
+                                    // contentSpacer,
+                                    // _buildForgettingCurve(
+                                    //     handleTapForgettingCurve,
+                                    //     l10n.forgetting_curve),
                                   ],
                                 ),
                               ),

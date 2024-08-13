@@ -57,7 +57,7 @@ class NoticePageViewModel extends _$NoticePageViewModel {
       ref.read(sharedPreferencesRepositoryProvider),
     ).execute(time);
     if (notice != null) {
-      state = state.copyWith(noticeList: [...state.noticeList, notice]);
+      await getNoticeList();
     }
   }
 
