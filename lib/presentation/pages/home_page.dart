@@ -10,6 +10,7 @@ import 'package:worbbing/data/repositories/shared_preferences/shared_preferences
 import 'package:worbbing/data/repositories/sqflite/notification_repository_impl.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
+import 'package:worbbing/domain/usecases/app/speak_word_usecase.dart';
 import 'package:worbbing/domain/usecases/notice/shuffle_notification_usecase.dart';
 import 'package:worbbing/domain/usecases/word/down_duration_usecase.dart';
 import 'package:worbbing/domain/usecases/word/up_duration_usecase.dart';
@@ -19,8 +20,10 @@ import 'package:worbbing/presentation/view_model/home_page_view_model.dart';
 import 'package:worbbing/presentation/view_model/setting_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_reward.dart';
 import 'package:worbbing/presentation/widgets/list_tile.dart';
+import 'package:worbbing/presentation/widgets/my_simple_dialog.dart';
 import 'package:worbbing/presentation/widgets/tag_select.dart';
 import 'package:worbbing/presentation/widgets/ticket_widget.dart';
+import 'package:worbbing/presentation/widgets/update_particle_widget.dart';
 import 'package:worbbing/providers/share_text_provider.dart';
 import 'package:worbbing/providers/ticket_state.dart';
 import 'package:worbbing/routes/router.dart';
@@ -42,23 +45,64 @@ class HomePage extends HookConsumerWidget {
     final appLifecycleState = useAppLifecycleState();
 
     final refresh = useState(false);
+    final isGood = useState<bool?>(null);
 
-    final handleUpDuration = useCallback((WordModel wordModel) async {
+    void handleUpDuration(WordModel wordModel) async {
       await UpDurationUsecase(ref.read(wordListRepositoryProvider))
           .execute(wordModel);
       viewModelNotifier.getWordList();
-    }, [ref]);
+      isGood.value = true;
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        isGood.value = null;
+      });
+    }
 
-    final handleDownDuration = useCallback((WordModel wordModel) async {
+    void handleDownDuration(WordModel wordModel) async {
       await DownDurationUsecase(ref.read(wordListRepositoryProvider))
           .execute(wordModel);
       viewModelNotifier.getWordList();
-    }, [ref]);
+      isGood.value = false;
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        isGood.value = null;
+      });
+    }
 
-    final handleEarnTicket = useCallback(() {
-      ref
-          .read(ticketStateProvider.notifier)
-          .earnTicket(TicketConstants.rewardEarnTicket);
+    final handleEarnTicket = useCallback(() async {
+      /// reward ads
+      // ref
+      //     .read(ticketStateProvider.notifier)
+      //     .earnTicket(TicketConstants.rewardEarnTicket);
+
+      /// daily ticket
+      final earnedTicket =
+          await ref.read(ticketStateProvider.notifier).checkDailyTicket();
+      if (!context.mounted) return;
+      MySimpleDialog.show(
+          context,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("3 tickets daily",
+                  style: TextStyle(
+                    color: MyTheme.lemon,
+                    fontSize: 28,
+                  )),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                  earnedTicket != null
+                      ? "You get $earnedTicket tickets"
+                      : "Already get today's ticket.",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  )),
+            ],
+          ),
+          "OK",
+          () {});
     }, [ref]);
 
     final handleUpdateWord = useCallback(() {
@@ -78,6 +122,12 @@ class HomePage extends HookConsumerWidget {
     handleTapFAB() async {
       await viewModelNotifier.showRegistrationBottomSheet(context);
       // viewModelNotifier.getWordList();
+    }
+
+    handleSpeakWord(WordModel word) async {
+      await ref
+          .read(speakWordUsecaseProvider.notifier)
+          .execute(word.originalWord, word.originalLang);
     }
 
     useEffect(() {
@@ -136,8 +186,8 @@ class HomePage extends HookConsumerWidget {
                     size: 30,
                   )),
               actions: [
-                AdReward(
-                  onEarnTicket: handleEarnTicket,
+                GestureDetector(
+                  onTap: handleEarnTicket,
                   child: TicketWidget(
                     count: ticketCount,
                     size: 50,
@@ -145,6 +195,15 @@ class HomePage extends HookConsumerWidget {
                     bgColor: MyTheme.appBarGrey,
                   ),
                 ),
+                // AdReward(
+                //   onEarnTicket: handleEarnTicket,
+                //   child: TicketWidget(
+                //     count: ticketCount,
+                //     size: 50,
+                //     isEnabledUseAnimation: true,
+                //     bgColor: MyTheme.appBarGrey,
+                //   ),
+                // ),
                 const SizedBox(
                   width: 4,
                 ),
@@ -200,68 +259,79 @@ class HomePage extends HookConsumerWidget {
                 ),
                 // list
                 Expanded(
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            MyTheme.lemon,
-                            MyTheme.grey,
-                            MyTheme.grey,
-                            MyTheme.orange,
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      height: 1,
-                    ),
-                    padding: EdgeInsets.zero,
-                    itemCount: viewModel.wordList.length,
-                    itemBuilder: (context, index) {
-                      final item = viewModel.wordList[index];
-                      return Column(
-                        children: [
-                          WordListTile(
-                            wordModel: item,
-                            onWordUpdate: () {
-                              handleUpdateWord();
-                            },
-                            onTapList: () async {
-                              handleTapList(item);
-                            },
-                            isEnabledSlideHint: isEnableSlideHint,
-                            onUpDuration: () => handleUpDuration(item),
-                            onDownDuration: () => handleDownDuration(item),
-                          ),
-                          // under space
-                          if (index == viewModel.wordList.length - 1)
-                            Column(
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        MyTheme.lemon,
-                                        MyTheme.grey,
-                                        MyTheme.grey,
-                                        MyTheme.orange,
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 170,
-                                ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ListView.separated(
+                        separatorBuilder: (context, index) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                MyTheme.lemon,
+                                MyTheme.grey,
+                                MyTheme.grey,
+                                MyTheme.orange,
                               ],
-                            )
-                        ],
-                      );
-                    },
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                          ),
+                          height: 1,
+                        ),
+                        padding: EdgeInsets.zero,
+                        itemCount: viewModel.wordList.length,
+                        itemBuilder: (context, index) {
+                          final item = viewModel.wordList[index];
+                          return Column(
+                            children: [
+                              WordListTile(
+                                wordModel: item,
+                                onWordUpdate: () {
+                                  handleUpdateWord();
+                                },
+                                onTapList: () async {
+                                  handleTapList(item);
+                                },
+                                isEnabledSlideHint: isEnableSlideHint,
+                                onUpDuration: () => handleUpDuration(item),
+                                onDownDuration: () => handleDownDuration(item),
+                                onSpeakWord: () => handleSpeakWord(item),
+                              ),
+                              // under space
+                              if (index == viewModel.wordList.length - 1)
+                                Column(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 1,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            MyTheme.lemon,
+                                            MyTheme.grey,
+                                            MyTheme.grey,
+                                            MyTheme.orange,
+                                          ],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 170,
+                                    ),
+                                  ],
+                                )
+                            ],
+                          );
+                        },
+                      ),
+                      isGood.value != null
+                          ? IgnorePointer(
+                              child:
+                                  UpdateParticleWidget(isGood: isGood.value!))
+                          : const SizedBox.shrink(),
+                    ],
                   ),
                 )
               ],

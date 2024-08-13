@@ -10,6 +10,7 @@ class TranslatedApiResponse {
   final List<String> translated;
   final String example;
   final String exampleTranslated;
+  final String? comment;
   final TranslatedResponseType type;
   final TranslateLanguage originalLang;
   final TranslateLanguage translateLang;
@@ -19,6 +20,7 @@ class TranslatedApiResponse {
     required this.translated,
     required this.example,
     required this.exampleTranslated,
+    this.comment,
     required this.type,
     required this.originalLang,
     required this.translateLang,
@@ -30,6 +32,7 @@ class TranslatedApiResponse {
       translated: List<String>.from(json['translated']),
       example: json['example'] as String,
       exampleTranslated: json['example_translated'] as String,
+      comment: json['comment'] as String?,
       type: TranslatedResponseType.values.firstWhere(
         (e) => e.toString().split('.').last == json['type'],
         orElse: () => TranslatedResponseType.translated,

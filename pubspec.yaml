@@ -2,7 +2,7 @@ name: worbbing
 description: worbbing.
 publish_to: "none"
 
-version: 2.0.1+2
+version: 2.0.3+2
 
 environment:
   sdk: ">=3.3.4 <4.0.0"
@@ -39,6 +39,8 @@ dependencies:
   path:
   flutter_hooks:
   flutter_timezone:
+  flutter_tts:
+  font_awesome_flutter:
   flutter_localizations:
     sdk: flutter
 

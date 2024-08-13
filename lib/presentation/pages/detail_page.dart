@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -10,6 +11,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:worbbing/core/utils/strings.dart';
 import 'package:worbbing/domain/entities/translate_language.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
+import 'package:worbbing/domain/usecases/app/speak_word_usecase.dart';
 import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/view_model/detail_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
@@ -195,6 +197,10 @@ class DetailPage extends HookConsumerWidget {
       await viewModelNotifier.changeFlag();
     }
 
+    Future<void> handleTapSpeak(String word, TranslateLanguage lang) async {
+      await ref.read(speakWordUsecaseProvider.notifier).execute(word, lang);
+    }
+
     void handleTapDelete() {
       YesNoDialog.show(
           context: context,
@@ -322,17 +328,53 @@ class DetailPage extends HookConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 42.0),
                         child: Column(
                           children: [
-                            detailWordContent(l10n, ContentType.original,
-                                viewModel.wordModel.originalWord),
-                            detailWordContent(l10n, ContentType.translated,
-                                viewModel.wordModel.translatedWord),
-                            detailWordContent(l10n, ContentType.example,
-                                viewModel.wordModel.example ?? ''),
+                            GestureDetector(
+                              onTap: () async {
+                                await handleTapSpeak(
+                                    viewModel.wordModel.originalWord,
+                                    viewModel.wordModel.originalLang);
+                              },
+                              child: detailWordContent(
+                                  l10n,
+                                  ContentType.original,
+                                  viewModel.wordModel.originalWord,
+                                  () => handleTapSpeak(
+                                      viewModel.wordModel.originalWord,
+                                      viewModel.wordModel.originalLang)),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            detailWordContent(
+                                l10n,
+                                ContentType.translated,
+                                viewModel.wordModel.translatedWord,
+                                () => handleTapSpeak(
+                                    viewModel.wordModel.translatedWord,
+                                    viewModel.wordModel.translatedLang)),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            detailWordContent(
+                                l10n,
+                                ContentType.example,
+                                viewModel.wordModel.example ?? '',
+                                () => handleTapSpeak(
+                                    viewModel.wordModel.example ?? '',
+                                    viewModel.wordModel.originalLang)),
+                            const SizedBox(
+                              height: 30,
+                            ),
                             detailWordContent(
                                 l10n,
                                 ContentType.exampleTranslated,
-                                viewModel.wordModel.exampleTranslated ?? ''),
-                            const SizedBox(height: 10),
+                                viewModel.wordModel.exampleTranslated ?? '',
+                                () => handleTapSpeak(
+                                    viewModel.wordModel.exampleTranslated ?? '',
+                                    viewModel.wordModel.translatedLang)),
+                            const SizedBox(
+                              height: 40,
+                            ),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
@@ -374,6 +416,7 @@ class DetailPage extends HookConsumerWidget {
     L10n l10n,
     ContentType type,
     String word,
+    VoidCallback onTap,
   ) {
     final title = switch (type) {
       ContentType.original => l10n.original,
@@ -445,32 +488,54 @@ class DetailPage extends HookConsumerWidget {
             Expanded(
               child: Container(
                 alignment: Alignment.topLeft,
-                child: Text(
-                  title,
-                  style: TextStyle(color: titleColor, fontSize: 18),
+                child: Row(
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(color: titleColor, fontSize: 18),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
                 ),
               ),
             ),
             language
           ],
         ),
-        Container(
-          alignment: Alignment.center,
-          width: double.infinity,
-          height: height,
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade600, width: 1.0))),
-          child: AutoSizeText(
-            word,
-            maxLines: maxLines,
-            style: TextStyle(color: Colors.white, fontSize: fontSize),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                width: double.infinity,
+                height: height,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                decoration: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Colors.grey.shade600, width: 1.0))),
+                child: AutoSizeText(
+                  word,
+                  maxLines: maxLines,
+                  style: TextStyle(color: Colors.white, fontSize: fontSize),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: onTap,
+              behavior: HitTestBehavior.opaque,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+                child: FaIcon(
+                  FontAwesomeIcons.volumeHigh,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(
-          height: 30,
-        )
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -10,6 +11,7 @@ import 'package:worbbing/core/exceptions/database_exception.dart';
 import 'package:worbbing/core/exceptions/registration_page_exception.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
+import 'package:worbbing/domain/usecases/app/speak_word_usecase.dart';
 import 'package:worbbing/domain/usecases/word/add_word_usecase.dart';
 import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
@@ -51,6 +53,7 @@ class RegistrationPage extends HookConsumerWidget {
     final originalColor = useState(MyTheme.lemon);
     final translateColor = useState(MyTheme.orange);
     final isTranslateLangError = useState(false);
+    final translateComment = useState("");
 
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 600));
@@ -62,6 +65,10 @@ class RegistrationPage extends HookConsumerWidget {
           parent: animationController,
           curve: Curves.easeInOut,
         ));
+
+    Future<void> handleTapSpeak(String word, TranslateLanguage lang) async {
+      await ref.read(speakWordUsecaseProvider.notifier).execute(word, lang);
+    }
 
     void handleTapOriginalLang() {
       final color = MyTheme.lemon;
@@ -131,6 +138,7 @@ class RegistrationPage extends HookConsumerWidget {
     }
 
     Future<void> handleTranslateAi() async {
+      translateComment.value = "";
       bool hasError = false;
       if (originalWordController.text.isEmpty) {
         shakeAnimation(originalAnimationController);
@@ -156,16 +164,20 @@ class RegistrationPage extends HookConsumerWidget {
           print("res is null");
           return;
         }
+        if (res.comment != null) {
+          translateComment.value = res.comment!;
+        }
 
         /// 提案の場合
         if (res.type == TranslatedResponseType.suggestion) {
           if (!context.mounted) return;
           TranslateSuggestDialog.execute(
               context, originalWordController.text, res, () {
+            translateComment.value = "";
             ref.read(ticketStateProvider.notifier).useTicket();
             originalWordController.text = res.original;
             translatedController.text =
-                "${res.translated[0]}, ${res.translated[1]}, ${res.translated[2]}";
+                res.translated.map((e) => e.toString()).join(", ");
             exampleController.text = res.example;
             exampleTranslatedController.text = res.exampleTranslated;
           });
@@ -175,13 +187,22 @@ class RegistrationPage extends HookConsumerWidget {
           ref.read(ticketStateProvider.notifier).useTicket();
           originalWordController.text = res.original;
           translatedController.text =
-              "${res.translated[0]}, ${res.translated[1]}, ${res.translated[2]}";
+              res.translated.map((e) => e.toString()).join(", ");
           exampleController.text = res.example;
           exampleTranslatedController.text = res.exampleTranslated;
+          if (!context.mounted) return;
         }
-      } on TranslateException catch (_) {
+      } on TranslateException catch (e) {
         if (!context.mounted) return;
-        ErrorDialog.show(context: context, text: l10n.failed_to_translate);
+        if (e.message != null) {
+          ErrorDialog.show(
+              context: context, text: "Failed to translate\n\n⚠️${e.message}");
+        } else {
+          ErrorDialog.show(context: context, text: "Failed to translate");
+        }
+      } on Exception catch (_) {
+        if (!context.mounted) return;
+        ErrorDialog.show(context: context, text: "Failed to translate");
       }
     }
 
@@ -316,31 +337,82 @@ class RegistrationPage extends HookConsumerWidget {
                                                                   const SizedBox(
                                                                       height:
                                                                           10),
-                                                                  Align(
-                                                                      alignment: const Alignment(
-                                                                          -0.95,
-                                                                          0.0),
-                                                                      child: bodyText(
-                                                                          l10n
-                                                                              .original,
-                                                                          MyTheme
-                                                                              .lightGrey)),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            left:
+                                                                                6.0),
+                                                                        child: bodyText(
+                                                                            l10n.original,
+                                                                            MyTheme.lightGrey),
+                                                                      ),
+                                                                      InkWell(
+                                                                        onTap: () => handleTapSpeak(
+                                                                            originalWordController.text,
+                                                                            viewModel.originalLanguage),
+                                                                        child:
+                                                                            const Padding(
+                                                                          padding: EdgeInsets.symmetric(
+                                                                              horizontal: 6,
+                                                                              vertical: 9),
+                                                                          child:
+                                                                              FaIcon(
+                                                                            FontAwesomeIcons.volumeHigh,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            size:
+                                                                                16,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
                                                                   CustomTextField(
-                                                                      textController:
-                                                                          originalWordController,
-                                                                      animationController:
-                                                                          originalAnimationController,
-                                                                      color: originalColor
-                                                                          .value,
-                                                                      focusNode:
-                                                                          focusNode,
-                                                                      isOriginalInput:
-                                                                          true,
-                                                                      isEnglish:
-                                                                          true),
+                                                                    textController:
+                                                                        originalWordController,
+                                                                    animationController:
+                                                                        originalAnimationController,
+                                                                    color: originalColor
+                                                                        .value,
+                                                                    focusNode:
+                                                                        focusNode,
+                                                                    isOriginalInput:
+                                                                        true,
+                                                                    isEnglish:
+                                                                        true,
+                                                                    onChange:
+                                                                        () {
+                                                                      translateComment
+                                                                          .value = "";
+                                                                    },
+                                                                  ),
                                                                   const SizedBox(
                                                                       height:
-                                                                          24),
+                                                                          12),
+                                                                  translateComment
+                                                                          .value
+                                                                          .isNotEmpty
+                                                                      ? Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                              horizontal: 8.0),
+                                                                          child:
+                                                                              Text(
+                                                                            translateComment.value,
+                                                                            style:
+                                                                                TextStyle(fontSize: 16, color: MyTheme.lemon.withOpacity(0.7)),
+                                                                          ),
+                                                                        )
+                                                                      : const SizedBox
+                                                                          .shrink(),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          12),
                                                                   LayoutBuilder(
                                                                       builder:
                                                                           (context,
@@ -405,16 +477,42 @@ class RegistrationPage extends HookConsumerWidget {
                                                                   }),
                                                                   const SizedBox(
                                                                       height:
-                                                                          8),
-                                                                  Align(
-                                                                      alignment: const Alignment(
-                                                                          -0.95,
-                                                                          0.0),
-                                                                      child: bodyText(
-                                                                          l10n
-                                                                              .translated,
-                                                                          MyTheme
-                                                                              .lightGrey)),
+                                                                          12),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            left:
+                                                                                6.0),
+                                                                        child: bodyText(
+                                                                            l10n.translated,
+                                                                            MyTheme.lightGrey),
+                                                                      ),
+                                                                      InkWell(
+                                                                        onTap: () => handleTapSpeak(
+                                                                            translatedController.text,
+                                                                            viewModel.translateLanguage),
+                                                                        child:
+                                                                            const Padding(
+                                                                          padding: EdgeInsets.symmetric(
+                                                                              horizontal: 6,
+                                                                              vertical: 9),
+                                                                          child:
+                                                                              FaIcon(
+                                                                            FontAwesomeIcons.volumeHigh,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            size:
+                                                                                16,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
                                                                   CustomTextField(
                                                                       textController:
                                                                           translatedController,
@@ -427,15 +525,41 @@ class RegistrationPage extends HookConsumerWidget {
                                                                   const SizedBox(
                                                                       height:
                                                                           16),
-                                                                  Align(
-                                                                      alignment: const Alignment(
-                                                                          -0.95,
-                                                                          0.0),
-                                                                      child: bodyText(
-                                                                          l10n
-                                                                              .example,
-                                                                          MyTheme
-                                                                              .lightGrey)),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            left:
+                                                                                6.0),
+                                                                        child: bodyText(
+                                                                            l10n.example,
+                                                                            MyTheme.lightGrey),
+                                                                      ),
+                                                                      InkWell(
+                                                                        onTap: () => handleTapSpeak(
+                                                                            exampleController.text,
+                                                                            viewModel.originalLanguage),
+                                                                        child:
+                                                                            const Padding(
+                                                                          padding: EdgeInsets.symmetric(
+                                                                              horizontal: 6,
+                                                                              vertical: 9),
+                                                                          child:
+                                                                              FaIcon(
+                                                                            FontAwesomeIcons.volumeHigh,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            size:
+                                                                                16,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
                                                                   CustomTextField(
                                                                       textController:
                                                                           exampleController,
@@ -447,15 +571,41 @@ class RegistrationPage extends HookConsumerWidget {
                                                                   const SizedBox(
                                                                       height:
                                                                           16),
-                                                                  Align(
-                                                                      alignment: const Alignment(
-                                                                          -0.95,
-                                                                          0.0),
-                                                                      child: bodyText(
-                                                                          l10n
-                                                                              .translated_example,
-                                                                          MyTheme
-                                                                              .lightGrey)),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            left:
+                                                                                6.0),
+                                                                        child: bodyText(
+                                                                            l10n.translated_example,
+                                                                            MyTheme.lightGrey),
+                                                                      ),
+                                                                      InkWell(
+                                                                        onTap: () => handleTapSpeak(
+                                                                            exampleTranslatedController.text,
+                                                                            viewModel.translateLanguage),
+                                                                        child:
+                                                                            const Padding(
+                                                                          padding: EdgeInsets.symmetric(
+                                                                              horizontal: 6,
+                                                                              vertical: 9),
+                                                                          child:
+                                                                              FaIcon(
+                                                                            FontAwesomeIcons.volumeHigh,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            size:
+                                                                                16,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
                                                                   CustomTextField(
                                                                       textController:
                                                                           exampleTranslatedController,

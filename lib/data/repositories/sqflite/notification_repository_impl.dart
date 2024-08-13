@@ -61,10 +61,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<List<NoticeDataModel>> getAllNotices({bool isDesc = true}) async {
+  Future<List<NoticeDataModel>> getAllNotices({bool isDesc = false}) async {
     Database db = await database;
     final dataList = await db
-        .query(table, orderBy: '$noticeId ${isDesc ? 'DESC' : 'ASC'}')
+        .query(table, orderBy: '$time ${isDesc ? 'DESC' : 'ASC'}')
         .catchError((e) {
       throw Exception('sqflite error: $e');
     });
