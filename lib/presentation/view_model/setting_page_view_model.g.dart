@@ -7,7 +7,7 @@ part of 'setting_page_view_model.dart';
 // **************************************************************************
 
 String _$settingPageViewModelHash() =>
-    r'1101dd6f312667eaf5e376b18860d82e12cc95f7';
+    r'99ca3242717b52782e3b5ed9718da3ac71103231';
 
 /// See also [SettingPageViewModel].
 @ProviderFor(SettingPageViewModel)
