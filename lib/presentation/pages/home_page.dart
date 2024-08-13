@@ -10,6 +10,7 @@ import 'package:worbbing/data/repositories/shared_preferences/shared_preferences
 import 'package:worbbing/data/repositories/sqflite/notification_repository_impl.dart';
 import 'package:worbbing/data/repositories/sqflite/word_list_repository_impl.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
+import 'package:worbbing/domain/usecases/app/speak_word_usecase.dart';
 import 'package:worbbing/domain/usecases/notice/shuffle_notification_usecase.dart';
 import 'package:worbbing/domain/usecases/word/down_duration_usecase.dart';
 import 'package:worbbing/domain/usecases/word/up_duration_usecase.dart';
@@ -121,6 +122,12 @@ class HomePage extends HookConsumerWidget {
     handleTapFAB() async {
       await viewModelNotifier.showRegistrationBottomSheet(context);
       // viewModelNotifier.getWordList();
+    }
+
+    handleSpeakWord(WordModel word) async {
+      await ref
+          .read(speakWordUsecaseProvider.notifier)
+          .execute(word.originalWord, word.originalLang);
     }
 
     useEffect(() {
@@ -288,6 +295,7 @@ class HomePage extends HookConsumerWidget {
                                 isEnabledSlideHint: isEnableSlideHint,
                                 onUpDuration: () => handleUpDuration(item),
                                 onDownDuration: () => handleDownDuration(item),
+                                onSpeakWord: () => handleSpeakWord(item),
                               ),
                               // under space
                               if (index == viewModel.wordList.length - 1)

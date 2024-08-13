@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -8,18 +9,21 @@ import 'package:worbbing/presentation/widgets/notice_block.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 const _listTileHeight = 87.0;
+const _negativeSlideRate = -0.3;
 
 class WordListTile extends StatefulWidget {
   final WordModel wordModel;
+  final bool isEnabledSlideHint;
+  final VoidCallback onSpeakWord;
   final VoidCallback onWordUpdate;
   final VoidCallback onTapList;
-  final bool isEnabledSlideHint;
   final VoidCallback onUpDuration;
   final VoidCallback onDownDuration;
 
   const WordListTile({
     super.key,
     required this.wordModel,
+    required this.onSpeakWord,
     required this.onWordUpdate,
     required this.onTapList,
     required this.isEnabledSlideHint,
@@ -41,6 +45,7 @@ class _WordListTileState extends State<WordListTile>
   static const double _dragRangeY = 85.0;
 
   bool _isDragEnd = false;
+  bool _isHaptic = false;
 
   double? _dragStartX;
   double? _dragStartY;
@@ -49,6 +54,10 @@ class _WordListTileState extends State<WordListTile>
 
   onWordUpdate() {
     widget.onWordUpdate();
+  }
+
+  handleSpeakWord() {
+    widget.onSpeakWord();
   }
 
   Widget _translatedWord() {
@@ -92,7 +101,11 @@ class _WordListTileState extends State<WordListTile>
     super.initState();
     _widget = _translatedWord();
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 250));
+        value: 0.0,
+        lowerBound: _negativeSlideRate,
+        upperBound: 0.8,
+        vsync: this,
+        duration: const Duration(milliseconds: 250));
   }
 
   @override
@@ -114,6 +127,7 @@ class _WordListTileState extends State<WordListTile>
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
     return SizedBox(
       key: _key,
       height: _listTileHeight,
@@ -127,112 +141,121 @@ class _WordListTileState extends State<WordListTile>
             height: _listTileHeight,
             child: _widget,
           ),
-          SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.002, 0),
-              end: const Offset(1, 0),
-            ).animate(_animationController),
-            // slide page
-            child: _SlideCard(
-              wordModel: widget.wordModel,
-            ),
-          ),
-          LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-            final viewWidth = constraints.maxWidth;
-            return GestureDetector(
-              onTap: () async {
-                HapticFeedback.lightImpact();
-                widget.onTapList();
-              },
-              onHorizontalDragStart: (DragStartDetails details) {
-                _dragReset();
-                final startX = details.localPosition.dx;
-                final startY = details.localPosition.dy;
-                final viewWidth = MediaQuery.of(context).size.width;
-                if (startX <= viewWidth / 1.5) {
-                  _dragStartX = startX;
-                  _dragStartY = startY;
+          AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Positioned(
+                  left: _animationController.value * w,
+                  child: _SlideCard(
+                    wordModel: widget.wordModel,
+                    slideValue: _animationController.value,
+                  ),
+                );
+              }),
+          GestureDetector(
+            onTap: () async {
+              HapticFeedback.lightImpact();
+              widget.onTapList();
+            },
+            onHorizontalDragStart: (DragStartDetails details) {
+              _dragReset();
+              final startX = details.localPosition.dx;
+              final startY = details.localPosition.dy;
+              if (startX <= w / 1.5) {
+                _dragStartX = startX;
+                _dragStartY = startY;
+              }
+              _isDragEnd = false;
+            },
+            onHorizontalDragUpdate: (DragUpdateDetails details) {
+              final dragStartX = _dragStartX;
+              final dragStartY = _dragStartY;
+              if (dragStartX == null || dragStartY == null) return;
+
+              final newX = details.localPosition.dx;
+              final newY = details.localPosition.dy;
+              final diffX = newX - dragStartX;
+              final diffY = newY - dragStartY;
+
+              if (_animationController.value < -0.28) {
+                if (!_isHaptic) {
+                  HapticFeedback.lightImpact();
+                  _isHaptic = true;
                 }
-                _isDragEnd = false;
-              },
-              onHorizontalDragUpdate: (DragUpdateDetails details) {
-                final dragStartX = _dragStartX;
-                final dragStartY = _dragStartY;
-                if (dragStartX == null || dragStartY == null) return;
+              } else {
+                _isHaptic = false;
+              }
 
-                final newX = details.localPosition.dx;
-                final newY = details.localPosition.dy;
-                final diffX = newX - dragStartX;
-                final diffY = newY - dragStartY;
+              if (diffX > _dragRangeX) {
+                _showHint(context, details.localPosition);
+              }
 
-                if (diffX > _dragRangeX) {
-                  _showHint(context, details.localPosition);
+              if (diffY > _dragRangeY && diffX > _dragRangeX) {
+                if (_color != MyTheme.blue) {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    _color = MyTheme.blue;
+                    _widget = const Icon(
+                      Icons.thumb_down,
+                      color: Colors.white,
+                      size: 48,
+                    );
+                  });
                 }
-
-                if (diffY > _dragRangeY && diffX > _dragRangeX) {
-                  if (_color != MyTheme.blue) {
-                    HapticFeedback.lightImpact();
-                    setState(() {
-                      _color = MyTheme.blue;
-                      _widget = const Icon(
-                        Icons.thumb_down,
-                        color: Colors.white,
-                        size: 48,
-                      );
-                    });
-                  }
-                } else if (diffY < -_dragRangeY && diffX > _dragRangeX) {
-                  if (_color != MyTheme.orange) {
-                    HapticFeedback.lightImpact();
-                    setState(() {
-                      _color = MyTheme.orange;
-                      _widget = const Icon(
-                        Icons.thumb_up,
-                        color: Colors.white,
-                        size: 48,
-                      );
-                    });
-                  }
-                } else {
-                  if (_color != MyTheme.lemon) {
-                    setState(() {
-                      _color = MyTheme.lemon;
-                      _widget = _translatedWord();
-                    });
-                  }
+              } else if (diffY < -_dragRangeY && diffX > _dragRangeX) {
+                if (_color != MyTheme.orange) {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    _color = MyTheme.orange;
+                    _widget = const Icon(
+                      Icons.thumb_up,
+                      color: Colors.white,
+                      size: 48,
+                    );
+                  });
                 }
-
-                _animationController.value =
-                    (newX - dragStartX) / viewWidth * 1;
-              },
-              onHorizontalDragEnd: (details) async {
-                _animationController.animateTo(0.0);
-
-                /// I don't understand the word
-                if (_color == MyTheme.blue) {
-                  widget.onDownDuration();
-
-                  /// I understand the word
-                } else if (_color == MyTheme.orange) {
-                  widget.onUpDuration();
+              } else {
+                if (_color != MyTheme.lemon) {
+                  setState(() {
+                    _color = MyTheme.lemon;
+                    _widget = _translatedWord();
+                  });
                 }
-                setState(() {
-                  _color = MyTheme.lemon;
-                  _widget = _translatedWord();
-                  _isDragEnd = true;
-                });
-                overlay?.markNeedsBuild();
-                Future.delayed(const Duration(milliseconds: 400), () {
-                  removeOverlay();
-                });
-              },
-              onHorizontalDragCancel: () {
-                _dragReset();
+              }
+
+              _animationController.value = (newX - dragStartX) / w;
+            },
+            onHorizontalDragEnd: (details) async {
+              /// speak word
+              if (_animationController.value < -0.28) {
+                handleSpeakWord();
+              }
+
+              _animationController.animateTo(0.0);
+
+              /// I don't understand the word
+              if (_color == MyTheme.blue) {
+                widget.onDownDuration();
+
+                /// I understand the word
+              } else if (_color == MyTheme.orange) {
+                widget.onUpDuration();
+              }
+              setState(() {
+                _color = MyTheme.lemon;
+                _widget = _translatedWord();
+                _isDragEnd = true;
+              });
+              overlay?.markNeedsBuild();
+              Future.delayed(const Duration(milliseconds: 400), () {
                 removeOverlay();
-              },
-            );
-          }),
+              });
+            },
+            onHorizontalDragCancel: () {
+              _dragReset();
+              removeOverlay();
+            },
+          ),
         ],
       ),
     );
@@ -241,65 +264,95 @@ class _WordListTileState extends State<WordListTile>
 
 class _SlideCard extends StatelessWidget {
   final WordModel wordModel;
+  final double slideValue;
   const _SlideCard({
     required this.wordModel,
+    required this.slideValue,
   });
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
     final DateTime currentDateTime = DateTime.now();
     final int forgettingDuration =
         currentDateTime.difference(wordModel.updateDate).inDays;
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.black,
-      ),
-      width: MediaQuery.of(context).size.width,
+      // width: w * 1.2,
       height: _listTileHeight,
-      child: Stack(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color.fromARGB(255, 48, 48, 48),
+            Colors.grey.shade900,
+            Colors.black,
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Row(
         children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.only(left: 25),
+                    child: SizedBox(
+                        width: MediaQuery.of(context).size.width - 150,
+                        child: titleText(wordModel.originalWord, null, null))),
+                Row(
+                  children: [
+                    if (wordModel.flag)
+                      const Icon(Icons.flag_rounded,
+                          color: Colors.white, size: 32),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: noticeBlock(
+                            48,
+                            wordModel.noticeDuration,
+                            (forgettingDuration < wordModel.noticeDuration) ||
+                                    (wordModel.noticeDuration == 99)
+                                ? MyTheme.lemon
+                                : MyTheme.orange,
+                            forgettingDuration >= wordModel.noticeDuration)),
+                  ],
+                )
+              ],
+            ),
+          ),
           Container(
-              width: double.infinity,
+              width: w * 0.3,
               height: _listTileHeight,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.white.withOpacity(0.2),
-                    Colors.white.withOpacity(0.1),
-                    Colors.transparent,
+                    MyTheme.orange,
+                    MyTheme.grey,
                   ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: [
+                    -slideValue / (_negativeSlideRate.abs() - 0.02),
+                    -slideValue / (_negativeSlideRate.abs() - 0.02)
+                  ],
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width - 150,
-                          child:
-                              titleText(wordModel.originalWord, null, null))),
-                  Row(
-                    children: [
-                      if (wordModel.flag)
-                        const Icon(Icons.flag_rounded,
-                            color: Colors.white, size: 32),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: noticeBlock(
-                              48,
-                              wordModel.noticeDuration,
-                              (forgettingDuration < wordModel.noticeDuration) ||
-                                      (wordModel.noticeDuration == 99)
-                                  ? MyTheme.lemon
-                                  : MyTheme.orange,
-                              forgettingDuration >= wordModel.noticeDuration)),
-                    ],
-                  )
-                ],
-              )),
+              child: Align(
+                alignment: const Alignment(-0.3, 0.0),
+                child: Transform.scale(
+                  alignment: Alignment.center,
+                  scale: 1 - 7 * slideValue.clamp(_negativeSlideRate, 0.0),
+                  child: FaIcon(
+                    FontAwesomeIcons.volumeHigh,
+                    color: slideValue < (_negativeSlideRate + 0.02)
+                        ? MyTheme.grey
+                        : Colors.white,
+                    size: 12,
+                  ),
+                ),
+              ))
         ],
       ),
     );
