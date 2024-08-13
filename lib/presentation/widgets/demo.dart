@@ -54,10 +54,24 @@ class _DemoPageState extends State<DemoPage> with TickerProviderStateMixin {
 
   double contentWidth = 0.0;
 
+  final List<Color> gradientColors1 = [
+    const Color.fromARGB(255, 116, 20, 105),
+    const Color.fromARGB(255, 42, 50, 95),
+    const Color.fromARGB(255, 38, 103, 82),
+  ];
+  final List<Color> gradientColors2 = [
+    const Color.fromARGB(255, 95, 9, 105),
+    const Color.fromARGB(255, 73, 42, 95),
+    const Color.fromARGB(255, 21, 75, 92),
+  ];
+
   final demo = [
     const Demo(title: 'Vocabulary Check', lottie: 'assets/lottie/home.json'),
-    const Demo(title: 'Registration', lottie: 'assets/lottie/home.json'),
-    const Demo(title: 'Notification', lottie: 'assets/lottie/home.json'),
+    const Demo(
+        title: 'Registration', lottie: 'assets/lottie/registration.json'),
+    const Demo(
+        title: 'Notification', lottie: 'assets/lottie/notification.json'),
+    const Demo(title: 'Sharing Text', lottie: 'assets/lottie/share.json'),
   ];
 
   void _updateLottieDuration(int index, int milliseconds) {
@@ -149,14 +163,14 @@ class _DemoPageState extends State<DemoPage> with TickerProviderStateMixin {
                             padding: const EdgeInsets.only(
                                 top: 16, bottom: 8, left: 16, right: 16),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment(-0.2, -1.0),
-                                end: Alignment(1.5, 0.2),
-                                colors: [
-                                  Color.fromARGB(255, 116, 20, 105),
-                                  Color.fromARGB(255, 42, 50, 95),
-                                  Color.fromARGB(255, 38, 103, 82),
-                                ],
+                              border:
+                                  Border.all(color: Colors.white24, width: 1.5),
+                              gradient: LinearGradient(
+                                begin: const Alignment(-0.2, -1.0),
+                                end: const Alignment(1.5, 0.2),
+                                colors: index % 2 == 0
+                                    ? gradientColors1
+                                    : gradientColors2,
                               ),
                               borderRadius: BorderRadius.circular(18),
                             ),

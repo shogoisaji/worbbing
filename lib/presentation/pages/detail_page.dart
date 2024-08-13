@@ -524,8 +524,9 @@ class DetailPage extends HookConsumerWidget {
             ),
             GestureDetector(
               onTap: onTap,
+              behavior: HitTestBehavior.opaque,
               child: const Padding(
-                padding: EdgeInsets.all(3),
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 14),
                 child: FaIcon(
                   FontAwesomeIcons.volumeHigh,
                   color: Colors.white,
