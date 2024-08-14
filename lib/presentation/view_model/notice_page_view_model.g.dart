@@ -7,7 +7,7 @@ part of 'notice_page_view_model.dart';
 // **************************************************************************
 
 String _$noticePageViewModelHash() =>
-    r'e838f5bc7027a7fa5c3a491e6dd88a5127699eba';
+    r'17837904a5760fad7cfacee38c669dd2223ed1f8';
 
 /// See also [NoticePageViewModel].
 @ProviderFor(NoticePageViewModel)

@@ -46,12 +46,14 @@ class HomePage extends HookConsumerWidget {
 
     final refresh = useState(false);
     final isGood = useState<bool?>(null);
+    final updateText = useState<String?>(null);
 
     void handleUpDuration(WordModel wordModel) async {
       await UpDurationUsecase(ref.read(wordListRepositoryProvider))
           .execute(wordModel);
       viewModelNotifier.getWordList();
       isGood.value = true;
+      updateText.value = wordModel.originalWord;
       Future.delayed(const Duration(milliseconds: 1000), () {
         isGood.value = null;
       });
@@ -62,6 +64,7 @@ class HomePage extends HookConsumerWidget {
           .execute(wordModel);
       viewModelNotifier.getWordList();
       isGood.value = false;
+      updateText.value = wordModel.originalWord;
       Future.delayed(const Duration(milliseconds: 1000), () {
         isGood.value = null;
       });
@@ -328,8 +331,10 @@ class HomePage extends HookConsumerWidget {
                       ),
                       isGood.value != null
                           ? IgnorePointer(
-                              child:
-                                  UpdateParticleWidget(isGood: isGood.value!))
+                              child: UpdateParticleWidget(
+                              isGood: isGood.value!,
+                              text: updateText.value ?? "",
+                            ))
                           : const SizedBox.shrink(),
                     ],
                   ),
