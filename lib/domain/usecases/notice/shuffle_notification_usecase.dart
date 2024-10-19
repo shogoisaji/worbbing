@@ -20,11 +20,6 @@ class ShuffleNotificationUsecase {
             .fetch<String>(SharedPreferencesKey.shuffledDate) ??
         DateTime.now().toIso8601String();
     if (DateTime.parse(shuffledDate).day == DateTime.now().day) return;
-    await sharedPreferencesRepository.save<String>(
-      SharedPreferencesKey.shuffledDate,
-      DateTime.now().toIso8601String(),
-    );
-
     final List<NoticeDataModel> list =
         await notificationRepository.getAllNotices();
     for (int i = 0; i < list.length; i++) {
@@ -37,6 +32,9 @@ class ShuffleNotificationUsecase {
               wordListRepository, sharedPreferencesRepository)
           .execute(newNotice);
     }
-    print("shuffleNotifications");
+    await sharedPreferencesRepository.save<String>(
+      SharedPreferencesKey.shuffledDate,
+      DateTime.now().toIso8601String(),
+    );
   }
 }
