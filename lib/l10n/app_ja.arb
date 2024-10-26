@@ -32,7 +32,7 @@
   "sample": "サンプル",
   "ticket_reward_title": "広告を視聴して\nチケットを獲得",
   "failed_get_ads": "広告の取得に失敗しました",
-  "ticket_reward_description": "動画広告を最後まで視聴すると、{rewardEarnTicket}枚のチケットを獲得できます。\n\n注意：音声が再生される場合があります。",
+  "ticket_reward_description": "動画広告を最後まで視聴すると、{rewardEarnTicket}枚のチケットを獲得できます。\n\nチケットはAI翻訳に使用します。\n\n注意：音声が再生される場合があります。",
   "@ticket_reward_description": {
     "placeholders": {
       "rewardEarnTicket": {

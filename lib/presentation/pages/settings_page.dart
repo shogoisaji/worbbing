@@ -531,7 +531,7 @@ class SettingsPage extends HookConsumerWidget {
                     maxLines: 1,
                     style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 20,
                         fontWeight: FontWeight.w500)),
               ),
             ],
@@ -567,7 +567,7 @@ class SettingsPage extends HookConsumerWidget {
                     maxLines: 1,
                     style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 20,
                         fontWeight: FontWeight.w500)),
               ),
             ],
@@ -634,7 +634,7 @@ class SettingsPage extends HookConsumerWidget {
                 maxLines: 1,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500)),
           ),
           const Icon(Icons.open_in_new, color: Colors.white)
@@ -660,7 +660,7 @@ class SettingsPage extends HookConsumerWidget {
                 maxLines: 1,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500)),
           ),
           const Icon(Icons.open_in_new, color: Colors.white)
@@ -686,7 +686,7 @@ class SettingsPage extends HookConsumerWidget {
                 maxLines: 1,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500)),
           ),
           const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white),
@@ -712,7 +712,7 @@ class SettingsPage extends HookConsumerWidget {
                 maxLines: 1,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500)),
           ),
           const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white),
@@ -837,7 +837,7 @@ class SlideHintSwitchState extends State<SlideHintSwitch>
                           maxLines: 2,
                           style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 24,
+                              fontSize: 20,
                               fontWeight: FontWeight.w500)),
                       const SizedBox(width: 8),
                     ],

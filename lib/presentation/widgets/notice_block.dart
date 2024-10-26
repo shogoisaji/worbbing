@@ -10,7 +10,7 @@ const double offsetY = 4.0;
 const double rotationAngle = 0.05;
 const int maxRandomValue = 10;
 const int animationDelayMultiplier = 30;
-const int animationDuration = 1000;
+const int animationDuration = 800;
 
 Widget noticeBlock(double size, int number, Color color, bool isShake) {
   Random random = Random();
@@ -31,7 +31,7 @@ Widget noticeBlock(double size, int number, Color color, bool isShake) {
             height: size,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(size * 0.025),
+              borderRadius: BorderRadius.circular(size * 0.05),
             ),
           ),
         ),
@@ -42,10 +42,11 @@ Widget noticeBlock(double size, int number, Color color, bool isShake) {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(size * 0.025),
+          border: Border.all(width: 1.2, color: Colors.white),
+          borderRadius: BorderRadius.circular(size * 0.05),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withOpacity(0.35),
               blurRadius: 7,
             ),
           ],
@@ -63,7 +64,7 @@ Widget noticeBlock(double size, int number, Color color, bool isShake) {
             duration: animationDuration.milliseconds,
             delay: (random.nextInt(maxRandomValue) * animationDelayMultiplier)
                 .milliseconds,
-            hz: isShake ? 5 : 0,
+            hz: isShake ? 3 : 0,
           ),
     ],
   );

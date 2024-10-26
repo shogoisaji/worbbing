@@ -25,7 +25,7 @@ GoRouter router = GoRouter(
       path: PagePath.home,
       pageBuilder: (BuildContext context, GoRouterState state) =>
           CustomTransitionPage<void>(
-        transitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 300),
         key: state.pageKey,
         child: const HomePage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {

@@ -751,9 +751,9 @@ class RegistrationPage extends HookConsumerWidget {
                               child: Text(
                                 cancel,
                                 style: TextStyle(
-                                  fontSize: 26,
+                                  fontSize: 24,
                                   color: MyTheme.greyForOrange,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w500,
                                   shadows: [
                                     BoxShadow(
                                       color: Colors.grey.shade800,
@@ -792,9 +792,9 @@ class RegistrationPage extends HookConsumerWidget {
                               child: Text(
                                 save,
                                 style: TextStyle(
-                                  fontSize: 28,
+                                  fontSize: 24,
                                   color: MyTheme.greyForOrange,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w500,
                                   shadows: [
                                     BoxShadow(
                                       color: Colors.grey.shade800,
