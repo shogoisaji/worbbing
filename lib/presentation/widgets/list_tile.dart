@@ -41,7 +41,7 @@ class _WordListTileState extends State<WordListTile>
 
   late final AnimationController _animationController;
 
-  static const double _dragRangeX = 80.0;
+  static const double _dragRangeX = 40.0;
   static const double _dragRangeY = 85.0;
 
   bool _isDragEnd = false;

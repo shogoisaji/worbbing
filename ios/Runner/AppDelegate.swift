@@ -2,7 +2,7 @@ import UIKit
 import flutter_sharing_intent
 import Flutter
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   // 修正: applicationメソッドにFlutterLocalNotificationsPluginのコールバックを追加
   override func application(

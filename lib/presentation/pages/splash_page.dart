@@ -19,7 +19,7 @@ class _AppSplashPageState extends State<AppSplashPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(milliseconds: 1000), () {
+    Future.delayed(const Duration(milliseconds: 900), () {
       context.pushReplacement(PagePath.home);
     });
   }

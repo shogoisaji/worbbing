@@ -62,7 +62,9 @@ class DetailPage extends HookConsumerWidget {
     final exampleController = useTextEditingController();
     final exampleTranslatedController = useTextEditingController();
 
-    int forgettingDuration = 0;
+    final DateTime currentDateTime = DateTime.now();
+    final int forgettingDuration =
+        currentDateTime.difference(wordModel.updateDate).inDays;
 
     void handleTapEdit() {
       originalController.text = wordModel.originalWord;
@@ -288,11 +290,8 @@ class DetailPage extends HookConsumerWidget {
                                       60,
                                       viewModel.wordModel.noticeDuration,
                                       (forgettingDuration <
-                                                  viewModel.wordModel
-                                                      .noticeDuration) ||
-                                              (viewModel.wordModel
-                                                      .noticeDuration ==
-                                                  99)
+                                                  wordModel.noticeDuration) ||
+                                              (wordModel.noticeDuration == 99)
                                           ? MyTheme.lemon
                                           : MyTheme.orange,
                                       false),
@@ -566,9 +565,9 @@ class DetailPage extends HookConsumerWidget {
           child: Text(
             text,
             style: TextStyle(
-              fontSize: 27,
+              fontSize: 24,
               color: MyTheme.greyForOrange,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               shadows: [
                 BoxShadow(
                   color: Colors.grey.shade500,
@@ -609,9 +608,9 @@ class DetailPage extends HookConsumerWidget {
           child: Text(
             text,
             style: TextStyle(
-              fontSize: 27,
+              fontSize: 24,
               color: Colors.grey.shade100,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               shadows: [
                 BoxShadow(
                   color: Colors.grey.shade500,

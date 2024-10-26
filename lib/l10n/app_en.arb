@@ -32,7 +32,7 @@
   "sample": "Sample",
   "ticket_reward_title": "Watch Ads\nGet Tickets",
   "failed_get_ads": "Failed to get ads!",
-  "ticket_reward_description": "By watching the video ad to the end, you can earn {rewardEarnTicket} tickets.\n\nNote: Audio may play.",
+  "ticket_reward_description": "By watching the video ad to the end, you can earn {rewardEarnTicket} tickets.\n\nTickets are used for AI translation.\n\nNote: Audio may play.",
   "@ticket_reward_description": {
     "placeholders": {
       "rewardEarnTicket": {

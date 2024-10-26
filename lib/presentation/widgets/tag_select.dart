@@ -15,7 +15,7 @@ Widget tagSelect(String tag, int tagState, int index, Function() onTap) {
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               )),
           Container(
             width: 10,
@@ -31,7 +31,7 @@ Widget tagSelect(String tag, int tagState, int index, Function() onTap) {
               Text(tag,
                   style: const TextStyle(
                     color: Colors.white70,
-                    fontSize: 16,
+                    fontSize: 15,
                   )),
               Container(
                 width: 8,

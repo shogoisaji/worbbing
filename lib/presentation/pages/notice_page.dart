@@ -14,6 +14,7 @@ import 'package:worbbing/l10n/l10n.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/view_model/notice_page_view_model.dart';
 import 'package:worbbing/presentation/widgets/ad_banner.dart';
+import 'package:worbbing/presentation/widgets/custom_time_selector.dart';
 import 'package:worbbing/presentation/widgets/error_dialog.dart';
 import 'package:worbbing/presentation/widgets/kati_button.dart';
 import 'package:worbbing/presentation/widgets/yes_no_dialog.dart';
@@ -55,17 +56,21 @@ class NoticePage extends HookConsumerWidget {
     }
 
     Future<void> handleTapAdd() async {
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        initialEntryMode: TimePickerEntryMode.dialOnly,
-      );
-      if (pickedTime != null) {
-        await viewModelNotifier.addNotice(pickedTime).catchError((e) {
-          if (!context.mounted) return null;
-          ErrorDialog.show(context: context, text: l10n.failed_add_notice);
-        });
-      }
+      // final TimeOfDay? pickedTime = await showTimePicker(
+      //   context: context,
+      //   initialTime: TimeOfDay.now(),
+      //   initialEntryMode: TimePickerEntryMode.dialOnly,
+      // );
+      final currentTimeOfDay = TimeOfDay.now();
+      final selectedTime = await VerticalTimeSelector()
+          .show(context, currentTimeOfDay.hour, currentTimeOfDay.minute);
+      if (selectedTime == null) return;
+      final pickedTime =
+          TimeOfDay(hour: selectedTime.$1, minute: selectedTime.$2);
+      await viewModelNotifier.addNotice(pickedTime).catchError((e) {
+        if (!context.mounted) return null;
+        ErrorDialog.show(context: context, text: l10n.failed_add_notice);
+      });
       HapticFeedback.lightImpact();
     }
 
@@ -93,15 +98,19 @@ class NoticePage extends HookConsumerWidget {
     }
 
     Future<void> handleTapUpdate(NoticeDataModel notice) async {
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        initialEntryMode: TimePickerEntryMode.dialOnly,
-      );
-      if (pickedTime != null) {
-        final newNotice = notice.copyWith(time: pickedTime);
-        await viewModelNotifier.updateNotice(newNotice);
-      }
+      // final TimeOfDay? pickedTime = await showTimePicker(
+      //   context: context,
+      //   initialTime: TimeOfDay.now(),
+      //   initialEntryMode: TimePickerEntryMode.dialOnly,
+      // );
+
+      final selectedTime = await VerticalTimeSelector()
+          .show(context, notice.time.hour, notice.time.minute);
+      if (selectedTime == null) return;
+      final pickedTime =
+          TimeOfDay(hour: selectedTime.$1, minute: selectedTime.$2);
+      final newNotice = notice.copyWith(time: pickedTime);
+      await viewModelNotifier.updateNotice(newNotice);
       HapticFeedback.lightImpact();
     }
 
@@ -308,6 +317,7 @@ class NoticePage extends HookConsumerWidget {
             IconButton(
                 onPressed: () {
                   onTapDelete(notice);
+                  HapticFeedback.lightImpact();
                 },
                 icon: Icon(Icons.delete_rounded,
                     color: Colors.grey.shade300, size: 32))
@@ -354,9 +364,9 @@ class NoticePage extends HookConsumerWidget {
                   child: Text(
                     text,
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 22,
                       color: MyTheme.greyForOrange,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       shadows: [
                         BoxShadow(
                           color: Colors.grey.shade800,
