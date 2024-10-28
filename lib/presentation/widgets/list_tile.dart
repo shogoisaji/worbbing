@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:worbbing/domain/entities/word_model.dart';
 import 'package:worbbing/presentation/theme/theme.dart';
 import 'package:worbbing/presentation/widgets/custom_text.dart';
@@ -374,9 +375,9 @@ class _HintWidgetState extends State<HintWidget>
   late AnimationController _animationController;
   late Animation<double> _animation;
 
-  final double _hintSize = 50.0;
+  final double _hintSize = 90.0;
   final double _spacerX = 30.0;
-  final double _spacerY = 10.0;
+  final double _spacerY = 5.0;
   @override
   void initState() {
     super.initState();
@@ -417,19 +418,23 @@ class _HintWidgetState extends State<HintWidget>
               opacity: _animation.value,
               child: Column(
                 children: [
-                  SvgPicture.asset(
-                    'assets/svg/good.svg',
-                    width: 50,
-                    height: 50,
-                  ),
+                  // SvgPicture.asset(
+                  //   'assets/svg/good.svg',
+                  //   width: 50,
+                  //   height: 50,
+                  // ),
+                  Lottie.asset('assets/lottie/up.json',
+                      height: _hintSize, repeat: true),
                   SizedBox(height: _spacerY),
                   const SizedBox(height: _listTileHeight),
                   SizedBox(height: _spacerY),
-                  SvgPicture.asset(
-                    'assets/svg/bad.svg',
-                    width: 50,
-                    height: 50,
-                  )
+                  Lottie.asset('assets/lottie/down.json',
+                      height: _hintSize, repeat: true),
+                  // SvgPicture.asset(
+                  //   'assets/svg/bad.svg',
+                  //   width: 50,
+                  //   height: 50,
+                  // )
                 ],
               ),
             );
